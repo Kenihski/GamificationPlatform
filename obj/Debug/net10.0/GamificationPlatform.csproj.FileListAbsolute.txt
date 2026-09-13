@@ -28,3 +28,9 @@ C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjon
 C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\GamificationPlatform.pdb
 C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\GamificationPlatform.genruntimeconfig.cache
 C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\ref\GamificationPlatform.dll
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\GamificationPlatform.sourcelink.json
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\GamificationPlatform.staticwebassets.runtime.json
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\scopedcss\projectbundle\GamificationPlatform.bundle.scp.css
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\ud9ti1nv9g-{0}-9ntzf8b3rk-9ntzf8b3rk.gz
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\dw9w7it9u8-{0}-9ntzf8b3rk-9ntzf8b3rk.gz

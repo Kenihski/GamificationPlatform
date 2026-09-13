@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj": {}
+    "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj": {
+    "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
+        "projectUniqueName": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
         "projectName": "GamificationPlatform",
-        "projectPath": "C:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
+        "projectPath": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
         "packagesPath": "C:\\Users\\Kenne\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\obj\\",
+        "outputPath": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Kenne\\AppData\\Roaming\\NuGet\\NuGet.Config"
