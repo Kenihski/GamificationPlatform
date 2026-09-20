@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
@@ -9,24 +7,30 @@ namespace GamificationPlatform.Controllers
     public class ChallengeController : Controller
     {
 
+        private readonly ChallengeDbContext _challengeDbContext;
+
+        public ChallengeController(ChallengeDbContext challengeDbContext)
+        {
+            _challengeDbContext = challengeDbContext;
+        }
+
         public IActionResult Table()
         {
-            var challenges = GetChallenges();
+            List<Challenge> challenges = _challengeDbContext.Challenges.ToList();
             var challengesViewModel = new ChallengesViewModel(challenges, "Table");
             return View(challengesViewModel);
         }
 
         public IActionResult Grid()
         {
-            var challenges = GetChallenges();
+            List<Challenge> challenges = _challengeDbContext.Challenges.ToList();
             var challengesViewModel = new ChallengesViewModel(challenges, "Grid");
-
             return View(challengesViewModel);
         }
 
         public IActionResult Details(int id)
         {
-            var challenges = GetChallenges();
+            List<Challenge> challenges = _challengeDbContext.Challenges.ToList();
             var challenge = challenges.FirstOrDefault(i => i.ChallengeId ==id);
             if (challenge == null)
                 return NotFound();

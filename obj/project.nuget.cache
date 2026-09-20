@@ -1,10 +1,22 @@
 {
   "version": 2,
-  "dgSpecHash": "wX8zAi17/kg=",
+  "dgSpecHash": "b977k/a4Su0=",
   "success": true,
   "projectFilePath": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.web.librarymanager.build\\3.0.114\\microsoft.web.librarymanager.build.3.0.114.nupkg.sha512"
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.data.sqlite.core\\10.0.12\\microsoft.data.sqlite.core.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.12\\microsoft.entityframeworkcore.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.12\\microsoft.entityframeworkcore.abstractions.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.12\\microsoft.entityframeworkcore.analyzers.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.12\\microsoft.entityframeworkcore.relational.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\10.0.12\\microsoft.entityframeworkcore.sqlite.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\10.0.12\\microsoft.entityframeworkcore.sqlite.core.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.extensions.dependencymodel\\10.0.12\\microsoft.extensions.dependencymodel.10.0.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.web.librarymanager.build\\3.0.114\\microsoft.web.librarymanager.build.3.0.114.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.12\\sqlitepclraw.bundle_e_sqlite3.2.1.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\sqlitepclraw.core\\2.1.12\\sqlitepclraw.core.2.1.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.12\\sqlitepclraw.lib.e_sqlite3.2.1.12.nupkg.sha512",
+    "C:\\Users\\Kenne\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.12\\sqlitepclraw.provider.e_sqlite3.2.1.12.nupkg.sha512"
   ],
   "logs": []
 }
