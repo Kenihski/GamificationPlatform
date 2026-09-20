@@ -1,0 +1,25 @@
+@model Challenge
+
+<h3 class="my-5">
+    @Model.Title
+</h3>
+
+<div class="row gx-5">
+    <img alt="@Model.Title"
+         src="@Model.ImageUrl"
+         class="img-fluid col-5" />
+
+    <div class="col">
+        <h5>@Model.Description</h5>
+
+        <h3>@Model.MaxPoints points</h3>
+
+        <p>
+            <a href="/Challenge/Table">Back to Table View</a>
+        </p>
+
+        <p>
+            <a href="/Challenge/Grid">Back to Grid View</a>
+        </p>
+    </div>
+</div>

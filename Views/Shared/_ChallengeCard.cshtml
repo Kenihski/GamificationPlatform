@@ -1,0 +1,31 @@
+@model Challenge
+
+<div class="col">
+    <div class="card h-100">
+
+        <div class="challenge-image-container">
+            <img src="@Model.ImageUrl"
+                    class="challenge-image"
+                    alt="@Model.Title">
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-between mt-2">
+                <h5 class="text-start">
+                    <a asp-controller="Challenge"
+                        asp-action="Details"
+                        asp-route-id="@Model.ChallengeId">@Model.Title</a>
+                </h5>
+
+                <h5 class="text-nowrap">
+                    @Model.MaxPoints points
+                </h5>
+            </div>
+
+            <p class="card-text">
+                @Model.Description
+            </p>
+        </div>
+
+    </div>
+</div>

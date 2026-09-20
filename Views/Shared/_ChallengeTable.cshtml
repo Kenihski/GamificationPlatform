@@ -1,0 +1,26 @@
+   @model IEnumerable<Challenge>
+
+   <div class="container">
+        <table class="table table-striped">
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Max Points</th>
+            </tr>
+
+            @foreach (var challenge in Model)
+            {
+                <tr>
+                    <td>@challenge.ChallengeId</td>
+                    <td>
+                    <a asp-controller="Challenge"
+                       asp-action="Details"
+                       asp-route-id="@challenge.ChallengeId">@challenge.Title</a>
+                    </td>
+                    <td>@challenge.Description</td>
+                    <td>@challenge.MaxPoints</td>
+                </tr>
+            }
+        </table>
+    </div>

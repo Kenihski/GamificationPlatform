@@ -1,26 +1,8 @@
-@model IEnumerable<GamificationPlatform.Models.Challenge>
+@model ChallengesViewModel
 
-    <div class="container">
-        <h1>@ViewBag.CurrentViewName</h1>
+<h1>List of Challenges (@Model.CurrentViewName View)</h1>
+<a href="/Challenge/Grid">Grid View</a>
 
-        <table class="table table-striped">
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Max Points</th>
-            </tr>
-
-            @foreach (var challenge in Model)
-            {
-                <tr>
-                    <td>@challenge.ChallengeId</td>
-                    <td>@challenge.Title</td>
-                    <td>@challenge.Description</td>
-                    <td>@challenge.MaxPoints</td>
-                </tr>
-            }
-        </table>
-    </div>
+ <partial name="_ChallengeTable" model="Model.Challenges" />
 
 

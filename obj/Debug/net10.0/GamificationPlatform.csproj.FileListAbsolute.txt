@@ -81,4 +81,4 @@ c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjon
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\ud9ti1nv9g-{0}-yledt9hlki-yledt9hlki.gz
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\dw9w7it9u8-{0}-yledt9hlki-yledt9hlki.gz
-c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-zil0hh39eq-zil0hh39eq.gz
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-bsnkeu2aa2-bsnkeu2aa2.gz

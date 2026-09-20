@@ -1,0 +1,14 @@
+@model ChallengesViewModel
+
+<h1>List of Challenges (@Model.CurrentViewName View)</h1>
+
+<a href="/Challenge/Table">Table View</a>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var challenge in Model.Challenges)
+    {
+        <partial name="_ChallengeCard" model="challenge" />
+    }
+</div>
+
+
