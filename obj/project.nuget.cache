@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "IrTZi5u9cDQ=",
+  "dgSpecHash": "wX8zAi17/kg=",
   "success": true,
   "projectFilePath": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Kenne\\.nuget\\packages\\microsoft.web.librarymanager.build\\3.0.114\\microsoft.web.librarymanager.build.3.0.114.nupkg.sha512"
+  ],
   "logs": []
 }

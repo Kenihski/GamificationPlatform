@@ -1,11 +1,99 @@
 {
   "version": 4,
   "targets": {
-    "net10.0": {}
+    "net10.0": {
+      "Microsoft.Web.LibraryManager.Build/3.0.114": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.Web.LibraryManager.Build.props": {},
+          "build/Microsoft.Web.LibraryManager.Build.targets": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Microsoft.Web.LibraryManager.Build/3.0.114": {
+      "sha512": "9E7B1ixZR2to7ZTPZKIcTfQwGKuBu11F7tFykmi2X+icjTy6bJY9N/LLJ9tAW7PhaAmgM15o3t7P9aBg0kbUxw==",
+      "type": "package",
+      "path": "microsoft.web.librarymanager.build/3.0.114",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "License.txt",
+        "PackageIcon.png",
+        "Third-party-notice.txt",
+        "build/Microsoft.Web.LibraryManager.Build.props",
+        "build/Microsoft.Web.LibraryManager.Build.targets",
+        "microsoft.web.librarymanager.build.3.0.114.nupkg.sha512",
+        "microsoft.web.librarymanager.build.nuspec",
+        "tools/net481/Microsoft.Web.LibraryManager.Build.dll",
+        "tools/net481/Microsoft.Web.LibraryManager.Contracts.dll",
+        "tools/net481/Microsoft.Web.LibraryManager.dll",
+        "tools/net481/Newtonsoft.Json.dll",
+        "tools/net481/cs/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/cs/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/de/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/de/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/es/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/es/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/fr/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/fr/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/it/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/it/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/ja/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/ja/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/ko/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/ko/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/pl/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/pl/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/pt-BR/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/pt-BR/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/ru/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/ru/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/tr/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/tr/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/zh-Hans/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/zh-Hans/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net481/zh-Hant/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net481/zh-Hant/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/Microsoft.Web.LibraryManager.Build.dll",
+        "tools/net8.0/Microsoft.Web.LibraryManager.Contracts.dll",
+        "tools/net8.0/Microsoft.Web.LibraryManager.dll",
+        "tools/net8.0/Newtonsoft.Json.dll",
+        "tools/net8.0/cs/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/cs/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/de/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/de/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/es/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/es/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/fr/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/fr/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/it/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/it/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/ja/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/ja/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/ko/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/ko/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/pl/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/pl/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/pt-BR/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/pt-BR/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/ru/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/ru/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/tr/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/tr/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/zh-Hans/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/zh-Hans/Microsoft.Web.LibraryManager.resources.dll",
+        "tools/net8.0/zh-Hant/Microsoft.Web.LibraryManager.Contracts.resources.dll",
+        "tools/net8.0/zh-Hant/Microsoft.Web.LibraryManager.resources.dll"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "Microsoft.Web.LibraryManager.Build >= 3.0.114"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Kenne\\.nuget\\packages\\": {}
@@ -51,6 +139,12 @@
       "net10.0": {
         "framework": "net10.0",
         "targetAlias": "net10.0",
+        "dependencies": {
+          "Microsoft.Web.LibraryManager.Build": {
+            "target": "Package",
+            "version": "[3.0.114, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
