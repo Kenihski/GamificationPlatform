@@ -56,7 +56,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Solve a Coding Puzzle",
                 Description = "Complete a small algorithmic challenge.",
                 MaxPoints = 50,
-                ImageUrl = "/images/Challenge.png"
+                ImageUrl = "/images/Question_mark_code_10.png"
             };
 
             var challenge2 = new Challenge
@@ -65,7 +65,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Write a Reflection",
                 Description = "Write a short reflection about today's lecture.",
                 MaxPoints = 20,
-                ImageUrl = "/images/Question_mark.png"
+                ImageUrl = "/images/Question_mark_code_2.png"
             };
 
             var challenge3 = new Challenge
@@ -74,7 +74,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Complete a Quiz",
                 Description = "Complete a quiz about the topics covered in class.",
                 MaxPoints = 30,
-                ImageUrl = "/images/Retro_Challenge.png"
+                ImageUrl = "/images/Question_mark_code_3.png"
             };
 
             var challenge4 = new Challenge
@@ -83,7 +83,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Build a Website",
                 Description = "Create a simple website using HTML and CSS.",
                 MaxPoints = 100,
-                ImageUrl = "/images/Retro_question_mark.png"
+                ImageUrl = "/images/Question_mark_code_4.png"
             };
 
             var challenge5 = new Challenge
@@ -92,7 +92,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Debug the Code",
                 Description = "Find and fix the errors in the provided code.",
                 MaxPoints = 40,
-                ImageUrl = "/images/Challenge.png"
+                ImageUrl = "/images/Question_mark_code_5.png"
             };
 
             var challenge6 = new Challenge
@@ -101,7 +101,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Team Challenge",
                 Description = "Work together with your classmates to solve a problem.",
                 MaxPoints = 60,
-                ImageUrl = "/images/Question_mark.png"
+                ImageUrl = "/images/Question_mark_code_6.png"
             };
 
             var challenge7 = new Challenge
@@ -110,7 +110,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Learn Something New",
                 Description = "Learn about a new programming concept and explain it.",
                 MaxPoints = 25,
-                ImageUrl = "/images/Retro_Challenge.png"
+                ImageUrl = "/images/Question_mark_code_7.png"
             };
 
             var challenge8 = new Challenge
@@ -119,7 +119,7 @@ namespace GamificationPlatform.Controllers
                 Title = "Final Project",
                 Description = "Complete a small project using what you have learned.",
                 MaxPoints = 150,
-                ImageUrl = "/images/Retro_question_mark.png"
+                ImageUrl = "/images/Question_mark_code_9.png"
             };
 
             challenges.Add(challenge1);
