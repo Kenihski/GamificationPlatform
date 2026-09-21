@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
 
@@ -14,24 +15,23 @@ namespace GamificationPlatform.Controllers
             _challengeDbContext = challengeDbContext;
         }
 
-        public IActionResult Table()
+        public async Task<IActionResult> Table()
         {
-            List<Challenge> challenges = _challengeDbContext.Challenges.ToList();
+            List<Challenge> challenges = await _challengeDbContext.Challenges.ToListAsync();
             var challengesViewModel = new ChallengesViewModel(challenges, "Table");
             return View(challengesViewModel);
         }
 
-        public IActionResult Grid()
+        public async Task<IActionResult> Grid()
         {
-            List<Challenge> challenges = _challengeDbContext.Challenges.ToList();
+            List<Challenge> challenges = await _challengeDbContext.Challenges.ToListAsync();
             var challengesViewModel = new ChallengesViewModel(challenges, "Grid");
             return View(challengesViewModel);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            List<Challenge> challenges = _challengeDbContext.Challenges.ToList();
-            var challenge = challenges.FirstOrDefault(i => i.ChallengeId ==id);
+            var challenge = await _challengeDbContext.Challenges.FirstOrDefaultAsync(i => i.ChallengeId ==id);
             if (challenge == null)
                 return NotFound();
             return View(challenge);
@@ -44,21 +44,21 @@ namespace GamificationPlatform.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Challenge challenge)
+        public async Task<IActionResult> Create(Challenge challenge)
         {
             if (ModelState.IsValid)
             {
                 _challengeDbContext.Challenges.Add(challenge);
-                _challengeDbContext.SaveChanges();
+                await _challengeDbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Table));
             }
             return View(challenge);
         }
 
         [HttpGet]
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var challenge = _challengeDbContext.Challenges.Find(id);
+            var challenge = await _challengeDbContext.Challenges.FindAsync(id);
             if (challenge == null)
             {
                 return NotFound();
@@ -67,21 +67,21 @@ namespace GamificationPlatform.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Challenge challenge)
+        public async Task<IActionResult> Update(Challenge challenge)
         {
             if (ModelState.IsValid)
             {
                 _challengeDbContext.Challenges.Update(challenge);
-                _challengeDbContext.SaveChanges();
+                await _challengeDbContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Table));
             }
             return View(challenge);
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var challenge = _challengeDbContext.Challenges.Find(id);
+            var challenge = await _challengeDbContext.Challenges.FindAsync(id);
             if (challenge == null)
             {
                 return NotFound();
@@ -90,15 +90,15 @@ namespace GamificationPlatform.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var challenge = _challengeDbContext.Challenges.Find(id);
+            var challenge = await _challengeDbContext.Challenges.FindAsync(id);
             if (challenge == null)
             {
                 return NotFound();
             }
             _challengeDbContext.Challenges.Remove(challenge);
-            _challengeDbContext.SaveChanges();
+            await _challengeDbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Table));
         }
 
