@@ -1,0 +1,39 @@
+@model Challenge
+
+<h2>Create New Challenge</h2>
+
+<form asp-action="Create">
+
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <span class="text-danger">*</span>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaxPoints"></label>
+        <span class="text-danger">*</span>
+        <input asp-for="MaxPoints" class="form-control" />
+        <span asp-validation-for="MaxPoints" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ImageUrl"></label>
+        <input asp-for="ImageUrl" class="form-control" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">Create</button>
+
+    <a asp-action="Table" class="btn btn-secondary">Back to Table View</a>
+
+</form>

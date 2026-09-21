@@ -7,6 +7,8 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Max Points</th>
+                <th>Image</th>
+                <th>Actions</th>
             </tr>
 
             @foreach (var challenge in Model)
@@ -20,7 +22,20 @@
                     </td>
                     <td>@challenge.Description</td>
                     <td>@challenge.MaxPoints</td>
+                    <td>
+                        <img src="@challenge.ImageUrl" alt="Challenge Image" style="max-width: 80px; max-height: 80px" />
+                    </td>
+                    <td>
+                        <a asp-action="Update" asp-route-id="@challenge.ChallengeId">Update</a>
+                        <a asp-action="Delete" asp-route-id="@challenge.ChallengeId">Delete</a>
+                    </td>
                 </tr>
             }
         </table>
+        <p>
+            <a class="btn btn-secondary"
+              asp-controller="Challenge"
+              asp-action="Create">Create New Challenge</a>
+        </p>
     </div>
+

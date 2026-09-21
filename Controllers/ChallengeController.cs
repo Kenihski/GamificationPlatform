@@ -37,6 +37,71 @@ namespace GamificationPlatform.Controllers
             return View(challenge);
         }
       
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Challenge challenge)
+        {
+            if (ModelState.IsValid)
+            {
+                _challengeDbContext.Challenges.Add(challenge);
+                _challengeDbContext.SaveChanges();
+                return RedirectToAction(nameof(Table));
+            }
+            return View(challenge);
+        }
+
+        [HttpGet]
+        public IActionResult Update(int id)
+        {
+            var challenge = _challengeDbContext.Challenges.Find(id);
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+            return View(challenge);
+        }
+
+        [HttpPost]
+        public IActionResult Update(Challenge challenge)
+        {
+            if (ModelState.IsValid)
+            {
+                _challengeDbContext.Challenges.Update(challenge);
+                _challengeDbContext.SaveChanges();
+                return RedirectToAction(nameof(Table));
+            }
+            return View(challenge);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var challenge = _challengeDbContext.Challenges.Find(id);
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+            return View(challenge);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var challenge = _challengeDbContext.Challenges.Find(id);
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+            _challengeDbContext.Challenges.Remove(challenge);
+            _challengeDbContext.SaveChanges();
+            return RedirectToAction(nameof(Table));
+        }
+
        // public IActionResult Table()
        // {
        //     var challenges = GetChallenges();
