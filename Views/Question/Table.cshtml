@@ -1,0 +1,74 @@
+@model IEnumerable<GamificationPlatform.Models.Question>
+
+<h1>List of Questions</h1>
+
+<p>
+    <a asp-controller="Question"
+       asp-action="Create"
+       class="btn btn-primary">
+        Create New Question
+    </a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Question</th>
+            <th>Description</th>
+            <th>Points</th>
+            <th>Challenge</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var question in Model)
+        {
+            <tr>
+                <td>@question.QuestionId</td>
+
+                <td>@question.Title</td>
+
+                <td>@question.Description</td>
+
+                <td>@question.Points</td>
+
+                <td>@question.Challenge.Title</td>
+
+                <td>
+                    @if (!string.IsNullOrEmpty(question.ImageUrl))
+                    {
+                        <img src="@question.ImageUrl"
+                             alt="@question.Title"
+                             style="width: 100px; height: 60px; object-fit: contain;" />
+                    }
+                    else
+                    {
+                        <span>No image</span>
+                    }
+                </td>
+
+                <td>
+                    <a asp-controller="Question"
+                       asp-action="Update"
+                       asp-route-id="@question.QuestionId"
+                       class="btn btn-warning btn-sm">
+                        Update
+                    </a>
+                </td>
+
+                <td>
+                    <a asp-controller="Question"
+                        asp-action="Delete"
+                        asp-route-id="@question.QuestionId"
+                        class="btn btn-danger btn-sm">
+                        Delete
+                    </a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

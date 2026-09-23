@@ -1,0 +1,46 @@
+@model IEnumerable<GamificationPlatform.Models.User>
+
+<div class="container">
+    <table class="table table-striped">
+
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Challenges</th>
+            <th>Attempts</th>
+        </tr>
+
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.Username</td>
+                <td>@user.Email</td>
+                <td>
+                    @if (user.UserChallenges != null)
+                    {
+                        <p>
+                            @string.Join(", ",
+                                user.UserChallenges.Select(
+                                    userChallenge => userChallenge.Challenge.Title))
+                        </p>
+                    }
+                </td>
+
+                <td>
+                    @if (user.UserChallenges != null)
+                    {
+                        <p>
+                            @string.Join(", ",
+                                user.UserChallenges.SelectMany(
+                                    userChallenge => userChallenge.Attempts)
+                                .Select(
+                                    attempt => $"{attempt.Score} points"))
+                        </p>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>

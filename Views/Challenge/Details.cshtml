@@ -14,6 +14,13 @@
 
         <h3>@Model.MaxPoints points</h3>
 
+        <a asp-controller="Challenge"
+           asp-action="Take"
+           asp-route-id="@Model.ChallengeId"
+           class="btn btn-primary my-3">
+            Start Challenge
+        </a>
+
         <p>
             <a href="/Challenge/Table">Back to Table View</a>
         </p>

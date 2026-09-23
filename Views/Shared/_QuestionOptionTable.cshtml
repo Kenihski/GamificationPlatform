@@ -1,0 +1,26 @@
+@model IEnumerable<GamificationPlatform.Models.QuestionOption>
+
+<div class="container">
+
+    <table class="table table-striped" style="max-width: 1200px;">
+
+        <tr>
+            <th>Id</th>
+            <th>Answer</th>
+            <th>Correct</th>
+        </tr>
+
+        @foreach (var option in Model)
+        {
+            <tr>
+                <td>@option.QuestionOptionId</td>
+
+                <td>@option.Text</td>
+
+                <td>@option.IsCorrect</td>
+            </tr>
+        }
+
+    </table>
+
+</div>

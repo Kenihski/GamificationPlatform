@@ -1,0 +1,25 @@
+@model GamificationPlatform.Models.Challenge
+
+<h2>Challenge Completed!</h2>
+
+<h4>@Model.Title</h4>
+
+<hr />
+
+<h3>
+    Your Score: @ViewBag.Score / @ViewBag.MaxScore
+</h3>
+
+<a asp-controller="Challenge"
+   asp-action="Take"
+   asp-route-id="@Model.ChallengeId"
+   class="btn btn-primary">
+    Try Again
+</a>
+
+<a asp-controller="Challenge"
+   asp-action="Details"
+   asp-route-id="@Model.ChallengeId"
+   class="btn btn-secondary">
+    Back to Challenge
+</a>

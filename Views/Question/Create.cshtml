@@ -1,0 +1,163 @@
+@model GamificationPlatform.ViewModels.CreateQuestionViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+<h2>Create New Question</h2>
+
+<form asp-action="Create">
+
+    <div class="form-group">
+        <label asp-for="Question.Title"></label>
+        <span class="text-danger">*</span>
+
+        <input asp-for="Question.Title"
+               class="form-control" />
+
+        <span asp-validation-for="Question.Title"
+              class="text-danger">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Question.Description"></label>
+
+        <input asp-for="Question.Description"
+               class="form-control" />
+
+        <span asp-validation-for="Question.Description"
+              class="text-danger">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Question.Points"></label>
+        <span class="text-danger">*</span>
+
+        <input asp-for="Question.Points"
+               class="form-control" />
+
+        <span asp-validation-for="Question.Points"
+              class="text-danger">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Question.ImageUrl">
+            Image
+        </label>
+
+        <select asp-for="Question.ImageUrl"
+                class="form-control">
+
+            <option value="">
+                -- Select Image --
+            </option>
+
+            <option value="/images/Question_mark_code_2.png">
+                Question 1
+            </option>
+
+            <option value="/images/Question_mark_code_3.png">
+                Question 2
+            </option>
+
+            <option value="/images/Question_mark_code_4.png">
+                Question 3
+            </option>
+
+            <option value="/images/Question_mark_code_5.png">
+                Question 4
+            </option>
+
+            <option value="/images/Question_mark_code_6.png">
+                Question 5
+            </option>
+
+            <option value="/images/Question_mark_code_7.png">
+                Question 6
+            </option>
+
+            <option value="/images/Question_mark_code_8.png">
+                Question 7
+            </option>
+
+            <option value="/images/Question_mark_code_9.png">
+                Question 8
+            </option>
+
+            <option value="/images/Question_mark_code_10.png">
+                Question 9
+            </option>
+
+            <option value="/images/Question_mark_code_11.png">
+                Question 10
+            </option>
+
+        </select>
+
+        <span asp-validation-for="Question.ImageUrl"
+              class="text-danger">
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Question.ChallengeId">
+            Challenge
+        </label>
+
+        <select asp-for="Question.ChallengeId"
+                class="form-control"
+                asp-items="@(new SelectList(Model.Challenges, "ChallengeId", "Title"))">
+
+            <option value="">
+                -- Select Challenge --
+            </option>
+
+        </select>
+
+        <span asp-validation-for="Question.ChallengeId"
+              class="text-danger">
+        </span>
+    </div>
+
+    <hr />
+
+    <h4>Answer Options</h4>
+
+    @for (int i = 0; i < 4; i++)
+    {
+        <div class="form-group mb-3">
+
+            <label>Option @(i + 1)</label>
+
+            <input asp-for="Options[i]"
+                   class="form-control" />
+
+            <div class="form-check mt-1">
+
+                <input type="radio"
+                       asp-for="CorrectOption"
+                       value="@i"
+                       class="form-check-input" />
+
+                <label class="form-check-label">
+                    Correct answer
+                </label>
+
+            </div>
+
+        </div>
+    }
+
+    <br />
+
+    <button type="submit"
+            class="btn btn-primary">
+        Create Question
+    </button>
+
+    <a asp-action="Table"
+       class="btn btn-secondary">
+        Back to Questions
+    </a>
+
+</form>

@@ -7,7 +7,6 @@ namespace GamificationPlatform.Controllers
 {
     public class ChallengeController : Controller
     {
-
         private readonly ChallengeDbContext _challengeDbContext;
 
         public ChallengeController(ChallengeDbContext challengeDbContext)
@@ -15,192 +14,190 @@ namespace GamificationPlatform.Controllers
             _challengeDbContext = challengeDbContext;
         }
 
+        // Shows challenges in a table
         public async Task<IActionResult> Table()
         {
-            List<Challenge> challenges = await _challengeDbContext.Challenges.ToListAsync();
-            var challengesViewModel = new ChallengesViewModel(challenges, "Table");
+            List<Challenge> challenges =
+                await _challengeDbContext.Challenges.ToListAsync();
+
+            var challengesViewModel =
+                new ChallengesViewModel(challenges, "Table");
+
             return View(challengesViewModel);
         }
 
+        // Shows challenges in a grid
         public async Task<IActionResult> Grid()
         {
-            List<Challenge> challenges = await _challengeDbContext.Challenges.ToListAsync();
-            var challengesViewModel = new ChallengesViewModel(challenges, "Grid");
+            List<Challenge> challenges =
+                await _challengeDbContext.Challenges.ToListAsync();
+
+            var challengesViewModel =
+                new ChallengesViewModel(challenges, "Grid");
+
             return View(challengesViewModel);
         }
 
+        // Shows information about a challenge
         public async Task<IActionResult> Details(int id)
         {
-            var challenge = await _challengeDbContext.Challenges.FirstOrDefaultAsync(i => i.ChallengeId ==id);
+            var challenge = await _challengeDbContext.Challenges
+                .FirstOrDefaultAsync(c => c.ChallengeId == id);
+
             if (challenge == null)
+            {
                 return NotFound();
+            }
+
             return View(challenge);
         }
-      
+
+        // Shows the quiz and its questions
+        [HttpGet]
+        public async Task<IActionResult> Take(int id)
+        {
+            var challenge = await _challengeDbContext.Challenges
+                .Include(c => c.Questions)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefaultAsync(c => c.ChallengeId == id);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            return View(challenge);
+        }
+
+        // Checks the answers and calculates the score
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Submit(
+            int challengeId,
+            Dictionary<int, int> answers)
+        {
+            var challenge = await _challengeDbContext.Challenges
+                .Include(c => c.Questions)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefaultAsync(c => c.ChallengeId == challengeId);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            int score = 0;
+
+            // Calculate the score
+            foreach (var question in challenge.Questions)
+            {
+                if (answers.TryGetValue(
+                    question.QuestionId,
+                    out int selectedOptionId))
+                {
+                    var selectedOption = question.Options
+                        .FirstOrDefault(o =>
+                            o.QuestionOptionId == selectedOptionId);
+
+                    if (selectedOption != null && selectedOption.IsCorrect)
+                    {
+                        score += question.Points;
+                    }
+                }
+            }
+
+            ViewBag.Score = score;
+            ViewBag.MaxScore = challenge.Questions.Sum(q => q.Points);
+
+            return View("Result", challenge);
+        }
+
+        // Shows the Create Challenge form
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        // Creates a new challenge
         [HttpPost]
         public async Task<IActionResult> Create(Challenge challenge)
         {
             if (ModelState.IsValid)
             {
                 _challengeDbContext.Challenges.Add(challenge);
+
                 await _challengeDbContext.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Table));
             }
+
             return View(challenge);
         }
 
+        // Shows the Update Challenge form
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var challenge = await _challengeDbContext.Challenges.FindAsync(id);
+            var challenge =
+                await _challengeDbContext.Challenges.FindAsync(id);
+
             if (challenge == null)
             {
                 return NotFound();
             }
+
             return View(challenge);
         }
 
+        // Updates an existing challenge
         [HttpPost]
         public async Task<IActionResult> Update(Challenge challenge)
         {
             if (ModelState.IsValid)
             {
                 _challengeDbContext.Challenges.Update(challenge);
+
                 await _challengeDbContext.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Table));
             }
+
             return View(challenge);
         }
 
+        // Shows the Delete Challenge confirmation page
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var challenge = await _challengeDbContext.Challenges.FindAsync(id);
+            var challenge =
+                await _challengeDbContext.Challenges.FindAsync(id);
+
             if (challenge == null)
             {
                 return NotFound();
             }
+
             return View(challenge);
         }
 
+        // Deletes a challenge
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var challenge = await _challengeDbContext.Challenges.FindAsync(id);
+            var challenge =
+                await _challengeDbContext.Challenges.FindAsync(id);
+
             if (challenge == null)
             {
                 return NotFound();
             }
+
             _challengeDbContext.Challenges.Remove(challenge);
+
             await _challengeDbContext.SaveChangesAsync();
+
             return RedirectToAction(nameof(Table));
-        }
-
-       // public IActionResult Table()
-       // {
-       //     var challenges = GetChallenges();
-       //    ViewBag.CurrentViewName = "Table";
-       //     return View(challenges);
-       // }
-
-        // public IActionResult Grid()
-        // {
-        // var challenges = GetChallenges();
-        //   ViewBag.CurrentViewName = "Grid";
-        //   return View(challenges);
-        // }
-
-        private List<Challenge> GetChallenges()
-        {
-            var challenges = new List<Challenge>();
-            var challenge1 = new Challenge
-            {
-                ChallengeId = 1,
-                Title = "Solve a Coding Puzzle",
-                Description = "Complete a small algorithmic challenge.",
-                MaxPoints = 50,
-                ImageUrl = "/images/Question_mark_code_10.png"
-            };
-
-            var challenge2 = new Challenge
-            {
-                ChallengeId = 2,
-                Title = "Write a Reflection",
-                Description = "Write a short reflection about today's lecture.",
-                MaxPoints = 20,
-                ImageUrl = "/images/Question_mark_code_2.png"
-            };
-
-            var challenge3 = new Challenge
-            {
-                ChallengeId = 3,
-                Title = "Complete a Quiz",
-                Description = "Complete a quiz about the topics covered in class.",
-                MaxPoints = 30,
-                ImageUrl = "/images/Question_mark_code_3.png"
-            };
-
-            var challenge4 = new Challenge
-            {
-                ChallengeId = 4,
-                Title = "Build a Website",
-                Description = "Create a simple website using HTML and CSS.",
-                MaxPoints = 100,
-                ImageUrl = "/images/Question_mark_code_4.png"
-            };
-
-            var challenge5 = new Challenge
-            {
-                ChallengeId = 5,
-                Title = "Debug the Code",
-                Description = "Find and fix the errors in the provided code.",
-                MaxPoints = 40,
-                ImageUrl = "/images/Question_mark_code_5.png"
-            };
-
-            var challenge6 = new Challenge
-            {
-                ChallengeId = 6,
-                Title = "Team Challenge",
-                Description = "Work together with your classmates to solve a problem.",
-                MaxPoints = 60,
-                ImageUrl = "/images/Question_mark_code_6.png"
-            };
-
-            var challenge7 = new Challenge
-            {
-                ChallengeId = 7,
-                Title = "Learn Something New",
-                Description = "Learn about a new programming concept and explain it.",
-                MaxPoints = 25,
-                ImageUrl = "/images/Question_mark_code_7.png"
-            };
-
-            var challenge8 = new Challenge
-            {
-                ChallengeId = 8,
-                Title = "Final Project",
-                Description = "Complete a small project using what you have learned.",
-                MaxPoints = 150,
-                ImageUrl = "/images/Question_mark_code_9.png"
-            };
-
-            challenges.Add(challenge1);
-            challenges.Add(challenge2);
-            challenges.Add(challenge3);
-            challenges.Add(challenge4);
-            challenges.Add(challenge5);
-            challenges.Add(challenge6);
-            challenges.Add(challenge7);
-            challenges.Add(challenge8);
-
-            return challenges;
         }
     }
 }
