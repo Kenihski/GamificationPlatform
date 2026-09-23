@@ -9,6 +9,6 @@ namespace GamificationPlatform.Models
         public int Score { get; set; }
         public bool Completed { get; set; }
         public DateTime StartedAt { get; set; }
-        public DateTime CompletedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
     }
 }

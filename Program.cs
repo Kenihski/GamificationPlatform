@@ -16,6 +16,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    DBInit.Seed(app);
 }
 
 app.MapStaticAssets(); // Enable static assets from wwwroot (images, JS, CSS)
