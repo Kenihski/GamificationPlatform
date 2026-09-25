@@ -3,10 +3,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - Learning Challenge Hub</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
     <script src="~/lib/jquery/dist/jquery.min.js" defer></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" defer></script>
+
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
@@ -37,13 +41,13 @@
 
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-sm-inline-flex">
 
+                    <!-- Left side -->
                     <ul class="navbar-nav flex-grow-1">
 
                         <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-area=""
                                asp-controller="Home"
                                asp-action="Index">
                                 Home
@@ -52,7 +56,6 @@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-area=""
                                asp-controller="Challenge"
                                asp-action="Table">
                                 Challenges
@@ -61,7 +64,6 @@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-area=""
                                asp-controller="User"
                                asp-action="Table">
                                 Users
@@ -70,12 +72,56 @@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-area=""
                                asp-controller="Question"
                                asp-action="Table">
                                 Questions
                             </a>
                         </li>
+
+                    </ul>
+
+                    <!-- Right side -->
+                    <ul class="navbar-nav">
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">
+                                    Welcome, @User.Identity.Name
+                                </span>
+                            </li>
+
+                            <li class="nav-item">
+                                <form asp-controller="User"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    <button type="submit"
+                                            class="btn btn-link nav-link text-dark">
+                                        Logout
+                                    </button>
+
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="User"
+                                   asp-action="Login">
+                                    Login
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="User"
+                                   asp-action="Register">
+                                    Register
+                                </a>
+                            </li>
+                        }
 
                     </ul>
 
