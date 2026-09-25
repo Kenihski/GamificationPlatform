@@ -6,6 +6,10 @@
       asp-action="Register"
       method="post">
 
+    <input type="hidden"
+           name="returnUrl"
+           value="@ViewBag.ReturnUrl" />
+
     <div class="mb-3">
         <label asp-for="Username"
                class="form-label">

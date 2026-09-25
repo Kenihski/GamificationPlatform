@@ -7,12 +7,15 @@ namespace GamificationPlatform.Models
     {
         public static void Seed(IApplicationBuilder app)
         {
-            using var serviceScope = app.ApplicationServices.CreateScope();
+            using var serviceScope =
+                app.ApplicationServices.CreateScope();
 
             ChallengeDbContext context =
-                serviceScope.ServiceProvider.GetRequiredService<ChallengeDbContext>();
+                serviceScope.ServiceProvider
+                    .GetRequiredService<ChallengeDbContext>();
 
             // Delete the existing database and create it again.
+            // Useful while testing with dummy data.
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
@@ -25,7 +28,7 @@ namespace GamificationPlatform.Models
                     {
                         Title = "HTML Quiz",
                         Description = "Test your knowledge of HTML.",
-                        MaxPoints = 50,
+                        MaxPoints = 20,
                         ImageUrl = "/images/Question_mark_code_10.png"
                     },
 
@@ -33,7 +36,7 @@ namespace GamificationPlatform.Models
                     {
                         Title = "Programming Challenge",
                         Description = "Test your programming knowledge.",
-                        MaxPoints = 100,
+                        MaxPoints = 10,
                         ImageUrl = "/images/Question_mark_code_7.png"
                     },
 
@@ -41,7 +44,7 @@ namespace GamificationPlatform.Models
                     {
                         Title = "Web Development",
                         Description = "Answer questions about web development.",
-                        MaxPoints = 75,
+                        MaxPoints = 20,
                         ImageUrl = "/images/Question_mark_code_7.png"
                     }
                 };
@@ -279,42 +282,66 @@ namespace GamificationPlatform.Models
             // Add ChallengeAttempts
             if (!context.ChallengeAttempts.Any())
             {
-                var challengeAttempts = new List<ChallengeAttempt>
+                var challengeAttempts =
+                    new List<ChallengeAttempt>
                 {
+                    // Alice - first attempt
                     new ChallengeAttempt
                     {
                         UserChallengeId = 1,
-                        Score = 40,
+                        Score = 10,
                         Completed = true,
-                        StartedAt = DateTime.Now.AddDays(-2),
-                        CompletedAt = DateTime.Now.AddDays(-2).AddMinutes(10)
+                        StartedAt =
+                            DateTime.Now
+                                .AddDays(-2)
+                                .AddMinutes(-10),
+                        CompletedAt =
+                            DateTime.Now
+                                .AddDays(-2)
                     },
 
+                    // Alice - best attempt
                     new ChallengeAttempt
                     {
                         UserChallengeId = 1,
-                        Score = 50,
+                        Score = 20,
                         Completed = true,
-                        StartedAt = DateTime.Now.AddDays(-1),
-                        CompletedAt = DateTime.Now.AddDays(-1).AddMinutes(8)
+                        StartedAt =
+                            DateTime.Now
+                                .AddDays(-1)
+                                .AddMinutes(-8),
+                        CompletedAt =
+                            DateTime.Now
+                                .AddDays(-1)
                     },
 
+                    // Bob - same score as Alice,
+                    // but slower
                     new ChallengeAttempt
                     {
                         UserChallengeId = 2,
-                        Score = 30,
+                        Score = 20,
                         Completed = true,
-                        StartedAt = DateTime.Now.AddDays(-1),
-                        CompletedAt = DateTime.Now.AddDays(-1).AddMinutes(12)
+                        StartedAt =
+                            DateTime.Now
+                                .AddDays(-1)
+                                .AddMinutes(-12),
+                        CompletedAt =
+                            DateTime.Now
+                                .AddDays(-1)
                     },
 
+                    // Charlie - Programming Challenge
                     new ChallengeAttempt
                     {
                         UserChallengeId = 3,
-                        Score = 70,
+                        Score = 10,
                         Completed = true,
-                        StartedAt = DateTime.Now,
-                        CompletedAt = DateTime.Now.AddMinutes(15)
+                        StartedAt =
+                            DateTime.Now
+                                .AddMinutes(-15),
+                        CompletedAt =
+                            DateTime.Now
                     }
                 };
 

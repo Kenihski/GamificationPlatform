@@ -1,0 +1,86 @@
+@model GamificationPlatform.ViewModels.LeaderboardViewModel
+
+<h2 class="mb-4">
+    Leaderboard
+</h2>
+
+<h4 class="mb-4">
+    @Model.Challenge.Title
+</h4>
+
+@if (!Model.Entries.Any())
+{
+    <div class="alert alert-info">
+        No scores yet.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>User</th>
+                <th>Score</th>
+                <th>Time</th>
+                <th>Completed</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var entry in Model.Entries)
+            {
+                <tr>
+                    <td>
+                        <strong>
+                            @entry.Rank
+                        </strong>
+                    </td>
+
+                    <td>
+                        @entry.Username
+                    </td>
+
+                    <td>
+                        <strong>
+                            @entry.Score / @Model.MaxPoints
+                        </strong>
+                    </td>
+
+                    <td>
+                        @if (entry.TimeUsed.HasValue)
+                        {
+                            if (entry.TimeUsed.Value.TotalMinutes >= 1)
+                            {
+                                <span>
+                                    @Math.Round(entry.TimeUsed.Value.TotalMinutes) min
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    @Math.Round(entry.TimeUsed.Value.TotalSeconds) sec
+                                </span>
+                            }
+                        }
+                    </td>
+
+                    <td>
+                        @entry.CompletedAt?.ToString("dd.MM.yyyy HH:mm")
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+<a asp-controller="Challenge"
+   asp-action="Details"
+   asp-route-id="@Model.Challenge.ChallengeId"
+   class="btn btn-secondary">
+    Back to Challenge
+</a>

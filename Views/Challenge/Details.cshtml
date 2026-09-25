@@ -16,11 +16,33 @@
 
         <h3>@Model.MaxPoints points</h3>
 
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-controller="Challenge"
+               asp-action="Take"
+               asp-route-id="@Model.Challenge.ChallengeId"
+               class="btn btn-primary my-3">
+                Start Challenge
+            </a>
+        }
+        else
+        {
+            <a asp-controller="User"
+               asp-action="Login"
+               asp-route-returnUrl="@Url.Action(
+                    "Details",
+                    "Challenge",
+                    new { id = Model.Challenge.ChallengeId })"
+               class="btn btn-primary my-3">
+                Start Challenge
+            </a>
+        }
+
         <a asp-controller="Challenge"
-           asp-action="Take"
+           asp-action="Leaderboard"
            asp-route-id="@Model.Challenge.ChallengeId"
-           class="btn btn-primary my-3">
-            Start Challenge
+           class="btn btn-secondary my-3">
+            Leaderboard
         </a>
 
         <p>
@@ -125,8 +147,8 @@
 
                         <td>
                             <a asp-controller="Challenge"
-                            asp-action="AttemptDetails"
-                            asp-route-id="@attempt.ChallengeAttemptId">
+                               asp-action="AttemptDetails"
+                               asp-route-id="@attempt.ChallengeAttemptId">
                                 Attempt @attemptNumber
                             </a>
                         </td>

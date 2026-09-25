@@ -111,8 +111,6 @@ namespace GamificationPlatform.Controllers
                                 .ChallengeAttemptId;
 
                         // Gets the best completed attempt
-                        // If several attempts have the same score,
-                        // the newest one is considered best
                         viewModel.BestAttemptId =
                             viewModel.Attempts
                                 .OrderByDescending(a => a.Score)
@@ -120,8 +118,7 @@ namespace GamificationPlatform.Controllers
                                 .First()
                                 .ChallengeAttemptId;
 
-                        // Places the best attempt first,
-                        // then the remaining attempts newest first
+                        // Places the best attempt first
                         viewModel.Attempts =
                             viewModel.Attempts
                                 .OrderByDescending(a =>
@@ -136,12 +133,81 @@ namespace GamificationPlatform.Controllers
             return View(viewModel);
         }
 
+        // Shows the leaderboard for a challenge
+        [HttpGet]
+        public async Task<IActionResult> Leaderboard(int id)
+        {
+            var challenge =
+                await _challengeDbContext.Challenges
+                    .Include(c => c.Questions)
+                    .FirstOrDefaultAsync(c =>
+                        c.ChallengeId == id);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            int maxPoints =
+                challenge.Questions.Sum(q => q.Points);
+
+            // Gets all completed attempts for this challenge
+            var attempts =
+                await _challengeDbContext.ChallengeAttempts
+                    .Include(a => a.UserChallenge)
+                        .ThenInclude(uc => uc.User)
+                    .Where(a =>
+                        a.UserChallenge.ChallengeId == id &&
+                        a.Completed)
+                    .ToListAsync();
+
+            // Gets the best attempt from each user
+            var bestAttempts =
+                attempts
+                    .GroupBy(a => a.UserChallenge.UserId)
+                    .Select(group =>
+                        group
+                            .OrderByDescending(a => a.Score)
+                            .ThenBy(a =>
+                                a.CompletedAt - a.StartedAt)
+                            .First())
+                    .OrderByDescending(a => a.Score)
+                    .ThenBy(a =>
+                        a.CompletedAt - a.StartedAt)
+                    .ToList();
+
+            var viewModel = new LeaderboardViewModel
+            {
+                Challenge = challenge,
+                MaxPoints = maxPoints
+            };
+
+            int rank = 1;
+
+            foreach (var attempt in bestAttempts)
+            {
+                viewModel.Entries.Add(
+                    new LeaderboardEntryViewModel
+                    {
+                        Rank = rank,
+                        Username =
+                            attempt.UserChallenge.User.Username,
+                        Score = attempt.Score,
+                        StartedAt = attempt.StartedAt,
+                        CompletedAt = attempt.CompletedAt
+                    });
+
+                rank++;
+            }
+
+            return View(viewModel);
+        }
+
         // Shows the answers from a completed attempt
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> AttemptDetails(int id)
         {
-            // Gets the logged-in user's ID
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -152,7 +218,6 @@ namespace GamificationPlatform.Controllers
 
             int userId = int.Parse(userIdString);
 
-            // Gets the attempt and its saved answers
             var attempt =
                 await _challengeDbContext.ChallengeAttempts
                     .Include(a => a.UserChallenge)
@@ -179,17 +244,18 @@ namespace GamificationPlatform.Controllers
         [HttpGet]
         public async Task<IActionResult> Take(int id)
         {
-            var challenge = await _challengeDbContext.Challenges
-                .Include(c => c.Questions)
-                .ThenInclude(q => q.Options)
-                .FirstOrDefaultAsync(c => c.ChallengeId == id);
+            var challenge =
+                await _challengeDbContext.Challenges
+                    .Include(c => c.Questions)
+                    .ThenInclude(q => q.Options)
+                    .FirstOrDefaultAsync(c =>
+                        c.ChallengeId == id);
 
             if (challenge == null)
             {
                 return NotFound();
             }
 
-            // Gets the logged-in user's ID
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -200,14 +266,12 @@ namespace GamificationPlatform.Controllers
 
             int userId = int.Parse(userIdString);
 
-            // Finds the connection between the user and challenge
             var userChallenge =
                 await _challengeDbContext.UserChallenges
                     .FirstOrDefaultAsync(uc =>
                         uc.UserId == userId &&
                         uc.ChallengeId == id);
 
-            // Creates UserChallenge if it does not already exist
             if (userChallenge == null)
             {
                 userChallenge = new UserChallenge
@@ -241,7 +305,6 @@ namespace GamificationPlatform.Controllers
             var viewModel = new TakeChallengeViewModel
             {
                 Challenge = challenge,
-
                 ChallengeAttemptId =
                     challengeAttempt.ChallengeAttemptId
             };
@@ -259,8 +322,6 @@ namespace GamificationPlatform.Controllers
             int challengeAttemptId,
             Dictionary<int, int>? answers)
         {
-            // If no questions were answered,
-            // create an empty dictionary
             answers ??= new Dictionary<int, int>();
 
             var challenge =
@@ -275,7 +336,6 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            // Creates the result for the Result page
             var result = new ChallengeResultViewModel
             {
                 ChallengeId = challenge.ChallengeId,
@@ -284,7 +344,6 @@ namespace GamificationPlatform.Controllers
                     challenge.Questions.Sum(q => q.Points)
             };
 
-            // Gets the logged-in user's ID
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -295,8 +354,6 @@ namespace GamificationPlatform.Controllers
 
             int userId = int.Parse(userIdString);
 
-            // Finds the attempt that belongs to
-            // the logged-in user and this challenge
             var challengeAttempt =
                 await _challengeDbContext.ChallengeAttempts
                     .Include(a => a.UserChallenge)
@@ -338,13 +395,11 @@ namespace GamificationPlatform.Controllers
                     }
                 }
 
-                // Adds points if the answer is correct
                 if (isCorrect)
                 {
                     result.Score += question.Points;
                 }
 
-                // Adds the question to the Result page
                 result.QuestionResults.Add(
                     new QuestionResultViewModel
                     {
@@ -354,7 +409,6 @@ namespace GamificationPlatform.Controllers
                         IsCorrect = isCorrect
                     });
 
-                // Saves the answer in the attempt history
                 var attemptAnswer =
                     new AttemptAnswer
                     {
@@ -380,7 +434,6 @@ namespace GamificationPlatform.Controllers
 
             await _challengeDbContext.SaveChangesAsync();
 
-            // Shows the Result page
             return View("Result", result);
         }
 

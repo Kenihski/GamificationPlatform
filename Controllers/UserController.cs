@@ -29,15 +29,19 @@ namespace GamificationPlatform.Controllers
 
         // Shows the registration form
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Register(string? returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
+
             return View();
         }
 
         // Creates a new user
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(
+            RegisterViewModel model,
+            string? returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -47,17 +51,28 @@ namespace GamificationPlatform.Controllers
                     Email = model.Email
                 };
 
-                var passwordHasher = new PasswordHasher<User>();
+                var passwordHasher =
+                    new PasswordHasher<User>();
 
                 user.PasswordHash =
-                    passwordHasher.HashPassword(user, model.Password);
+                    passwordHasher.HashPassword(
+                        user,
+                        model.Password);
 
                 _challengeDbContext.Users.Add(user);
 
                 await _challengeDbContext.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Login));
+                // Sends the ReturnUrl to the login page
+                return RedirectToAction(
+                    nameof(Login),
+                    new
+                    {
+                        returnUrl = returnUrl
+                    });
             }
+
+            ViewBag.ReturnUrl = returnUrl;
 
             return View(model);
         }
@@ -77,16 +92,18 @@ namespace GamificationPlatform.Controllers
         // Logs the user in
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(
+            LoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var user = await _challengeDbContext.Users
-                .FirstOrDefaultAsync(u =>
-                    u.Username == model.Username);
+            var user =
+                await _challengeDbContext.Users
+                    .FirstOrDefaultAsync(u =>
+                        u.Username == model.Username);
 
             if (user == null)
             {
@@ -106,7 +123,8 @@ namespace GamificationPlatform.Controllers
                     user.PasswordHash,
                     model.Password);
 
-            if (result == PasswordVerificationResult.Failed)
+            if (result ==
+                PasswordVerificationResult.Failed)
             {
                 ModelState.AddModelError(
                     "",
@@ -126,18 +144,22 @@ namespace GamificationPlatform.Controllers
                     user.Username)
             };
 
-            var claimsIdentity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity =
+                new ClaimsIdentity(
+                    claims,
+                    CookieAuthenticationDefaults
+                        .AuthenticationScheme);
 
             var claimsPrincipal =
                 new ClaimsPrincipal(claimsIdentity);
 
             await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
+                CookieAuthenticationDefaults
+                    .AuthenticationScheme,
                 claimsPrincipal);
 
-            // Returns the user to the challenge they tried to access
+            // Returns the user to the page
+            // they came from
             if (!string.IsNullOrEmpty(model.ReturnUrl)
                 && Url.IsLocalUrl(model.ReturnUrl))
             {
@@ -156,7 +178,8 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
+                CookieAuthenticationDefaults
+                    .AuthenticationScheme);
 
             TempData["SuccessMessage"] =
                 "You have been logged out successfully.";
