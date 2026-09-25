@@ -14,7 +14,8 @@ else
 {
     <form asp-controller="Challenge"
           asp-action="Submit"
-          method="post">
+          method="post"
+          id="challengeForm">
 
         <input type="hidden"
                name="challengeId"
@@ -22,7 +23,7 @@ else
 
         @foreach (var question in Model.Questions)
         {
-            <div class="card mb-4">
+            <div class="card mb-4 question-card">
                 <div class="card-body">
 
                     <h4>@question.Title</h4>
@@ -63,7 +64,8 @@ else
             </div>
         }
 
-        <button type="submit" class="btn btn-primary">
+        <button type="submit"
+                class="btn btn-primary">
             Submit Answers
         </button>
 
@@ -75,4 +77,8 @@ else
         </a>
 
     </form>
+}
+
+@section Scripts {
+    <script src="~/js/challenge.js" asp-append-version="true"></script>
 }

@@ -201,3 +201,4 @@ C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjon
 C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Castle.Core.dll
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Proxies.dll
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\ykhymcho9p-{0}-2fu0hxquxs-2fu0hxquxs.gz

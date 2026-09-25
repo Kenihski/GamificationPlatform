@@ -52,7 +52,7 @@ namespace GamificationPlatform.Controllers
             return View(challenge);
         }
 
-        // Shows the quiz and its questions
+        // Shows the challenge and its questions
         [HttpGet]
         public async Task<IActionResult> Take(int id)
         {
@@ -74,8 +74,11 @@ namespace GamificationPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(
             int challengeId,
-            Dictionary<int, int> answers)
+            Dictionary<int, int>? answers)
         {
+            // If no questions were answered, create an empty dictionary
+            answers ??= new Dictionary<int, int>();
+
             var challenge = await _challengeDbContext.Challenges
                 .Include(c => c.Questions)
                 .ThenInclude(q => q.Options)
@@ -86,30 +89,48 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            int score = 0;
+            var result = new ChallengeResultViewModel
+            {
+                ChallengeTitle = challenge.Title,
+                MaxScore = challenge.Questions.Sum(q => q.Points)
+            };
 
-            // Calculate the score
             foreach (var question in challenge.Questions)
             {
+                int? selectedOptionId = null;
+                bool isCorrect = false;
+
                 if (answers.TryGetValue(
                     question.QuestionId,
-                    out int selectedOptionId))
+                    out int optionId))
                 {
+                    selectedOptionId = optionId;
+
                     var selectedOption = question.Options
                         .FirstOrDefault(o =>
-                            o.QuestionOptionId == selectedOptionId);
+                            o.QuestionOptionId == optionId);
 
-                    if (selectedOption != null && selectedOption.IsCorrect)
+                    if (selectedOption != null)
                     {
-                        score += question.Points;
+                        isCorrect = selectedOption.IsCorrect;
                     }
                 }
+
+                if (isCorrect)
+                {
+                    result.Score += question.Points;
+                }
+
+                result.QuestionResults.Add(
+                    new QuestionResultViewModel
+                    {
+                        Question = question,
+                        SelectedOptionId = selectedOptionId,
+                        IsCorrect = isCorrect
+                    });
             }
 
-            ViewBag.Score = score;
-            ViewBag.MaxScore = challenge.Questions.Sum(q => q.Points);
-
-            return View("Result", challenge);
+            return View("Result", result);
         }
 
         // Shows the Create Challenge form

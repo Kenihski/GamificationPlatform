@@ -1,25 +1,86 @@
-@model GamificationPlatform.Models.Challenge
+@model GamificationPlatform.ViewModels.ChallengeResultViewModel
 
 <h2>Challenge Completed!</h2>
 
-<h4>@Model.Title</h4>
+<h4>@Model.ChallengeTitle</h4>
+
+<h3 class="mb-4">
+    Score: @Model.Score / @Model.MaxScore
+</h3>
 
 <hr />
 
-<h3>
-    Your Score: @ViewBag.Score / @ViewBag.MaxScore
-</h3>
+@foreach (var result in Model.QuestionResults)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <h4>@result.Question.Title</h4>
+
+            <p>@result.Question.Description</p>
+
+            @if (!string.IsNullOrEmpty(result.Question.ImageUrl))
+            {
+                <img src="@result.Question.ImageUrl"
+                     alt="@result.Question.Title"
+                     style="width: 300px; height: 180px; object-fit: contain;"
+                     class="mb-3" />
+            }
+
+            <p>
+                <strong>@result.Question.Points points</strong>
+            </p>
+
+            @foreach (var option in result.Question.Options)
+            {
+                <div class="form-check mb-2">
+
+                    <input class="form-check-input"
+                           type="radio"
+                           disabled
+                           checked="@(option.QuestionOptionId == result.SelectedOptionId)" />
+
+                    <label class="form-check-label">
+                        @option.Text
+                    </label>
+
+                </div>
+            }
+
+            <hr />
+
+            @if (result.IsCorrect)
+            {
+                <p class="text-success">
+                    <strong>✓ Correct</strong>
+                </p>
+            }
+            else
+            {
+                <p class="text-danger">
+                    <strong>✗ Wrong</strong>
+                </p>
+            }
+
+            @{
+                var correctOption =
+                    result.Question.Options.FirstOrDefault(o => o.IsCorrect);
+            }
+
+            @if (correctOption != null)
+            {
+                <p>
+                    Correct answer:
+                    <strong>@correctOption.Text</strong>
+                </p>
+            }
+
+        </div>
+    </div>
+}
 
 <a asp-controller="Challenge"
-   asp-action="Take"
-   asp-route-id="@Model.ChallengeId"
-   class="btn btn-primary">
-    Try Again
-</a>
-
-<a asp-controller="Challenge"
-   asp-action="Details"
-   asp-route-id="@Model.ChallengeId"
+   asp-action="Grid"
    class="btn btn-secondary">
-    Back to Challenge
+    Back to Challenges
 </a>
