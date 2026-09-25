@@ -1,12 +1,12 @@
-@model GamificationPlatform.Models.Challenge
+@model GamificationPlatform.ViewModels.TakeChallengeViewModel
 
-<h1>@Model.Title</h1>
+<h1>@Model.Challenge.Title</h1>
 
-<p>@Model.Description</p>
+<p>@Model.Challenge.Description</p>
 
 <hr />
 
-@if (!Model.Questions.Any())
+@if (!Model.Challenge.Questions.Any())
 {
     <p>This challenge has no questions yet.</p>
 }
@@ -19,9 +19,13 @@ else
 
         <input type="hidden"
                name="challengeId"
-               value="@Model.ChallengeId" />
+               value="@Model.Challenge.ChallengeId" />
 
-        @foreach (var question in Model.Questions)
+        <input type="hidden"
+               name="challengeAttemptId"
+               value="@Model.ChallengeAttemptId" />
+
+        @foreach (var question in Model.Challenge.Questions)
         {
             <div class="card mb-4 question-card">
                 <div class="card-body">
@@ -71,7 +75,7 @@ else
 
         <a asp-controller="Challenge"
            asp-action="Details"
-           asp-route-id="@Model.ChallengeId"
+           asp-route-id="@Model.Challenge.ChallengeId"
            class="btn btn-secondary">
             Back to Challenge
         </a>
@@ -80,5 +84,6 @@ else
 }
 
 @section Scripts {
-    <script src="~/js/challenge.js" asp-append-version="true"></script>
+    <script src="~/js/challenge.js"
+            asp-append-version="true"></script>
 }

@@ -1,0 +1,148 @@
+@model GamificationPlatform.Models.ChallengeAttempt
+
+<h2 class="mb-4">
+    Attempt Details
+</h2>
+
+<h4>
+    @Model.UserChallenge.Challenge.Title
+</h4>
+
+<p>
+    <strong>Score:</strong>
+    @Model.Score /
+    @Model.UserChallenge.Challenge.Questions.Sum(q => q.Points)
+</p>
+
+@if (Model.CompletedAt.HasValue)
+{
+    var timeUsed =
+        Model.CompletedAt.Value - Model.StartedAt;
+
+    <p>
+        <strong>Time:</strong>
+
+        @if (timeUsed.TotalMinutes >= 1)
+        {
+            <span>
+                @Math.Round(timeUsed.TotalMinutes) min
+            </span>
+        }
+        else
+        {
+            <span>
+                @Math.Round(timeUsed.TotalSeconds) sec
+            </span>
+        }
+    </p>
+
+    <p>
+        <strong>Completed:</strong>
+        @Model.CompletedAt.Value.ToString("dd.MM.yyyy HH:mm")
+    </p>
+}
+
+<hr />
+
+@foreach (var answer in Model.Answers)
+{
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+            <h4>
+                @answer.Question.Title
+            </h4>
+
+            <p>
+                @answer.Question.Description
+            </p>
+
+            @if (!string.IsNullOrEmpty(answer.Question.ImageUrl))
+            {
+                <img src="@answer.Question.ImageUrl"
+                     alt="@answer.Question.Title"
+                     style="width: 300px;
+                            height: 180px;
+                            object-fit: contain;"
+                     class="mb-3" />
+            }
+
+            <p>
+                <strong>
+                    @answer.Question.Points points
+                </strong>
+            </p>
+
+            @foreach (var option in answer.Question.Options)
+            {
+                <div class="form-check mb-2">
+
+                    <input class="form-check-input"
+                           type="radio"
+                           disabled
+                           checked="@(option.QuestionOptionId == answer.SelectedOptionId)" />
+
+                    <label class="form-check-label">
+                        @option.Text
+                    </label>
+
+                </div>
+            }
+
+            <hr />
+
+            @{
+                var selectedOption =
+                    answer.Question.Options
+                        .FirstOrDefault(o =>
+                            o.QuestionOptionId ==
+                            answer.SelectedOptionId);
+
+                var correctOption =
+                    answer.Question.Options
+                        .FirstOrDefault(o => o.IsCorrect);
+
+                bool isCorrect =
+                    selectedOption != null &&
+                    selectedOption.IsCorrect;
+            }
+
+            @if (answer.SelectedOptionId == null)
+            {
+                <p class="text-danger">
+                    <strong>Not answered</strong>
+                </p>
+            }
+            else if (isCorrect)
+            {
+                <p class="text-success">
+                    <strong>✓ Correct</strong>
+                </p>
+            }
+            else
+            {
+                <p class="text-danger">
+                    <strong>✗ Wrong</strong>
+                </p>
+            }
+
+            @if (correctOption != null)
+            {
+                <p>
+                    Correct answer:
+                    <strong>@correctOption.Text</strong>
+                </p>
+            }
+
+        </div>
+
+    </div>
+}
+
+<a asp-controller="Challenge"
+   asp-action="Details"
+   asp-route-id="@Model.UserChallenge.ChallengeId"
+   class="btn btn-secondary">
+    Back to Challenge
+</a>

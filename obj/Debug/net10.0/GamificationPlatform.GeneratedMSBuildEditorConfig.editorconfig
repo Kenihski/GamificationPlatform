@@ -20,109 +20,113 @@ build_property.TargetFrameworkVersion = v10.0
 build_property.EntryPointFilePath = 
 build_property.RootNamespace = GamificationPlatform
 build_property.RootNamespace = GamificationPlatform
-build_property.ProjectDir = c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\
+build_property.ProjectDir = C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform
+build_property.MSBuildProjectDirectory = C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Create.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/AttemptDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXEF0dGVtcHREZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Delete.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Details.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Grid.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Grid.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXEdyaWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Result.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Result.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXFJlc3VsdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Table.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Table.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXFRhYmxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Take.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Take.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXFRha2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Update.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Challenge/Update.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhbGxlbmdlXFVwZGF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Home/Index.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Create.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25cQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Delete.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25cRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Table.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Table.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25cVGFibGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Update.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Question/Update.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25cVXBkYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_Carousel.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_Carousel.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9DYXJvdXNlbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_ChallengeCard.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_ChallengeCard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9DaGFsbGVuZ2VDYXJkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_ChallengeTable.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_ChallengeTable.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9DaGFsbGVuZ2VUYWJsZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_QuestionOptionTable.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_QuestionOptionTable.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9RdWVzdGlvbk9wdGlvblRhYmxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_UserTable.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_UserTable.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Vc2VyVGFibGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/User/Login.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/User/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/User/Register.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/User/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/User/Table.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/User/Table.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxUYWJsZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/_ViewImports.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/_ViewStart.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_Layout.cshtml]
+[C:/Users/Kenne/Dropbox/Oslomet/Dataingeniør 2024/3.år/ITPE 3200 Webapplikasjoner/GamificationPlatform/GamificationPlatform/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-2l1szijz7w

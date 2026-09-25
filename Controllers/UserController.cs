@@ -64,9 +64,14 @@ namespace GamificationPlatform.Controllers
 
         // Shows the login form
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl)
         {
-            return View();
+            var model = new LoginViewModel
+            {
+                ReturnUrl = returnUrl
+            };
+
+            return View(model);
         }
 
         // Logs the user in
@@ -132,6 +137,14 @@ namespace GamificationPlatform.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 claimsPrincipal);
 
+            // Returns the user to the challenge they tried to access
+            if (!string.IsNullOrEmpty(model.ReturnUrl)
+                && Url.IsLocalUrl(model.ReturnUrl))
+            {
+                return LocalRedirect(model.ReturnUrl);
+            }
+
+            // Normal login from the navbar
             return RedirectToAction(
                 "Grid",
                 "Challenge");
@@ -145,10 +158,12 @@ namespace GamificationPlatform.Controllers
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
+            TempData["SuccessMessage"] =
+                "You have been logged out successfully.";
+
             return RedirectToAction(
                 "Index",
                 "Home");
         }
-
     }
 }

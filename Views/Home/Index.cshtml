@@ -2,6 +2,13 @@
     ViewData["Title"] = "Home Page";
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successMessage" class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
 <div class="text-center">
     <h1 class="display-4">Welcome to Learning Challenge Hub</h1>
 </div>
@@ -19,3 +26,6 @@
   </button>
 </div>
 
+@section Scripts {
+    <script src="~/js/home.js" asp-append-version="true"></script>
+}
