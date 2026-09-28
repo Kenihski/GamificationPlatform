@@ -18,12 +18,13 @@ namespace GamificationPlatform.Controllers
         }
 
 
-        // Shows challenges in a table
+        // Shows published challenges in a table
         public async Task<IActionResult> Table()
         {
             List<Challenge> challenges =
                 await _challengeDbContext.Challenges
                     .Include(c => c.Questions)
+                    .Where(c => c.IsPublished)
                     .ToListAsync();
 
             // Calculates max points from the questions
@@ -40,12 +41,13 @@ namespace GamificationPlatform.Controllers
         }
 
 
-        // Shows challenges in a grid
+        // Shows published challenges in a grid
         public async Task<IActionResult> Grid()
         {
             List<Challenge> challenges =
                 await _challengeDbContext.Challenges
                     .Include(c => c.Questions)
+                    .Where(c => c.IsPublished)
                     .ToListAsync();
 
             // Calculates max points from the questions
@@ -59,6 +61,156 @@ namespace GamificationPlatform.Controllers
                 new ChallengesViewModel(challenges, "Grid");
 
             return View(challengesViewModel);
+        }
+
+
+        // Shows challenges created by the logged-in user
+        [Authorize]
+        public async Task<IActionResult> MyChallenges()
+        {
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            var challenges =
+                await _challengeDbContext.Challenges
+                    .Include(c => c.Questions)
+                    .Where(c =>
+                        c.CreatedByUserId == userId)
+                    .ToListAsync();
+
+            // Calculates max points from the questions
+            foreach (var challenge in challenges)
+            {
+                challenge.MaxPoints =
+                    challenge.Questions.Sum(q => q.Points);
+            }
+
+            return View(challenges);
+        }
+
+
+        // Publishes a challenge
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Publish(int id)
+        {
+            var challenge =
+                await _challengeDbContext.Challenges
+                    .Include(c => c.Questions)
+                    .FirstOrDefaultAsync(c =>
+                        c.ChallengeId == id);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+            // Normal users can only publish
+            // challenges they created.
+            if (!isAdmin &&
+                challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
+
+            // A challenge must have at least
+            // one question before publishing.
+            if (!challenge.Questions.Any())
+            {
+                TempData["ErrorMessage"] =
+                    "The challenge must have at least one question before it can be published.";
+
+                return RedirectToAction(
+                    nameof(MyChallenges));
+            }
+
+            challenge.IsPublished = true;
+
+            await _challengeDbContext
+                .SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                "Challenge published successfully.";
+
+            return RedirectToAction(
+                nameof(MyChallenges));
+        }
+
+
+        // Unpublishes a challenge
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Unpublish(int id)
+        {
+            var challenge =
+                await _challengeDbContext.Challenges
+                    .FirstOrDefaultAsync(c =>
+                        c.ChallengeId == id);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+            // Normal users can only unpublish
+            // challenges they created.
+            if (!isAdmin &&
+                challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
+
+            challenge.IsPublished = false;
+
+            await _challengeDbContext
+                .SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                "Challenge unpublished successfully.";
+
+            return RedirectToAction(
+                nameof(MyChallenges));
         }
 
 
@@ -274,6 +426,12 @@ namespace GamificationPlatform.Controllers
                         c.ChallengeId == id);
 
             if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            // Draft challenges cannot be taken.
+            if (!challenge.IsPublished)
             {
                 return NotFound();
             }
@@ -518,6 +676,9 @@ namespace GamificationPlatform.Controllers
 
             // MaxPoints is calculated from questions later.
             challenge.MaxPoints = 0;
+
+            // New challenges start as drafts.
+            challenge.IsPublished = false;
 
             // Navigation property is not received from the form.
             ModelState.Remove("CreatedByUser");

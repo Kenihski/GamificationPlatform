@@ -1,0 +1,146 @@
+@model IEnumerable<GamificationPlatform.Models.Challenge>
+
+@{
+    ViewData["Title"] = "My Challenges";
+}
+
+<h2 class="my-4">My Challenges</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successMessage"
+         class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div id="errorMessage"
+         class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You have not created any challenges yet.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Challenge</th>
+                <th>Questions</th>
+                <th>Max Points</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var challenge in Model)
+            {
+                <tr>
+                    <td>
+                        @challenge.Title
+                    </td>
+
+                    <td>
+                        @challenge.Questions.Count
+                    </td>
+
+                    <td>
+                        @challenge.MaxPoints
+                    </td>
+
+                    <td>
+                        @if (challenge.IsPublished)
+                        {
+                            <span class="badge bg-success">
+                                Published
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                Draft
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <a asp-controller="Challenge"
+                           asp-action="Details"
+                           asp-route-id="@challenge.ChallengeId"
+                           class="btn btn-sm btn-primary">
+                            View
+                        </a>
+
+                        <a asp-controller="Challenge"
+                           asp-action="Update"
+                           asp-route-id="@challenge.ChallengeId"
+                           class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+
+                        <a asp-controller="Challenge"
+                           asp-action="Delete"
+                           asp-route-id="@challenge.ChallengeId"
+                           class="btn btn-sm btn-danger">
+                            Delete
+                        </a>
+
+                        @if (!challenge.IsPublished)
+                        {
+                            <form asp-controller="Challenge"
+                                  asp-action="Publish"
+                                  asp-route-id="@challenge.ChallengeId"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-success">
+                                    Publish
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="Challenge"
+                                  asp-action="Unpublish"
+                                  asp-route-id="@challenge.ChallengeId"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-dark">
+                                    Unpublish
+                                </button>
+
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+
+<a asp-controller="Challenge"
+   asp-action="Create"
+   class="btn btn-primary">
+    Create New Challenge
+</a>
+
+@section Scripts
+{
+    <script src="~/js/myChallenges.js" defer></script>
+}

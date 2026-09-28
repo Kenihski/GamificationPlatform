@@ -12,6 +12,9 @@ namespace GamificationPlatform.Models
 
         public string ImageUrl { get; set; } = string.Empty;
 
+        // False = Draft, True = Published.
+        public bool IsPublished { get; set; } = false;
+
         // Foreign key: The user who created the challenge.
         public int CreatedByUserId { get; set; }
 
