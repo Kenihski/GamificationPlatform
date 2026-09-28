@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
 
@@ -9,196 +12,696 @@ namespace GamificationPlatform.Controllers
     {
         private readonly ChallengeDbContext _challengeDbContext;
 
-        public QuestionController(ChallengeDbContext challengeDbContext)
+
+        public QuestionController(
+            ChallengeDbContext challengeDbContext)
         {
             _challengeDbContext = challengeDbContext;
         }
 
-        // Shows all questions
+
+        // Shows all questions - admin only
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Table()
         {
             List<Question> questions =
-                await _challengeDbContext.Questions.ToListAsync();
+                await _challengeDbContext.Questions
+                    .ToListAsync();
 
             return View(questions);
         }
 
+
         // Shows the Create Question form
+        [Authorize]
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int? challengeId)
         {
-            var model = new CreateQuestionViewModel
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
             {
-                Challenges = _challengeDbContext.Challenges.ToList()
-            };
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+
+            // Admin can use all challenges.
+            // Normal users can only use their own challenges.
+            var challenges =
+                isAdmin
+                    ? _challengeDbContext.Challenges
+                        .ToList()
+                    : _challengeDbContext.Challenges
+                        .Where(c =>
+                            c.CreatedByUserId == userId)
+                        .ToList();
+
+
+            var model =
+                new CreateQuestionViewModel
+                {
+                    Challenges = challenges
+                };
+
+
+            // Automatically selects the challenge
+            // if we came from Challenge Details.
+            if (challengeId.HasValue)
+            {
+                var challenge =
+                    challenges.FirstOrDefault(c =>
+                        c.ChallengeId ==
+                        challengeId.Value);
+
+                if (challenge == null)
+                {
+                    return Forbid();
+                }
+
+                model.Question.ChallengeId =
+                    challengeId.Value;
+            }
+
 
             return View(model);
         }
 
+
         // Creates a new question with answer options
+        [Authorize]
         [HttpPost]
-        public IActionResult Create(CreateQuestionViewModel model)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(
+            CreateQuestionViewModel model)
         {
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+
+            var challenge =
+                _challengeDbContext.Challenges
+                    .FirstOrDefault(c =>
+                        c.ChallengeId ==
+                        model.Question.ChallengeId);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+
+            // Challenge is a navigation property
+            // and is not submitted by the form.
+            ModelState.Remove(
+                "Question.Challenge");
+
+
+            // Normal users can only add questions
+            // to challenges they created.
+            if (!isAdmin &&
+                challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
+
+
+            // At least two answer options
+            // must be filled in.
+            int filledOptions =
+                model.Options.Count(option =>
+                    !string.IsNullOrWhiteSpace(option));
+
+            if (filledOptions < 2)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "You must enter at least two answer options.");
+            }
+
+
+            // The correct answer must be one
+            // of the filled answer options.
+            if (model.CorrectOption < 0 ||
+                model.CorrectOption >= model.Options.Count ||
+                string.IsNullOrWhiteSpace(
+                    model.Options[model.CorrectOption]))
+            {
+                ModelState.AddModelError(
+                    "",
+                    "You must select a filled answer as the correct answer.");
+            }
+
+
             if (ModelState.IsValid)
             {
-                var question = model.Question;
+                // The challenge content is changing,
+                // so previous attempt history is reset.
+                DeleteChallengeHistory(
+                    model.Question.ChallengeId);
 
-                for (int i = 0; i < model.Options.Count; i++)
+
+                var question =
+                    model.Question;
+
+
+                // Add the filled answer options.
+                for (int i = 0;
+                     i < model.Options.Count;
+                     i++)
                 {
-                    var option = new QuestionOption
+                    // Empty options are not saved.
+                    if (string.IsNullOrWhiteSpace(
+                        model.Options[i]))
                     {
-                        Text = model.Options[i],
-                        IsCorrect = i == model.CorrectOption,
-                        Question = question
-                    };
+                        continue;
+                    }
+
+
+                    var option =
+                        new QuestionOption
+                        {
+                            Text =
+                                model.Options[i],
+
+                            IsCorrect =
+                                i == model.CorrectOption,
+
+                            Question =
+                                question
+                        };
+
 
                     question.Options.Add(option);
                 }
 
-                _challengeDbContext.Questions.Add(question);
+
+                _challengeDbContext.Questions.Add(
+                    question);
+
+
+                // History deletion and new question
+                // are saved together.
                 _challengeDbContext.SaveChanges();
 
-                return RedirectToAction(nameof(Table));
+
+                TempData["SuccessMessage"] =
+                    "Question created. Previous attempts and scores were reset.";
+
+
+                // Return to the challenge
+                // after creating the question.
+                return RedirectToAction(
+                    "Details",
+                    "Challenge",
+                    new
+                    {
+                        id = question.ChallengeId
+                    });
             }
 
-            model.Challenges = _challengeDbContext.Challenges.ToList();
+
+            // Reload challenges if validation fails.
+            model.Challenges =
+                isAdmin
+                    ? _challengeDbContext.Challenges
+                        .ToList()
+                    : _challengeDbContext.Challenges
+                        .Where(c =>
+                            c.CreatedByUserId == userId)
+                        .ToList();
+
 
             return View(model);
         }
 
+
         // Shows the Update Question form
+        [Authorize]
         [HttpGet]
         public IActionResult Update(int id)
         {
-            var question = _challengeDbContext.Questions
-                .Include(q => q.Options)
-                .FirstOrDefault(q => q.QuestionId == id);
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+
+            var question =
+                _challengeDbContext.Questions
+                    .Include(q => q.Options)
+                    .Include(q => q.Challenge)
+                    .FirstOrDefault(q =>
+                        q.QuestionId == id);
+
 
             if (question == null)
             {
                 return NotFound();
             }
 
-            var model = new CreateQuestionViewModel
-            {
-                Question = question,
-                Challenges = _challengeDbContext.Challenges.ToList()
-            };
 
-            // Get existing answer options
-            model.Options = question.Options
-                .Select(option => option.Text)
-                .ToList();
-
-            // Make sure there are always 4 option fields
-            while (model.Options.Count < 4)
+            // Normal users can only edit questions
+            // belonging to their own challenges.
+            if (!isAdmin &&
+                question.Challenge.CreatedByUserId != userId)
             {
-                model.Options.Add("");
+                return Forbid();
             }
 
+
+            var model =
+                new CreateQuestionViewModel
+                {
+                    Question = question,
+
+                    Challenges =
+                        new List<Challenge>
+                        {
+                            question.Challenge
+                        }
+                };
+
+
+            // Get existing answer options.
+            model.Options =
+                question.Options
+                    .Select(option => option.Text)
+                    .ToList();
+
+
             // Find which option is correct
-            var correctOption = question.Options
-                .Select((option, index) => new { option, index })
-                .FirstOrDefault(x => x.option.IsCorrect);
+            // before adding empty option fields.
+            var correctOption =
+                question.Options
+                    .Select((option, index) =>
+                        new
+                        {
+                            option,
+                            index
+                        })
+                    .FirstOrDefault(x =>
+                        x.option.IsCorrect);
+
 
             if (correctOption != null)
             {
-                model.CorrectOption = correctOption.index;
+                model.CorrectOption =
+                    correctOption.index;
             }
 
-            return View(model);
-        }
 
-        // Updates an existing question
-        [HttpPost]
-        public IActionResult Update(CreateQuestionViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var question = _challengeDbContext.Questions
-                    .Include(q => q.Options)
-                    .FirstOrDefault(q =>
-                        q.QuestionId == model.Question.QuestionId);
-
-                if (question == null)
-                {
-                    return NotFound();
-                }
-
-                // Update question information
-                question.Title = model.Question.Title;
-                question.Description = model.Question.Description;
-                question.Points = model.Question.Points;
-                question.ImageUrl = model.Question.ImageUrl;
-                question.ChallengeId = model.Question.ChallengeId;
-
-                // Update answer options
-                for (int i = 0;
-                     i < question.Options.Count && i < model.Options.Count;
-                     i++)
-                {
-                    question.Options[i].Text = model.Options[i];
-
-                    question.Options[i].IsCorrect =
-                        i == model.CorrectOption;
-                }
-
-                _challengeDbContext.SaveChanges();
-
-                return RedirectToAction(nameof(Table));
-            }
-
-            // Reload challenges if validation fails
-            model.Challenges = _challengeDbContext.Challenges.ToList();
-
-            // Make sure there are always 4 option fields
+            // Always show four option fields.
             while (model.Options.Count < 4)
             {
                 model.Options.Add("");
             }
 
+
             return View(model);
         }
 
-        // Shows the Delete Question confirmation page
-        [HttpGet]
-        public IActionResult Delete(int id)
+
+        // Updates an existing question
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Update(
+            CreateQuestionViewModel model)
         {
-            var question = _challengeDbContext.Questions
-                .Include(q => q.Options)
-                .FirstOrDefault(q => q.QuestionId == id);
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+
+            var question =
+                _challengeDbContext.Questions
+                    .Include(q => q.Options)
+                    .Include(q => q.Challenge)
+                    .FirstOrDefault(q =>
+                        q.QuestionId ==
+                        model.Question.QuestionId);
+
 
             if (question == null)
             {
                 return NotFound();
             }
+
+
+            // Normal users can only edit questions
+            // belonging to their own challenges.
+            if (!isAdmin &&
+                question.Challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
+
+
+            // Navigation property is not submitted
+            // by the form.
+            ModelState.Remove(
+                "Question.Challenge");
+
+
+            // At least two answer options
+            // must be filled in.
+            int filledOptions =
+                model.Options.Count(option =>
+                    !string.IsNullOrWhiteSpace(option));
+
+
+            if (filledOptions < 2)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "You must enter at least two answer options.");
+            }
+
+
+            // The selected correct answer
+            // cannot be an empty option.
+            if (model.CorrectOption < 0 ||
+                model.CorrectOption >= model.Options.Count ||
+                string.IsNullOrWhiteSpace(
+                    model.Options[model.CorrectOption]))
+            {
+                ModelState.AddModelError(
+                    "",
+                    "You must select a filled answer as the correct answer.");
+            }
+
+
+            if (ModelState.IsValid)
+            {
+                // The challenge content is changing,
+                // so previous attempt history is reset.
+                DeleteChallengeHistory(
+                    question.ChallengeId);
+
+
+                // Update question information.
+                question.Title =
+                    model.Question.Title;
+
+                question.Description =
+                    model.Question.Description;
+
+                question.Points =
+                    model.Question.Points;
+
+                question.ImageUrl =
+                    model.Question.ImageUrl;
+
+
+                // ChallengeId is deliberately
+                // not changed here.
+
+
+                // Remove the old answer options.
+                _challengeDbContext.QuestionOptions
+                    .RemoveRange(question.Options);
+
+                question.Options.Clear();
+
+
+                // Add the current answer options.
+                for (int i = 0;
+                     i < model.Options.Count;
+                     i++)
+                {
+                    // Empty options are not saved.
+                    if (string.IsNullOrWhiteSpace(
+                        model.Options[i]))
+                    {
+                        continue;
+                    }
+
+
+                    var option =
+                        new QuestionOption
+                        {
+                            Text =
+                                model.Options[i],
+
+                            IsCorrect =
+                                i == model.CorrectOption,
+
+                            Question =
+                                question
+                        };
+
+
+                    question.Options.Add(option);
+                }
+
+
+                // History deletion and question update
+                // are saved together.
+                _challengeDbContext.SaveChanges();
+
+
+                TempData["SuccessMessage"] =
+                    "Question updated. Previous attempts and scores were reset.";
+
+
+                // Return to the challenge
+                // after updating the question.
+                return RedirectToAction(
+                    "Details",
+                    "Challenge",
+                    new
+                    {
+                        id = question.ChallengeId
+                    });
+            }
+
+
+            // Reload the challenge
+            // if validation fails.
+            model.Question.ChallengeId =
+                question.ChallengeId;
+
+
+            model.Challenges =
+                new List<Challenge>
+                {
+                    question.Challenge
+                };
+
+
+            // Always show four option fields.
+            while (model.Options.Count < 4)
+            {
+                model.Options.Add("");
+            }
+
+
+            return View(model);
+        }
+
+
+        // Shows the Delete Question confirmation page
+        [Authorize]
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+
+            var question =
+                _challengeDbContext.Questions
+                    .Include(q => q.Options)
+                    .Include(q => q.Challenge)
+                    .FirstOrDefault(q =>
+                        q.QuestionId == id);
+
+
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+
+            // Normal users can only delete questions
+            // belonging to their own challenges.
+            if (!isAdmin &&
+                question.Challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
+
 
             return View(question);
         }
 
+
         // Deletes the question
+        [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var question = _challengeDbContext.Questions
-                .Include(q => q.Options)
-                .FirstOrDefault(q => q.QuestionId == id);
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+
+            var question =
+                _challengeDbContext.Questions
+                    .Include(q => q.Options)
+                    .Include(q => q.Challenge)
+                    .FirstOrDefault(q =>
+                        q.QuestionId == id);
+
 
             if (question == null)
             {
                 return NotFound();
             }
 
-            // Delete the answer options belonging to the question
-            _challengeDbContext.QuestionOptions.RemoveRange(question.Options);
 
-            // Delete the question
-            _challengeDbContext.Questions.Remove(question);
+            // Normal users can only delete questions
+            // belonging to their own challenges.
+            if (!isAdmin &&
+                question.Challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
 
+
+            int challengeId =
+                question.ChallengeId;
+
+
+            // The challenge content is changing,
+            // so previous attempt history is reset.
+            DeleteChallengeHistory(
+                challengeId);
+
+
+            // Delete the answer options
+            // belonging to the question.
+            _challengeDbContext.QuestionOptions
+                .RemoveRange(question.Options);
+
+
+            // Delete the question.
+            _challengeDbContext.Questions.Remove(
+                question);
+
+
+            // History deletion and question deletion
+            // are saved together.
             _challengeDbContext.SaveChanges();
 
-            return RedirectToAction(nameof(Table));
+
+            TempData["SuccessMessage"] =
+                "Question deleted. Previous attempts and scores were reset.";
+
+
+            // Return to the challenge
+            // after deleting the question.
+            return RedirectToAction(
+                "Details",
+                "Challenge",
+                new
+                {
+                    id = challengeId
+                });
         }
 
+
+        // Deletes all previous attempts and answers
+        // when the content of a challenge changes.
+        private void DeleteChallengeHistory(
+            int challengeId)
+        {
+            var attempts =
+                _challengeDbContext.ChallengeAttempts
+                    .Include(a => a.Answers)
+                    .Where(a =>
+                        a.UserChallenge.ChallengeId ==
+                        challengeId)
+                    .ToList();
+
+
+            // Delete answers first because they
+            // reference attempts and answer options.
+            foreach (var attempt in attempts)
+            {
+                _challengeDbContext.AttemptAnswers
+                    .RemoveRange(attempt.Answers);
+            }
+
+
+            // Delete the attempts after their answers.
+            _challengeDbContext.ChallengeAttempts
+                .RemoveRange(attempts);
+        }
     }
 }

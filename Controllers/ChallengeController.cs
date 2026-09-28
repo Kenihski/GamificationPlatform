@@ -11,10 +11,12 @@ namespace GamificationPlatform.Controllers
     {
         private readonly ChallengeDbContext _challengeDbContext;
 
-        public ChallengeController(ChallengeDbContext challengeDbContext)
+        public ChallengeController(
+            ChallengeDbContext challengeDbContext)
         {
             _challengeDbContext = challengeDbContext;
         }
+
 
         // Shows challenges in a table
         public async Task<IActionResult> Table()
@@ -37,6 +39,7 @@ namespace GamificationPlatform.Controllers
             return View(challengesViewModel);
         }
 
+
         // Shows challenges in a grid
         public async Task<IActionResult> Grid()
         {
@@ -58,12 +61,15 @@ namespace GamificationPlatform.Controllers
             return View(challengesViewModel);
         }
 
+
         // Shows information about a challenge and the user's history
         public async Task<IActionResult> Details(int id)
         {
-            var challenge = await _challengeDbContext.Challenges
-                .Include(c => c.Questions)
-                .FirstOrDefaultAsync(c => c.ChallengeId == id);
+            var challenge =
+                await _challengeDbContext.Challenges
+                    .Include(c => c.Questions)
+                    .FirstOrDefaultAsync(c =>
+                        c.ChallengeId == id);
 
             if (challenge == null)
             {
@@ -76,30 +82,37 @@ namespace GamificationPlatform.Controllers
 
             challenge.MaxPoints = maxPoints;
 
-            var viewModel = new ChallengeDetailsHistoryViewModel
-            {
-                Challenge = challenge,
-                MaxPoints = maxPoints
-            };
+            var viewModel =
+                new ChallengeDetailsHistoryViewModel
+                {
+                    Challenge = challenge,
+                    MaxPoints = maxPoints
+                };
 
             // Gets history only if the user is logged in
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userIdString =
-                    User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    User.FindFirstValue(
+                        ClaimTypes.NameIdentifier);
 
                 if (userIdString != null)
                 {
-                    int userId = int.Parse(userIdString);
+                    int userId =
+                        int.Parse(userIdString);
 
                     // Gets all completed attempts
                     viewModel.Attempts =
-                        await _challengeDbContext.ChallengeAttempts
+                        await _challengeDbContext
+                            .ChallengeAttempts
                             .Where(a =>
-                                a.UserChallenge.UserId == userId &&
-                                a.UserChallenge.ChallengeId == id &&
+                                a.UserChallenge.UserId ==
+                                    userId &&
+                                a.UserChallenge.ChallengeId ==
+                                    id &&
                                 a.Completed)
-                            .OrderByDescending(a => a.CompletedAt)
+                            .OrderByDescending(a =>
+                                a.CompletedAt)
                             .ToListAsync();
 
                     if (viewModel.Attempts.Any())
@@ -113,8 +126,10 @@ namespace GamificationPlatform.Controllers
                         // Gets the best completed attempt
                         viewModel.BestAttemptId =
                             viewModel.Attempts
-                                .OrderByDescending(a => a.Score)
-                                .ThenByDescending(a => a.CompletedAt)
+                                .OrderByDescending(a =>
+                                    a.Score)
+                                .ThenByDescending(a =>
+                                    a.CompletedAt)
                                 .First()
                                 .ChallengeAttemptId;
 
@@ -124,7 +139,8 @@ namespace GamificationPlatform.Controllers
                                 .OrderByDescending(a =>
                                     a.ChallengeAttemptId ==
                                     viewModel.BestAttemptId)
-                                .ThenByDescending(a => a.CompletedAt)
+                                .ThenByDescending(a =>
+                                    a.CompletedAt)
                                 .ToList();
                     }
                 }
@@ -132,6 +148,7 @@ namespace GamificationPlatform.Controllers
 
             return View(viewModel);
         }
+
 
         // Shows the leaderboard for a challenge
         [HttpGet]
@@ -176,11 +193,12 @@ namespace GamificationPlatform.Controllers
                         a.CompletedAt - a.StartedAt)
                     .ToList();
 
-            var viewModel = new LeaderboardViewModel
-            {
-                Challenge = challenge,
-                MaxPoints = maxPoints
-            };
+            var viewModel =
+                new LeaderboardViewModel
+                {
+                    Challenge = challenge,
+                    MaxPoints = maxPoints
+                };
 
             int rank = 1;
 
@@ -203,20 +221,23 @@ namespace GamificationPlatform.Controllers
             return View(viewModel);
         }
 
+
         // Shows the answers from a completed attempt
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> AttemptDetails(int id)
         {
             var userIdString =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId = int.Parse(userIdString);
+            int userId =
+                int.Parse(userIdString);
 
             var attempt =
                 await _challengeDbContext.ChallengeAttempts
@@ -239,6 +260,7 @@ namespace GamificationPlatform.Controllers
             return View(attempt);
         }
 
+
         // Shows the challenge and its questions
         [Authorize]
         [HttpGet]
@@ -247,7 +269,7 @@ namespace GamificationPlatform.Controllers
             var challenge =
                 await _challengeDbContext.Challenges
                     .Include(c => c.Questions)
-                    .ThenInclude(q => q.Options)
+                        .ThenInclude(q => q.Options)
                     .FirstOrDefaultAsync(c =>
                         c.ChallengeId == id);
 
@@ -257,14 +279,16 @@ namespace GamificationPlatform.Controllers
             }
 
             var userIdString =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId = int.Parse(userIdString);
+            int userId =
+                int.Parse(userIdString);
 
             var userChallenge =
                 await _challengeDbContext.UserChallenges
@@ -274,43 +298,48 @@ namespace GamificationPlatform.Controllers
 
             if (userChallenge == null)
             {
-                userChallenge = new UserChallenge
-                {
-                    UserId = userId,
-                    ChallengeId = id
-                };
+                userChallenge =
+                    new UserChallenge
+                    {
+                        UserId = userId,
+                        ChallengeId = id
+                    };
 
                 _challengeDbContext.UserChallenges.Add(
                     userChallenge);
 
-                await _challengeDbContext.SaveChangesAsync();
+                await _challengeDbContext
+                    .SaveChangesAsync();
             }
 
             // Creates a new attempt
-            var challengeAttempt = new ChallengeAttempt
-            {
-                UserChallengeId =
-                    userChallenge.UserChallengeId,
+            var challengeAttempt =
+                new ChallengeAttempt
+                {
+                    UserChallengeId =
+                        userChallenge.UserChallengeId,
 
-                Score = 0,
-                Completed = false,
-                StartedAt = DateTime.Now
-            };
+                    Score = 0,
+                    Completed = false,
+                    StartedAt = DateTime.Now
+                };
 
             _challengeDbContext.ChallengeAttempts.Add(
                 challengeAttempt);
 
             await _challengeDbContext.SaveChangesAsync();
 
-            var viewModel = new TakeChallengeViewModel
-            {
-                Challenge = challenge,
-                ChallengeAttemptId =
-                    challengeAttempt.ChallengeAttemptId
-            };
+            var viewModel =
+                new TakeChallengeViewModel
+                {
+                    Challenge = challenge,
+                    ChallengeAttemptId =
+                        challengeAttempt.ChallengeAttemptId
+                };
 
             return View(viewModel);
         }
+
 
         // Checks the answers, calculates the score
         // and saves the answers
@@ -322,12 +351,13 @@ namespace GamificationPlatform.Controllers
             int challengeAttemptId,
             Dictionary<int, int>? answers)
         {
-            answers ??= new Dictionary<int, int>();
+            answers ??=
+                new Dictionary<int, int>();
 
             var challenge =
                 await _challengeDbContext.Challenges
                     .Include(c => c.Questions)
-                    .ThenInclude(q => q.Options)
+                        .ThenInclude(q => q.Options)
                     .FirstOrDefaultAsync(c =>
                         c.ChallengeId == challengeId);
 
@@ -336,26 +366,35 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            var result = new ChallengeResultViewModel
-            {
-                ChallengeId = challenge.ChallengeId,
-                ChallengeTitle = challenge.Title,
-                MaxScore =
-                    challenge.Questions.Sum(q => q.Points)
-            };
+            var result =
+                new ChallengeResultViewModel
+                {
+                    ChallengeId =
+                        challenge.ChallengeId,
+
+                    ChallengeTitle =
+                        challenge.Title,
+
+                    MaxScore =
+                        challenge.Questions
+                            .Sum(q => q.Points)
+                };
 
             var userIdString =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId = int.Parse(userIdString);
+            int userId =
+                int.Parse(userIdString);
 
             var challengeAttempt =
-                await _challengeDbContext.ChallengeAttempts
+                await _challengeDbContext
+                    .ChallengeAttempts
                     .Include(a => a.UserChallenge)
                     .FirstOrDefaultAsync(a =>
                         a.ChallengeAttemptId ==
@@ -386,7 +425,7 @@ namespace GamificationPlatform.Controllers
                         question.Options
                             .FirstOrDefault(o =>
                                 o.QuestionOptionId ==
-                                optionId);
+                                    optionId);
 
                     if (selectedOption != null)
                     {
@@ -397,7 +436,8 @@ namespace GamificationPlatform.Controllers
 
                 if (isCorrect)
                 {
-                    result.Score += question.Points;
+                    result.Score +=
+                        question.Points;
                 }
 
                 result.QuestionResults.Add(
@@ -423,46 +463,87 @@ namespace GamificationPlatform.Controllers
                             selectedOptionId
                     };
 
-                _challengeDbContext.AttemptAnswers.Add(
-                    attemptAnswer);
+                _challengeDbContext
+                    .AttemptAnswers
+                    .Add(attemptAnswer);
             }
 
             // Saves the completed attempt
-            challengeAttempt.Score = result.Score;
-            challengeAttempt.Completed = true;
-            challengeAttempt.CompletedAt = DateTime.Now;
+            challengeAttempt.Score =
+                result.Score;
 
-            await _challengeDbContext.SaveChangesAsync();
+            challengeAttempt.Completed = true;
+
+            challengeAttempt.CompletedAt =
+                DateTime.Now;
+
+            await _challengeDbContext
+                .SaveChangesAsync();
 
             return View("Result", result);
         }
 
+
         // Shows the Create Challenge form
+        [Authorize]
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+
         // Creates a new challenge
+        [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             Challenge challenge)
         {
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            // The logged-in user becomes the owner.
+            challenge.CreatedByUserId =
+                userId;
+
+            // MaxPoints is calculated from questions later.
+            challenge.MaxPoints = 0;
+
+            // Navigation property is not received from the form.
+            ModelState.Remove("CreatedByUser");
+
             if (ModelState.IsValid)
             {
                 _challengeDbContext.Challenges.Add(
                     challenge);
 
-                await _challengeDbContext.SaveChangesAsync();
+                await _challengeDbContext
+                    .SaveChangesAsync();
 
-                return RedirectToAction(nameof(Table));
+                return RedirectToAction(
+                    nameof(Details),
+                    new
+                    {
+                        id = challenge.ChallengeId
+                    });
             }
 
             return View(challenge);
         }
 
+
         // Shows the Update Challenge form
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
@@ -475,28 +556,108 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            return View(challenge);
-        }
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
 
-        // Updates an existing challenge
-        [HttpPost]
-        public async Task<IActionResult> Update(
-            Challenge challenge)
-        {
-            if (ModelState.IsValid)
+            if (userIdString == null)
             {
-                _challengeDbContext.Challenges.Update(
-                    challenge);
+                return Unauthorized();
+            }
 
-                await _challengeDbContext.SaveChangesAsync();
+            int userId =
+                int.Parse(userIdString);
 
-                return RedirectToAction(nameof(Table));
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+            // Normal users can only update
+            // challenges they created.
+            if (!isAdmin &&
+                challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
             }
 
             return View(challenge);
         }
 
+
+        // Updates an existing challenge
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(
+            Challenge challenge)
+        {
+            var existingChallenge =
+                await _challengeDbContext.Challenges
+                    .FirstOrDefaultAsync(c =>
+                        c.ChallengeId ==
+                            challenge.ChallengeId);
+
+            if (existingChallenge == null)
+            {
+                return NotFound();
+            }
+
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+            // Normal users can only update
+            // challenges they created.
+            if (!isAdmin &&
+                existingChallenge.CreatedByUserId !=
+                    userId)
+            {
+                return Forbid();
+            }
+
+            // Navigation property is not
+            // received from the form.
+            ModelState.Remove("CreatedByUser");
+
+            if (ModelState.IsValid)
+            {
+                // Only updates fields the user
+                // is allowed to change.
+                existingChallenge.Title =
+                    challenge.Title;
+
+                existingChallenge.Description =
+                    challenge.Description;
+
+                existingChallenge.ImageUrl =
+                    challenge.ImageUrl;
+
+                // CreatedByUserId is not changed.
+                // The original owner stays the owner.
+
+                await _challengeDbContext
+                    .SaveChangesAsync();
+
+                return RedirectToAction(
+                    nameof(Table));
+            }
+
+            return View(challenge);
+        }
+
+
         // Shows the Delete Challenge confirmation page
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -509,11 +670,37 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+            // Normal users can only delete
+            // challenges they created.
+            if (!isAdmin &&
+                challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
+
             return View(challenge);
         }
 
+
         // Deletes a challenge
+        [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(
             int id)
         {
@@ -526,12 +713,37 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
+            var userIdString =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdString);
+
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+            // Normal users can only delete
+            // challenges they created.
+            if (!isAdmin &&
+                challenge.CreatedByUserId != userId)
+            {
+                return Forbid();
+            }
+
             _challengeDbContext.Challenges.Remove(
                 challenge);
 
-            await _challengeDbContext.SaveChangesAsync();
+            await _challengeDbContext
+                .SaveChangesAsync();
 
-            return RedirectToAction(nameof(Table));
+            return RedirectToAction(
+                nameof(Table));
         }
     }
 }

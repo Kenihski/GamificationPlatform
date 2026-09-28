@@ -6,7 +6,8 @@
 
     <title>@ViewData["Title"] - Learning Challenge Hub</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     <script src="~/lib/jquery/dist/jquery.min.js" defer></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" defer></script>
@@ -62,21 +63,46 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-controller="User"
-                               asp-action="Table">
-                                Users
-                            </a>
-                        </li>
+                        <!-- Logged-in users -->
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Challenge"
+                                   asp-action="MyChallenges">
+                                    My Challenges
+                                </a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-controller="Question"
-                               asp-action="Table">
-                                Questions
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Challenge"
+                                   asp-action="Create">
+                                    Create Challenge
+                                </a>
+                            </li>
+                        }
+
+                        <!-- Admin only -->
+                        @if (User.Identity?.IsAuthenticated == true &&
+                             User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="User"
+                                   asp-action="Table">
+                                    Users
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Question"
+                                   asp-action="Table">
+                                    Questions
+                                </a>
+                            </li>
+                        }
 
                     </ul>
 

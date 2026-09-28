@@ -8,7 +8,6 @@ namespace GamificationPlatform.Models
             DbContextOptions<ChallengeDbContext> options)
             : base(options)
         {
-            // Database.EnsureCreated(); // For early prototyping only. Remove when switching to EF Core Migrations.
         }
 
         public DbSet<Challenge> Challenges { get; set; }
@@ -29,6 +28,17 @@ namespace GamificationPlatform.Models
             DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseLazyLoadingProxies();
+        }
+
+        protected override void OnModelCreating(
+            ModelBuilder modelBuilder)
+        {
+            // One user can create many challenges.
+            modelBuilder.Entity<Challenge>()
+                .HasOne(c => c.CreatedByUser)
+                .WithMany(u => u.CreatedChallenges)
+                .HasForeignKey(c => c.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

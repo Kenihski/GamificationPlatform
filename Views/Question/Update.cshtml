@@ -1,15 +1,44 @@
 @model GamificationPlatform.ViewModels.CreateQuestionViewModel
-@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    var challenge =
+        Model.Challenges.FirstOrDefault(c =>
+            c.ChallengeId ==
+            Model.Question.ChallengeId);
+}
 
 <h2>Update Question</h2>
 
-<form asp-action="Update" method="post">
+
+<div class="alert alert-warning">
+    <strong>Warning:</strong>
+    Updating this question will reset all previous attempts
+    and scores for this challenge.
+</div>
+
+
+<form asp-controller="Question"
+      asp-action="Update"
+      method="post">
+
+    <div asp-validation-summary="All"
+         class="text-danger mb-3">
+    </div>
+
 
     <input type="hidden"
            asp-for="Question.QuestionId" />
 
-    <div class="form-group">
-        <label asp-for="Question.Title"></label>
+    <input type="hidden"
+           asp-for="Question.ChallengeId" />
+
+
+    <div class="form-group mb-3">
+
+        <label asp-for="Question.Title">
+            Title
+        </label>
+
         <span class="text-danger">*</span>
 
         <input asp-for="Question.Title"
@@ -18,10 +47,15 @@
         <span asp-validation-for="Question.Title"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
-        <label asp-for="Question.Description"></label>
+
+    <div class="form-group mb-3">
+
+        <label asp-for="Question.Description">
+            Description
+        </label>
 
         <input asp-for="Question.Description"
                class="form-control" />
@@ -29,10 +63,16 @@
         <span asp-validation-for="Question.Description"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
-        <label asp-for="Question.Points"></label>
+
+    <div class="form-group mb-3">
+
+        <label asp-for="Question.Points">
+            Points
+        </label>
+
         <span class="text-danger">*</span>
 
         <input asp-for="Question.Points"
@@ -41,9 +81,12 @@
         <span asp-validation-for="Question.Points"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
+
+    <div class="form-group mb-3">
+
         <label asp-for="Question.ImageUrl">
             Image
         </label>
@@ -52,7 +95,7 @@
                 class="form-control">
 
             <option value="">
-                -- Select Image --
+                -- No Image --
             </option>
 
             <option value="/images/Question_mark_code_2.png">
@@ -100,40 +143,46 @@
         <span asp-validation-for="Question.ImageUrl"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
-        <label asp-for="Question.ChallengeId">
+
+    @* Challenge cannot be changed when editing a question. *@
+    <div class="form-group mb-3">
+
+        <label>
             Challenge
         </label>
 
-        <select asp-for="Question.ChallengeId"
-                class="form-control"
-                asp-items="@(new SelectList(Model.Challenges, "ChallengeId", "Title"))">
+        <input type="text"
+               class="form-control"
+               value="@challenge?.Title"
+               readonly />
 
-            <option value="">
-                -- Select Challenge --
-            </option>
-
-        </select>
-
-        <span asp-validation-for="Question.ChallengeId"
-              class="text-danger">
-        </span>
     </div>
+
 
     <hr />
 
+
     <h4>Answer Options</h4>
+
+    <p class="text-muted">
+        Enter between 2 and 4 answer options.
+    </p>
+
 
     @for (int i = 0; i < 4; i++)
     {
         <div class="form-group mb-3">
 
-            <label>Option @(i + 1)</label>
+            <label>
+                Option @(i + 1)
+            </label>
 
             <input asp-for="Options[i]"
                    class="form-control" />
+
 
             <div class="form-check mt-1">
 
@@ -151,16 +200,21 @@
         </div>
     }
 
+
     <br />
+
 
     <button type="submit"
             class="btn btn-primary">
         Update Question
     </button>
 
-    <a asp-action="Table"
+
+    <a asp-controller="Challenge"
+       asp-action="Details"
+       asp-route-id="@Model.Question.ChallengeId"
        class="btn btn-secondary">
-        Back to Questions
+        Cancel
     </a>
 
 </form>

@@ -1,21 +1,29 @@
-using System;
-
 namespace GamificationPlatform.Models
 {
     public class Challenge
     {
         public int ChallengeId { get; set; }
+
         public string Title { get; set; } = string.Empty;
+
         public string Description { get; set; } = string.Empty;
+
         public int MaxPoints { get; set; }
-        public string? ImageUrl { get; set; }
 
-         // Navigation: A challenge can contain multiple questions.
-        public virtual List<Question> Questions { get; set; } = new List<Question>();
+        public string ImageUrl { get; set; } = string.Empty;
 
-        // Navigation: A challenge can be associated with multiple users.
-        public virtual List<UserChallenge> UserChallenges { get; set; } = new List<UserChallenge>();
+        // Foreign key: The user who created the challenge.
+        public int CreatedByUserId { get; set; }
 
+        // Navigation: Each challenge is created by one user.
+        public virtual User CreatedByUser { get; set; } = default!;
+
+        // Navigation: One challenge can have many questions.
+        public virtual List<Question> Questions { get; set; }
+            = new List<Question>();
+
+        // Navigation: One challenge can be connected to many users.
+        public virtual List<UserChallenge> UserChallenges { get; set; }
+            = new List<UserChallenge>();
     }
 }
-

@@ -1,12 +1,37 @@
 @model GamificationPlatform.ViewModels.CreateQuestionViewModel
-@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    var challenge =
+        Model.Challenges.FirstOrDefault(c =>
+            c.ChallengeId ==
+            Model.Question.ChallengeId);
+}
 
 <h2>Create New Question</h2>
 
-<form asp-action="Create">
 
-    <div class="form-group">
-        <label asp-for="Question.Title"></label>
+<div class="alert alert-warning">
+    <strong>Note:</strong>
+    Adding a new question will reset all previous attempts
+    and scores for this challenge.
+</div>
+
+
+<form asp-controller="Question"
+      asp-action="Create"
+      method="post">
+
+    <div asp-validation-summary="All"
+         class="text-danger mb-3">
+    </div>
+
+
+    <div class="form-group mb-3">
+
+        <label asp-for="Question.Title">
+            Title
+        </label>
+
         <span class="text-danger">*</span>
 
         <input asp-for="Question.Title"
@@ -15,10 +40,15 @@
         <span asp-validation-for="Question.Title"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
-        <label asp-for="Question.Description"></label>
+
+    <div class="form-group mb-3">
+
+        <label asp-for="Question.Description">
+            Description
+        </label>
 
         <input asp-for="Question.Description"
                class="form-control" />
@@ -26,10 +56,16 @@
         <span asp-validation-for="Question.Description"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
-        <label asp-for="Question.Points"></label>
+
+    <div class="form-group mb-3">
+
+        <label asp-for="Question.Points">
+            Points
+        </label>
+
         <span class="text-danger">*</span>
 
         <input asp-for="Question.Points"
@@ -38,9 +74,12 @@
         <span asp-validation-for="Question.Points"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
+
+    <div class="form-group mb-3">
+
         <label asp-for="Question.ImageUrl">
             Image
         </label>
@@ -49,7 +88,7 @@
                 class="form-control">
 
             <option value="">
-                -- Select Image --
+                -- No Image --
             </option>
 
             <option value="/images/Question_mark_code_2.png">
@@ -97,40 +136,51 @@
         <span asp-validation-for="Question.ImageUrl"
               class="text-danger">
         </span>
+
     </div>
 
-    <div class="form-group">
-        <label asp-for="Question.ChallengeId">
+
+    @* ChallengeId is sent to the controller. *@
+    <input type="hidden"
+           asp-for="Question.ChallengeId" />
+
+
+    @* The challenge cannot be changed. *@
+    <div class="form-group mb-3">
+
+        <label>
             Challenge
         </label>
 
-        <select asp-for="Question.ChallengeId"
-                class="form-control"
-                asp-items="@(new SelectList(Model.Challenges, "ChallengeId", "Title"))">
+        <input type="text"
+               class="form-control"
+               value="@challenge?.Title"
+               readonly />
 
-            <option value="">
-                -- Select Challenge --
-            </option>
-
-        </select>
-
-        <span asp-validation-for="Question.ChallengeId"
-              class="text-danger">
-        </span>
     </div>
+
 
     <hr />
 
+
     <h4>Answer Options</h4>
+
+    <p class="text-muted">
+        Enter between 2 and 4 answer options.
+    </p>
+
 
     @for (int i = 0; i < 4; i++)
     {
         <div class="form-group mb-3">
 
-            <label>Option @(i + 1)</label>
+            <label>
+                Option @(i + 1)
+            </label>
 
             <input asp-for="Options[i]"
                    class="form-control" />
+
 
             <div class="form-check mt-1">
 
@@ -148,16 +198,21 @@
         </div>
     }
 
+
     <br />
+
 
     <button type="submit"
             class="btn btn-primary">
         Create Question
     </button>
 
-    <a asp-action="Table"
+
+    <a asp-controller="Challenge"
+       asp-action="Details"
+       asp-route-id="@Model.Question.ChallengeId"
        class="btn btn-secondary">
-        Back to Questions
+        Back to Challenge
     </a>
 
 </form>

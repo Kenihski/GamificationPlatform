@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,8 @@ namespace GamificationPlatform.Controllers
             _challengeDbContext = challengeDbContext;
         }
 
-        // Shows all users
+        // Shows all users - admin only
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Table()
         {
             List<User> users =
@@ -48,7 +50,10 @@ namespace GamificationPlatform.Controllers
                 var user = new User
                 {
                     Username = model.Username,
-                    Email = model.Email
+                    Email = model.Email,
+
+                    // New users are normal users by default
+                    IsAdmin = false
                 };
 
                 var passwordHasher =
@@ -135,13 +140,22 @@ namespace GamificationPlatform.Controllers
 
             var claims = new List<Claim>
             {
+                // Stores the user's ID
                 new Claim(
                     ClaimTypes.NameIdentifier,
                     user.UserId.ToString()),
 
+                // Stores the username
                 new Claim(
                     ClaimTypes.Name,
-                    user.Username)
+                    user.Username),
+
+                // Stores the user's role
+                new Claim(
+                    ClaimTypes.Role,
+                    user.IsAdmin
+                        ? "Admin"
+                        : "User")
             };
 
             var claimsIdentity =

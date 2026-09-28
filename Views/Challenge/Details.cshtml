@@ -1,8 +1,51 @@
 @model GamificationPlatform.ViewModels.ChallengeDetailsHistoryViewModel
+@using System.Security.Claims
+
+@{
+    int? currentUserId = null;
+
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var userIdString =
+            User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+        if (int.TryParse(userIdString, out int userId))
+        {
+            currentUserId = userId;
+        }
+    }
+
+    bool canManage =
+        User.IsInRole("Admin") ||
+        currentUserId == Model.Challenge.CreatedByUserId;
+}
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successMessage"
+         class="alert alert-success mt-4">
+        @TempData["SuccessMessage"]
+    </div>
+
+    <script>
+        setTimeout(function () {
+            const message =
+                document.getElementById("successMessage");
+
+            if (message) {
+                message.style.display = "none";
+            }
+        }, 3000);
+    </script>
+}
+
 
 <h3 class="my-5">
     @Model.Challenge.Title
 </h3>
+
 
 <div class="row gx-5">
 
@@ -10,11 +53,17 @@
          src="@Model.Challenge.ImageUrl"
          class="img-fluid col-5" />
 
+
     <div class="col">
 
-        <h5>@Model.Challenge.Description</h5>
+        <h5>
+            @Model.Challenge.Description
+        </h5>
 
-        <h3>@Model.MaxPoints points</h3>
+        <h3>
+            @Model.MaxPoints points
+        </h3>
+
 
         @if (User.Identity?.IsAuthenticated == true)
         {
@@ -38,6 +87,7 @@
             </a>
         }
 
+
         <a asp-controller="Challenge"
            asp-action="Leaderboard"
            asp-route-id="@Model.Challenge.ChallengeId"
@@ -45,12 +95,14 @@
             Leaderboard
         </a>
 
+
         <p>
             <a asp-controller="Challenge"
                asp-action="Table">
                 Back to Table View
             </a>
         </p>
+
 
         <p>
             <a asp-controller="Challenge"
@@ -60,13 +112,164 @@
         </p>
 
     </div>
+
 </div>
+
+
+@* Question management is only visible
+   to the challenge owner or admin. *@
+@if (canManage)
+{
+    <hr class="my-5" />
+
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-3">
+
+        <button class="btn btn-outline-primary"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#questionOverview"
+                aria-expanded="true"
+                aria-controls="questionOverview">
+
+            Questions
+            (@Model.Challenge.Questions.Count)
+
+        </button>
+
+
+        <a asp-controller="Question"
+           asp-action="Create"
+           asp-route-challengeId="@Model.Challenge.ChallengeId"
+           class="btn btn-success">
+            + Add Question
+        </a>
+
+    </div>
+
+
+    <div class="collapse show"
+         id="questionOverview">
+
+        @if (!Model.Challenge.Questions.Any())
+        {
+            <div class="alert alert-info">
+                No questions have been added yet.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-striped
+                              table-bordered align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Answer Options</th>
+                            <th>Points</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var question in
+                            Model.Challenge.Questions
+                                .OrderBy(q => q.QuestionId))
+                        {
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        @question.Title
+                                    </strong>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        question.Description))
+                                    {
+                                        <div class="text-muted small mt-1">
+                                            @question.Description
+                                        </div>
+                                    }
+
+                                </td>
+
+
+                                <td>
+
+                                    @foreach (var option in question.Options)
+                                    {
+                                        <div>
+
+                                            @if (option.IsCorrect)
+                                            {
+                                                <span>
+                                                    ✓
+                                                    <strong>
+                                                        @option.Text
+                                                    </strong>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    ○ @option.Text
+                                                </span>
+                                            }
+
+                                        </div>
+                                    }
+
+                                </td>
+
+
+                                <td>
+                                    @question.Points
+                                </td>
+
+
+                                <td>
+
+                                    <a asp-controller="Question"
+                                       asp-action="Update"
+                                       asp-route-id="@question.QuestionId"
+                                       class="btn btn-sm btn-warning">
+                                        Edit
+                                    </a>
+
+                                    <a asp-controller="Question"
+                                       asp-action="Delete"
+                                       asp-route-id="@question.QuestionId"
+                                       class="btn btn-sm btn-danger">
+                                        Delete
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+}
+
 
 @if (User.Identity?.IsAuthenticated == true)
 {
     <hr class="my-5" />
 
     <h3>Your History</h3>
+
 
     @if (!Model.Attempts.Any())
     {
@@ -88,6 +291,7 @@
                 </tr>
             </thead>
 
+
             <tbody>
 
                 @foreach (var attempt in Model.Attempts)
@@ -104,6 +308,7 @@
                                 a.ChallengeAttemptId ==
                                 attempt.ChallengeAttemptId) + 1;
 
+
                     // Calculates time used
                     TimeSpan? timeUsed = null;
 
@@ -114,6 +319,7 @@
                             attempt.StartedAt;
                     }
 
+
                     bool isBest =
                         attempt.ChallengeAttemptId ==
                         Model.BestAttemptId;
@@ -122,9 +328,11 @@
                         attempt.ChallengeAttemptId ==
                         Model.LatestAttemptId;
 
+
                     <tr>
 
                         <td>
+
                             @if (isBest && isLatest)
                             {
                                 <strong>
@@ -143,42 +351,60 @@
                                     LATEST
                                 </strong>
                             }
+
                         </td>
 
+
                         <td>
+
                             <a asp-controller="Challenge"
                                asp-action="AttemptDetails"
                                asp-route-id="@attempt.ChallengeAttemptId">
+
                                 Attempt @attemptNumber
+
                             </a>
+
                         </td>
 
+
                         <td>
+
                             @if (timeUsed.HasValue)
                             {
                                 if (timeUsed.Value.TotalMinutes >= 1)
                                 {
                                     <span>
-                                        @Math.Round(timeUsed.Value.TotalMinutes) min
+                                        @Math.Round(
+                                            timeUsed.Value.TotalMinutes) min
                                     </span>
                                 }
                                 else
                                 {
                                     <span>
-                                        @Math.Round(timeUsed.Value.TotalSeconds) sec
+                                        @Math.Round(
+                                            timeUsed.Value.TotalSeconds) sec
                                     </span>
                                 }
                             }
+
                         </td>
 
+
                         <td>
+
                             <strong>
                                 @attempt.Score / @Model.MaxPoints
                             </strong>
+
                         </td>
 
+
                         <td>
-                            @attempt.CompletedAt?.ToString("dd.MM.yyyy HH:mm")
+
+                            @attempt.CompletedAt?.ToString(
+                                "dd.MM.yyyy HH:mm")
+
                         </td>
 
                     </tr>
