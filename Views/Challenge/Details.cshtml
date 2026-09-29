@@ -64,6 +64,11 @@
         </h3>
 
         <p>
+            <strong>Created by:</strong>
+            @Model.Challenge.CreatedByUser.Username
+        </p>
+
+        <p>
             <strong>Time Limit:</strong>
 
             @if (Model.Challenge.TimeLimitMinutes.HasValue)
