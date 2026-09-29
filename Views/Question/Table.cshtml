@@ -2,12 +2,8 @@
 
 <h1>List of Questions</h1>
 
-<p>
-    <a asp-controller="Question"
-       asp-action="Create"
-       class="btn btn-primary">
-        Create New Question
-    </a>
+<p class="text-muted">
+    Overview of all questions in the system.
 </p>
 
 <table class="table table-striped">
@@ -18,6 +14,7 @@
             <th>Description</th>
             <th>Points</th>
             <th>Challenge</th>
+            <th>Owner</th>
             <th>Image</th>
             <th>Actions</th>
         </tr>
@@ -27,22 +24,46 @@
         @foreach (var question in Model)
         {
             <tr>
-                <td>@question.QuestionId</td>
+                <td>
+                    @question.QuestionId
+                </td>
 
-                <td>@question.Title</td>
+                <td>
+                    @question.Title
+                </td>
 
-                <td>@question.Description</td>
+                <td>
+                    @question.Description
+                </td>
 
-                <td>@question.Points</td>
+                <td>
+                    @question.Points
+                </td>
 
-                <td>@question.Challenge.Title</td>
+                <td>
+                    <a asp-controller="Challenge"
+                       asp-action="Details"
+                       asp-route-id="@question.ChallengeId">
+                        @question.Challenge.Title
+                    </a>
+                </td>
+
+                <td>
+                    <a asp-controller="User"
+                       asp-action="Details"
+                       asp-route-id="@question.Challenge.CreatedByUserId">
+                        @question.Challenge.CreatedByUser.Username
+                    </a>
+                </td>
 
                 <td>
                     @if (!string.IsNullOrEmpty(question.ImageUrl))
                     {
                         <img src="@question.ImageUrl"
                              alt="@question.Title"
-                             style="width: 100px; height: 60px; object-fit: contain;" />
+                             style="width: 100px;
+                                    height: 60px;
+                                    object-fit: contain;" />
                     }
                     else
                     {
@@ -50,24 +71,23 @@
                     }
                 </td>
 
-                <td>
+                <td class="text-nowrap">
+
                     <a asp-controller="Question"
                        asp-action="Update"
                        asp-route-id="@question.QuestionId"
                        class="btn btn-warning btn-sm">
                         Update
                     </a>
-                </td>
 
-                <td>
                     <a asp-controller="Question"
-                        asp-action="Delete"
-                        asp-route-id="@question.QuestionId"
-                        class="btn btn-danger btn-sm">
+                       asp-action="Delete"
+                       asp-route-id="@question.QuestionId"
+                       class="btn btn-danger btn-sm">
                         Delete
                     </a>
-                </td>
 
+                </td>
             </tr>
         }
     </tbody>
