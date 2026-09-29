@@ -88,7 +88,7 @@
 
         @if (User.Identity?.IsAuthenticated == true)
         {
-            <a asp-controller="Challenge"
+            <a asp-controller="Quiz"
                asp-action="Take"
                asp-route-id="@Model.Challenge.ChallengeId"
                class="btn btn-primary my-3">
@@ -371,7 +371,7 @@
 
                         <td>
 
-                            <a asp-controller="Challenge"
+                            <a asp-controller="Quiz"
                                asp-action="AttemptDetails"
                                asp-route-id="@attempt.ChallengeAttemptId">
 
