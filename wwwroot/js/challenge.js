@@ -8,6 +8,65 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // --------------------------------
+    // Saves selected answers
+    // --------------------------------
+
+    const challengeAttemptId =
+        form.querySelector(
+            'input[name="challengeAttemptId"]'
+        ).value;
+
+    // Each attempt gets its own storage key.
+    const storageKey =
+        "challengeAnswers_" + challengeAttemptId;
+
+
+    // Loads previously selected answers.
+    const savedAnswers =
+        JSON.parse(
+            sessionStorage.getItem(storageKey) || "{}"
+        );
+
+
+    const radioButtons =
+        form.querySelectorAll(
+            'input[type="radio"]'
+        );
+
+
+    // Restores answers after refresh.
+    radioButtons.forEach(function (radioButton) {
+
+        const questionName =
+            radioButton.name;
+
+        if (savedAnswers[questionName] ===
+            radioButton.value) {
+
+            radioButton.checked = true;
+        }
+
+
+        // Saves an answer when the user
+        // selects an option.
+        radioButton.addEventListener(
+            "change",
+            function () {
+
+                savedAnswers[this.name] =
+                    this.value;
+
+                sessionStorage.setItem(
+                    storageKey,
+                    JSON.stringify(savedAnswers)
+                );
+            }
+        );
+
+    });
+
+
+    // --------------------------------
     // Challenge timer
     // --------------------------------
 
@@ -53,6 +112,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     "00:00";
 
                 timeExpired = true;
+
+                // Removes the saved answers
+                // because the attempt is ending.
+                sessionStorage.removeItem(
+                    storageKey
+                );
 
                 form.submit();
 
@@ -130,8 +195,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!confirmed) {
                 event.preventDefault();
+                return;
             }
         }
+
+
+        // The attempt is being submitted,
+        // so the temporary answers are removed.
+        sessionStorage.removeItem(
+            storageKey
+        );
 
     });
 
