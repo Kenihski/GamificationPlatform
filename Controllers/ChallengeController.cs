@@ -391,8 +391,13 @@ namespace GamificationPlatform.Controllers
             int userId =
                 int.Parse(userIdString);
 
+            bool isAdmin =
+                User.IsInRole("Admin");
+
             var attempt =
                 await _challengeDbContext.ChallengeAttempts
+                    .Include(a => a.UserChallenge)
+                        .ThenInclude(uc => uc.User)
                     .Include(a => a.UserChallenge)
                         .ThenInclude(uc => uc.Challenge)
                             .ThenInclude(c => c.Questions)
@@ -401,12 +406,20 @@ namespace GamificationPlatform.Controllers
                             .ThenInclude(question => question.Options)
                     .FirstOrDefaultAsync(a =>
                         a.ChallengeAttemptId == id &&
-                        a.UserChallenge.UserId == userId &&
                         a.Completed);
 
             if (attempt == null)
             {
                 return NotFound();
+            }
+
+            // Normal users can only view
+            // their own attempts.
+            // Admins can view all attempts.
+            if (!isAdmin &&
+                attempt.UserChallenge.UserId != userId)
+            {
+                return Forbid();
             }
 
             return View(attempt);

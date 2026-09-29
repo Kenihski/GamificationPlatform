@@ -1,0 +1,323 @@
+@model GamificationPlatform.ViewModels.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h2 class="my-4">
+    @Model.User.Username
+</h2>
+
+<div class="mb-4">
+    <p>
+        <strong>Email:</strong>
+        @Model.User.Email
+    </p>
+
+    <p>
+        <strong>Role:</strong>
+
+        @if (Model.User.IsAdmin)
+        {
+            <span class="badge bg-danger">
+                Admin
+            </span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">
+                User
+            </span>
+        }
+    </p>
+</div>
+
+
+<h3 class="mt-4">Created Challenges</h3>
+
+@if (!Model.CreatedChallenges.Any())
+{
+    <div class="alert alert-info">
+        This user has not created any challenges.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Challenge</th>
+                <th>Questions</th>
+                <th>Max Points</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var challenge in Model.CreatedChallenges)
+            {
+                <tr>
+                    <td>
+                        @challenge.Title
+                    </td>
+
+                    <td>
+                        @challenge.Questions.Count
+                    </td>
+
+                    <td>
+                        @challenge.MaxPoints
+                    </td>
+
+                    <td>
+                        @if (challenge.IsPublished)
+                        {
+                            <span class="badge bg-success">
+                                Published
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                Draft
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <a asp-controller="Challenge"
+                           asp-action="Details"
+                           asp-route-id="@challenge.ChallengeId"
+                           class="btn btn-sm btn-primary">
+                            View
+                        </a>
+
+                        <a asp-controller="Challenge"
+                           asp-action="Update"
+                           asp-route-id="@challenge.ChallengeId"
+                           class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+
+                        <a asp-controller="Challenge"
+                           asp-action="Delete"
+                           asp-route-id="@challenge.ChallengeId"
+                           class="btn btn-sm btn-danger">
+                            Delete
+                        </a>
+
+                        @if (!challenge.IsPublished)
+                        {
+                            <form asp-controller="Challenge"
+                                  asp-action="Publish"
+                                  asp-route-id="@challenge.ChallengeId"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-success">
+                                    Publish
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="Challenge"
+                                  asp-action="Unpublish"
+                                  asp-route-id="@challenge.ChallengeId"
+                                  method="post"
+                                  class="d-inline">
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-dark">
+                                    Unpublish
+                                </button>
+
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+
+
+<h3 class="mt-5">Challenge History</h3>
+
+@if (!Model.ChallengeHistory.Any())
+{
+    <div class="alert alert-info">
+        This user has not completed any challenges yet.
+    </div>
+}
+else
+{
+    @foreach (var userChallenge in Model.ChallengeHistory)
+    {
+        var attempts =
+            userChallenge.Attempts
+                .Where(a => a.Completed)
+                .OrderByDescending(a => a.CompletedAt)
+                .ToList();
+
+        var chronologicalAttempts =
+            attempts
+                .OrderBy(a => a.CompletedAt)
+                .ToList();
+
+        var latestAttempt =
+            attempts.FirstOrDefault();
+
+        var bestAttempt =
+            attempts
+                .OrderByDescending(a => a.Score)
+                .ThenBy(a =>
+                    (a.CompletedAt ?? a.StartedAt)
+                    - a.StartedAt)
+                .FirstOrDefault();
+
+        var maxPoints =
+            userChallenge.Challenge.Questions
+                .Sum(q => q.Points);
+
+        <h5 class="mt-4">
+            @userChallenge.Challenge.Title
+        </h5>
+
+        <table class="table table-striped">
+
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Attempt</th>
+                    <th>Time</th>
+                    <th>Score</th>
+                    <th>Completed</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var attempt in attempts)
+                {
+                    // Finds the real attempt number
+                    int attemptNumber =
+                        chronologicalAttempts
+                            .FindIndex(a =>
+                                a.ChallengeAttemptId ==
+                                attempt.ChallengeAttemptId) + 1;
+
+                    // Calculates time used
+                    TimeSpan? timeUsed = null;
+
+                    if (attempt.CompletedAt.HasValue)
+                    {
+                        timeUsed =
+                            attempt.CompletedAt.Value -
+                            attempt.StartedAt;
+                    }
+
+                    bool isBest =
+                        bestAttempt != null &&
+                        attempt.ChallengeAttemptId ==
+                        bestAttempt.ChallengeAttemptId;
+
+                    bool isLatest =
+                        latestAttempt != null &&
+                        attempt.ChallengeAttemptId ==
+                        latestAttempt.ChallengeAttemptId;
+
+                    <tr>
+
+                        <td>
+
+                            @if (isBest && isLatest)
+                            {
+                                <strong>
+                                    BEST / LATEST
+                                </strong>
+                            }
+                            else if (isBest)
+                            {
+                                <strong>
+                                    BEST
+                                </strong>
+                            }
+                            else if (isLatest)
+                            {
+                                <strong>
+                                    LATEST
+                                </strong>
+                            }
+
+                        </td>
+
+                        <td>
+
+                            <a asp-controller="Challenge"
+                               asp-action="AttemptDetails"
+                               asp-route-id="@attempt.ChallengeAttemptId">
+
+                                Attempt @attemptNumber
+
+                            </a>
+
+                        </td>
+
+                        <td>
+
+                            @if (timeUsed.HasValue)
+                            {
+                                if (timeUsed.Value.TotalMinutes >= 1)
+                                {
+                                    <span>
+                                        @Math.Round(
+                                            timeUsed.Value.TotalMinutes) min
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        @Math.Round(
+                                            timeUsed.Value.TotalSeconds) sec
+                                    </span>
+                                }
+                            }
+
+                        </td>
+
+                        <td>
+
+                            <strong>
+                                @attempt.Score / @maxPoints
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            @attempt.CompletedAt?.ToString(
+                                "dd.MM.yyyy HH:mm")
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+}
+
+
+<a asp-controller="User"
+   asp-action="Table"
+   class="btn btn-secondary mt-3">
+    Back to Users
+</a>

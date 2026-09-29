@@ -14,20 +14,75 @@ namespace GamificationPlatform.Controllers
     {
         private readonly ChallengeDbContext _challengeDbContext;
 
-        public UserController(ChallengeDbContext challengeDbContext)
+        public UserController(
+            ChallengeDbContext challengeDbContext)
         {
             _challengeDbContext = challengeDbContext;
         }
+
 
         // Shows all users - admin only
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Table()
         {
             List<User> users =
-                await _challengeDbContext.Users.ToListAsync();
+                await _challengeDbContext.Users
+                    .Include(u => u.CreatedChallenges)
+                    .ToListAsync();
 
             return View(users);
         }
+
+
+        // Shows details and history for one user - admin only
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var user =
+                await _challengeDbContext.Users
+                    .Include(u => u.CreatedChallenges)
+                        .ThenInclude(c => c.Questions)
+                    .Include(u => u.UserChallenges)
+                        .ThenInclude(uc => uc.Challenge)
+                    .Include(u => u.UserChallenges)
+                        .ThenInclude(uc => uc.Attempts)
+                    .FirstOrDefaultAsync(u =>
+                        u.UserId == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Calculates max points for challenges
+            // created by this user.
+            foreach (var challenge in user.CreatedChallenges)
+            {
+                challenge.MaxPoints =
+                    challenge.Questions.Sum(q => q.Points);
+            }
+
+            var viewModel =
+                new UserDetailsViewModel
+                {
+                    User = user,
+
+                    CreatedChallenges =
+                        user.CreatedChallenges,
+
+                    // Only includes challenges
+                    // that the user has completed.
+                    ChallengeHistory =
+                        user.UserChallenges
+                            .Where(uc =>
+                                uc.Attempts.Any(a =>
+                                    a.Completed))
+                            .ToList()
+                };
+
+            return View(viewModel);
+        }
+
 
         // Shows the registration form
         [HttpGet]
@@ -37,6 +92,7 @@ namespace GamificationPlatform.Controllers
 
             return View();
         }
+
 
         // Creates a new user
         [HttpPost]
@@ -66,7 +122,8 @@ namespace GamificationPlatform.Controllers
 
                 _challengeDbContext.Users.Add(user);
 
-                await _challengeDbContext.SaveChangesAsync();
+                await _challengeDbContext
+                    .SaveChangesAsync();
 
                 // Sends the ReturnUrl to the login page
                 return RedirectToAction(
@@ -82,17 +139,20 @@ namespace GamificationPlatform.Controllers
             return View(model);
         }
 
+
         // Shows the login form
         [HttpGet]
         public IActionResult Login(string? returnUrl)
         {
-            var model = new LoginViewModel
-            {
-                ReturnUrl = returnUrl
-            };
+            var model =
+                new LoginViewModel
+                {
+                    ReturnUrl = returnUrl
+                };
 
             return View(model);
         }
+
 
         // Logs the user in
         [HttpPost]
@@ -138,25 +198,26 @@ namespace GamificationPlatform.Controllers
                 return View(model);
             }
 
-            var claims = new List<Claim>
-            {
-                // Stores the user's ID
-                new Claim(
-                    ClaimTypes.NameIdentifier,
-                    user.UserId.ToString()),
+            var claims =
+                new List<Claim>
+                {
+                    // Stores the user's ID
+                    new Claim(
+                        ClaimTypes.NameIdentifier,
+                        user.UserId.ToString()),
 
-                // Stores the username
-                new Claim(
-                    ClaimTypes.Name,
-                    user.Username),
+                    // Stores the username
+                    new Claim(
+                        ClaimTypes.Name,
+                        user.Username),
 
-                // Stores the user's role
-                new Claim(
-                    ClaimTypes.Role,
-                    user.IsAdmin
-                        ? "Admin"
-                        : "User")
-            };
+                    // Stores the user's role
+                    new Claim(
+                        ClaimTypes.Role,
+                        user.IsAdmin
+                            ? "Admin"
+                            : "User")
+                };
 
             var claimsIdentity =
                 new ClaimsIdentity(
@@ -165,7 +226,8 @@ namespace GamificationPlatform.Controllers
                         .AuthenticationScheme);
 
             var claimsPrincipal =
-                new ClaimsPrincipal(claimsIdentity);
+                new ClaimsPrincipal(
+                    claimsIdentity);
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults
@@ -174,10 +236,13 @@ namespace GamificationPlatform.Controllers
 
             // Returns the user to the page
             // they came from
-            if (!string.IsNullOrEmpty(model.ReturnUrl)
-                && Url.IsLocalUrl(model.ReturnUrl))
+            if (!string.IsNullOrEmpty(
+                    model.ReturnUrl)
+                && Url.IsLocalUrl(
+                    model.ReturnUrl))
             {
-                return LocalRedirect(model.ReturnUrl);
+                return LocalRedirect(
+                    model.ReturnUrl);
             }
 
             // Normal login from the navbar
@@ -185,6 +250,7 @@ namespace GamificationPlatform.Controllers
                 "Grid",
                 "Challenge");
         }
+
 
         // Logs the user out
         [HttpPost]
