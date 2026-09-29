@@ -10,7 +10,6 @@
                 <th>Email</th>
                 <th>Role</th>
                 <th>Challenges Created</th>
-                <th>Actions</th>
             </tr>
         </thead>
 
@@ -24,7 +23,11 @@
                     </td>
 
                     <td>
-                        @user.Username
+                        <a asp-controller="User"
+                           asp-action="Details"
+                           asp-route-id="@user.UserId">
+                            @user.Username
+                        </a>
                     </td>
 
                     <td>
@@ -48,15 +51,6 @@
 
                     <td>
                         @user.CreatedChallenges.Count
-                    </td>
-
-                    <td>
-                        <a asp-controller="User"
-                           asp-action="Details"
-                           asp-route-id="@user.UserId"
-                           class="btn btn-sm btn-primary">
-                            View
-                        </a>
                     </td>
                 </tr>
             }
