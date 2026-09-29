@@ -6,34 +6,85 @@
 
     <input type="hidden" asp-for="ChallengeId" />
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Title"></label>
         <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+        <span asp-validation-for="Title"
+              class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="Description"></label>
-        <input asp-for="Description" class="form-control" />
-        <span asp-validation-for="Description" class="text-danger"></span>
+        <input asp-for="Description"
+               class="form-control" />
+        <span asp-validation-for="Description"
+              class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="MaxPoints"></label>
-        <input asp-for="MaxPoints" class="form-control" />
-        <span asp-validation-for="MaxPoints" class="text-danger"></span>
+    <div class="form-group mb-4">
+        <label asp-for="ImageUrl">Image</label>
+
+        <select asp-for="ImageUrl"
+                class="form-control">
+
+            <option value="">
+                -- Select Image --
+            </option>
+
+            <option value="/images/Question_mark_code_2.png">
+                Question 1
+            </option>
+
+            <option value="/images/Question_mark_code_3.png">
+                Question 2
+            </option>
+
+            <option value="/images/Question_mark_code_4.png">
+                Question 3
+            </option>
+
+            <option value="/images/Question_mark_code_5.png">
+                Question 4
+            </option>
+
+            <option value="/images/Question_mark_code_6.png">
+                Question 5
+            </option>
+
+            <option value="/images/Question_mark_code_7.png">
+                Question 6
+            </option>
+
+            <option value="/images/Question_mark_code_8.png">
+                Question 7
+            </option>
+
+            <option value="/images/Question_mark_code_9.png">
+                Question 8
+            </option>
+
+            <option value="/images/Question_mark_code_10.png">
+                Question 9
+            </option>
+
+            <option value="/images/Question_mark_code_11.png">
+                Question 10
+            </option>
+
+        </select>
+
+        <span asp-validation-for="ImageUrl"
+              class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="ImageUrl"></label>
-        <input asp-for="ImageUrl" class="form-control" />
-        <span asp-validation-for="ImageUrl" class="text-danger"></span>
-    </div>
+    <button type="submit"
+            class="btn btn-primary">
+        Save Changes
+    </button>
 
-    <br />
-
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-
-    <a asp-action="Table" class="btn btn-secondary">Cancel</a>
+    <a asp-action="MyChallenges"
+       class="btn btn-secondary">
+        Cancel
+    </a>
 
 </form>
