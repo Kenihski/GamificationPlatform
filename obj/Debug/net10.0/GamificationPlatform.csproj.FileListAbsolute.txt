@@ -201,7 +201,8 @@ C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjon
 C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Castle.Core.dll
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Proxies.dll
-c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\ykhymcho9p-{0}-2fu0hxquxs-2fu0hxquxs.gz
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\2tq8bqv2zh-{0}-aej6164bp8-aej6164bp8.gz
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\ag4d5swz6x-{0}-of0sk59aul-of0sk59aul.gz
 c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\9jhb0rrvyq-{0}-of0sk59aul-of0sk59aul.gz
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\ykhymcho9p-{0}-82r5mzfsep-82r5mzfsep.gz
+c:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\obj\Debug\net10.0\compressed\ad2jgxepyl-{0}-n5noefd4z2-n5noefd4z2.gz

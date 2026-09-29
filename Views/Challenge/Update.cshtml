@@ -21,6 +21,48 @@
               class="text-danger"></span>
     </div>
 
+    <div class="form-group mb-3">
+        <label asp-for="TimeLimitMinutes">
+            Time Limit
+        </label>
+
+        <select asp-for="TimeLimitMinutes"
+                class="form-control">
+
+            <option value="">
+                Unlimited
+            </option>
+
+            <option value="10">
+                10 minutes
+            </option>
+
+            <option value="20">
+                20 minutes
+            </option>
+
+            <option value="30">
+                30 minutes
+            </option>
+
+            <option value="60">
+                60 minutes
+            </option>
+
+            <option value="90">
+                90 minutes
+            </option>
+
+            <option value="120">
+                120 minutes
+            </option>
+
+        </select>
+
+        <span asp-validation-for="TimeLimitMinutes"
+              class="text-danger"></span>
+    </div>
+
     <div class="form-group mb-4">
         <label asp-for="ImageUrl">Image</label>
 

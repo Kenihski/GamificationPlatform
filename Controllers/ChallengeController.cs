@@ -505,29 +505,50 @@ namespace GamificationPlatform.Controllers
                     .SaveChangesAsync();
             }
 
-            // Creates a new attempt
+            // Gets an unfinished attempt
+            // if one already exists.
             var challengeAttempt =
-                new ChallengeAttempt
-                {
-                    UserChallengeId =
-                        userChallenge.UserChallengeId,
+                await _challengeDbContext.ChallengeAttempts
+                    .Where(a =>
+                        a.UserChallengeId ==
+                            userChallenge.UserChallengeId &&
+                        !a.Completed)
+                    .OrderByDescending(a =>
+                        a.StartedAt)
+                    .FirstOrDefaultAsync();
 
-                    Score = 0,
-                    Completed = false,
-                    StartedAt = DateTime.Now
-                };
+            // Creates a new attempt if there
+            // is no unfinished attempt.
+            if (challengeAttempt == null)
+            {
+                challengeAttempt =
+                    new ChallengeAttempt
+                    {
+                        UserChallengeId =
+                            userChallenge.UserChallengeId,
 
-            _challengeDbContext.ChallengeAttempts.Add(
-                challengeAttempt);
+                        Score = 0,
+                        Completed = false,
+                        StartedAt = DateTime.Now
+                    };
 
-            await _challengeDbContext.SaveChangesAsync();
+                _challengeDbContext.ChallengeAttempts.Add(
+                    challengeAttempt);
+
+                await _challengeDbContext
+                    .SaveChangesAsync();
+            }
 
             var viewModel =
                 new TakeChallengeViewModel
                 {
                     Challenge = challenge,
+
                     ChallengeAttemptId =
-                        challengeAttempt.ChallengeAttemptId
+                        challengeAttempt.ChallengeAttemptId,
+
+                    StartedAt =
+                        challengeAttempt.StartedAt
                 };
 
             return View(viewModel);
@@ -603,6 +624,23 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
+            // Checks the time limit on the server.
+            if (challenge.TimeLimitMinutes.HasValue)
+            {
+                DateTime timeLimit =
+                    challengeAttempt.StartedAt
+                        .AddMinutes(
+                            challenge.TimeLimitMinutes.Value);
+
+                // Allows a few seconds for the automatic
+                // form submission to reach the server.
+                if (DateTime.Now >
+                    timeLimit.AddSeconds(5))
+                {
+                    answers.Clear();
+                }
+            }
+
             foreach (var question in challenge.Questions)
             {
                 int? selectedOptionId = null;
@@ -669,6 +707,12 @@ namespace GamificationPlatform.Controllers
 
             challengeAttempt.CompletedAt =
                 DateTime.Now;
+
+            // Calculates how long the user
+            // spent on the challenge.
+            result.TimeUsed =
+                challengeAttempt.CompletedAt.Value -
+                challengeAttempt.StartedAt;
 
             await _challengeDbContext
                 .SaveChangesAsync();
@@ -837,6 +881,9 @@ namespace GamificationPlatform.Controllers
 
                 existingChallenge.ImageUrl =
                     challenge.ImageUrl;
+
+                existingChallenge.TimeLimitMinutes =
+                    challenge.TimeLimitMinutes;
 
                 // CreatedByUserId is not changed.
                 // The original owner stays the owner.

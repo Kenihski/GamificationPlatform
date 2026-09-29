@@ -4,9 +4,14 @@
 
 <h4>@Model.ChallengeTitle</h4>
 
-<h3 class="mb-4">
+<h3>
     Score: @Model.Score / @Model.MaxScore
 </h3>
+
+<p class="mb-4">
+    <strong>Time Used:</strong>
+    @($"{(int)Model.TimeUsed.TotalMinutes:00}:{Model.TimeUsed.Seconds:00}")
+</p>
 
 <hr />
 

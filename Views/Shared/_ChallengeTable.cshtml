@@ -7,13 +7,16 @@
             <th>Title</th>
             <th>Description</th>
             <th>Max Points</th>
+            <th>Time Limit</th>
             <th>Image</th>
         </tr>
 
         @foreach (var challenge in Model)
         {
             <tr>
-                <td>@challenge.ChallengeId</td>
+                <td>
+                    @challenge.ChallengeId
+                </td>
 
                 <td>
                     <a asp-controller="Challenge"
@@ -29,6 +32,21 @@
 
                 <td>
                     @challenge.MaxPoints
+                </td>
+
+                <td>
+                    @if (challenge.TimeLimitMinutes.HasValue)
+                    {
+                        <span>
+                            @challenge.TimeLimitMinutes minutes
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            Unlimited
+                        </span>
+                    }
                 </td>
 
                 <td>

@@ -12,6 +12,9 @@ namespace GamificationPlatform.ViewModels
 
         public int MaxScore { get; set; }
 
+        // The total time used to complete the challenge.
+        public TimeSpan TimeUsed { get; set; }
+
         public List<QuestionResultViewModel> QuestionResults { get; set; }
             = new List<QuestionResultViewModel>();
     }
