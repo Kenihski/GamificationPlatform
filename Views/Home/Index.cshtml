@@ -1,31 +1,304 @@
+@model GamificationPlatform.ViewModels.HomeViewModel
+
 @{
     ViewData["Title"] = "Home Page";
 }
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div id="successMessage" class="alert alert-success">
+    <div id="successMessage"
+         class="alert alert-success">
         @TempData["SuccessMessage"]
     </div>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to Learning Challenge Hub</h1>
+
+<!-- Welcome section -->
+<div class="text-center home-hero">
+
+    <p class="home-subtitle">
+        LEARN • CHALLENGE • IMPROVE
+    </p>
+
+    <h1 class="display-4">
+        Welcome to Learning Challenge Hub
+    </h1>
+
+    <p class="lead">
+        Test your knowledge, complete challenges
+        and track your progress.
+    </p>
+
+    <div class="mt-3">
+
+        <a asp-controller="Challenge"
+           asp-action="Grid"
+           class="btn btn-primary btn-lg">
+            Browse Challenges
+        </a>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-controller="Challenge"
+               asp-action="Create"
+               class="btn btn-outline-primary btn-lg ms-2">
+                Create Challenge
+            </a>
+        }
+
+    </div>
+
 </div>
 
-<partial name="_Carousel" />
 
-  <!-- Left and Right Controls -->
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
+<!-- Challenge of the Day, Carousel and Leaderboard -->
+<div class="row g-4 align-items-stretch my-5">
+
+    <!-- Challenge of the Day -->
+    <div class="col-lg-3">
+
+        <div class="card home-daily-card h-100">
+
+            <div class="card-body d-flex flex-column">
+
+                <p class="home-daily-title">
+                    CHALLENGE OF THE DAY
+                </p>
+
+                @if (Model.ChallengeOfTheDay != null)
+                {
+                    <h3>
+                        @Model.ChallengeOfTheDay.Title
+                    </h3>
+
+                    <p class="text-muted">
+                        @Model.ChallengeOfTheDay.Description
+                    </p>
+
+                    <div class="mt-3">
+
+                        <div class="home-daily-points">
+                            @Model.MaxPoints points
+                        </div>
+
+                        <div class="text-muted mt-1">
+
+                            @if (Model.ChallengeOfTheDay.TimeLimitMinutes.HasValue)
+                            {
+                                <span>
+                                    @Model.ChallengeOfTheDay.TimeLimitMinutes min
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    Unlimited
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-auto">
+
+                        <a asp-controller="Challenge"
+                           asp-action="Details"
+                           asp-route-id="@Model.ChallengeOfTheDay.ChallengeId"
+                           class="btn btn-primary w-100">
+                            View Challenge
+                        </a>
+
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">
+                        No challenges are available.
+                    </p>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Image carousel -->
+    <div class="col-lg-6">
+
+        <div class="h-100 d-flex align-items-center">
+            <partial name="_Carousel" />
+        </div>
+
+    </div>
+
+
+    <!-- Challenge Leaderboard -->
+    <div class="col-lg-3">
+
+        <div class="card home-daily-card h-100">
+
+            <div class="card-body d-flex flex-column">
+
+                <p class="home-daily-title">
+                    CHALLENGE LEADERBOARD
+                </p>
+
+                @if (Model.ChallengeOfTheDay != null)
+                {
+                    <h3>
+                        @Model.ChallengeOfTheDay.Title
+                    </h3>
+
+                    @if (Model.LeaderboardEntries.Any())
+                    {
+                        <div class="mt-2">
+
+                            @foreach (var entry in Model.LeaderboardEntries)
+                            {
+                                <div class="d-flex justify-content-between
+                                            border-bottom py-2">
+
+                                    <span>
+                                        <strong>
+                                            @entry.Rank.
+                                        </strong>
+
+                                        @entry.Username
+                                    </span>
+
+                                    <strong>
+                                        @entry.Score pts
+                                    </strong>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">
+                            No completed attempts yet.
+                        </p>
+                    }
+
+                    <div class="mt-auto pt-3">
+
+                        <a asp-controller="Challenge"
+                           asp-action="Leaderboard"
+                           asp-route-id="@Model.ChallengeOfTheDay.ChallengeId"
+                           class="btn btn-outline-primary w-100">
+                            View Full Leaderboard
+                        </a>
+
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">
+                        No leaderboard is available.
+                    </p>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-@section Scripts {
-    <script src="~/js/home.js" asp-append-version="true"></script>
+
+<!-- Features -->
+<div class="row text-center g-4 mb-5">
+
+    <div class="col-md-4">
+
+        <div class="card home-feature-card h-100">
+
+            <div class="card-body p-4">
+
+                <div class="home-feature-icon">
+                    ?
+                </div>
+
+                <h4 class="card-title">
+                    Take Challenges
+                </h4>
+
+                <p class="card-text text-muted">
+                    Test your knowledge with
+                    interactive quizzes.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card home-feature-card h-100">
+
+            <div class="card-body p-4">
+
+                <div class="home-feature-icon">
+                    ✓
+                </div>
+
+                <h4 class="card-title">
+                    Track Your Progress
+                </h4>
+
+                <p class="card-text text-muted">
+                    View your scores and
+                    previous attempts.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card home-feature-card h-100">
+
+            <div class="card-body p-4">
+
+                <div class="home-feature-icon">
+                    ★
+                </div>
+
+                <h4 class="card-title">
+                    Leaderboards
+                </h4>
+
+                <p class="card-text text-muted">
+                    Compare your best results
+                    with other users.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <script src="~/js/home.js"
+            asp-append-version="true"
+            defer>
+    </script>
 }

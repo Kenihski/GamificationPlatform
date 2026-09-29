@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GamificationPlatform")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+89ed094187d6f57cd0267161ecc65fe6acc6dc38")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2b355b76da09329a804f49f8795ad15a9e963bf7")]
 [assembly: System.Reflection.AssemblyProductAttribute("GamificationPlatform")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GamificationPlatform")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
