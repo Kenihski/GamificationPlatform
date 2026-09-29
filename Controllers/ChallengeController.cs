@@ -102,7 +102,9 @@ namespace GamificationPlatform.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Publish(int id)
+        public async Task<IActionResult> Publish(
+            int id,
+            string? returnUrl)
         {
             var challenge =
                 await _challengeDbContext.Challenges
@@ -145,6 +147,12 @@ namespace GamificationPlatform.Controllers
                 TempData["ErrorMessage"] =
                     "The challenge must have at least one question before it can be published.";
 
+                if (!string.IsNullOrEmpty(returnUrl) &&
+                    Url.IsLocalUrl(returnUrl))
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
                 return RedirectToAction(
                     nameof(MyChallenges));
             }
@@ -157,6 +165,12 @@ namespace GamificationPlatform.Controllers
             TempData["SuccessMessage"] =
                 "Challenge published successfully.";
 
+            if (!string.IsNullOrEmpty(returnUrl) &&
+                Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
             return RedirectToAction(
                 nameof(MyChallenges));
         }
@@ -166,7 +180,9 @@ namespace GamificationPlatform.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Unpublish(int id)
+        public async Task<IActionResult> Unpublish(
+            int id,
+            string? returnUrl)
         {
             var challenge =
                 await _challengeDbContext.Challenges
@@ -208,6 +224,12 @@ namespace GamificationPlatform.Controllers
 
             TempData["SuccessMessage"] =
                 "Challenge unpublished successfully.";
+
+            if (!string.IsNullOrEmpty(returnUrl) &&
+                Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
 
             return RedirectToAction(
                 nameof(MyChallenges));

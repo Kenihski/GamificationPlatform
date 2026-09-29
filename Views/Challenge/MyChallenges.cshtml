@@ -104,6 +104,10 @@ else
                                   method="post"
                                   class="d-inline">
 
+                                <input type="hidden"
+                                       name="returnUrl"
+                                       value="@Context.Request.Path" />
+
                                 <button type="submit"
                                         class="btn btn-sm btn-success">
                                     Publish
@@ -118,6 +122,10 @@ else
                                   asp-route-id="@challenge.ChallengeId"
                                   method="post"
                                   class="d-inline">
+
+                                <input type="hidden"
+                                       name="returnUrl"
+                                       value="@Context.Request.Path" />
 
                                 <button type="submit"
                                         class="btn btn-sm btn-dark">

@@ -8,6 +8,22 @@
     @Model.User.Username
 </h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successMessage"
+         class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div id="errorMessage"
+         class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <div class="mb-4">
     <p>
         <strong>Email:</strong>
@@ -117,6 +133,10 @@ else
                                   method="post"
                                   class="d-inline">
 
+                                <input type="hidden"
+                                       name="returnUrl"
+                                       value="@Context.Request.Path" />
+
                                 <button type="submit"
                                         class="btn btn-sm btn-success">
                                     Publish
@@ -131,6 +151,10 @@ else
                                   asp-route-id="@challenge.ChallengeId"
                                   method="post"
                                   class="d-inline">
+
+                                <input type="hidden"
+                                       name="returnUrl"
+                                       value="@Context.Request.Path" />
 
                                 <button type="submit"
                                         class="btn btn-sm btn-dark">
@@ -321,3 +345,8 @@ else
    class="btn btn-secondary mt-3">
     Back to Users
 </a>
+
+@section Scripts
+{
+    <script src="~/js/userDetails.js" defer></script>
+}
