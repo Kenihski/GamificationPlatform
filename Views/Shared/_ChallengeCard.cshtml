@@ -1,58 +1,63 @@
 @model Challenge
 
 <div class="col">
-    <div class="card h-100">
 
-        <div class="challenge-image-container">
-            <img src="@Model.ImageUrl"
-                 class="challenge-image"
-                 alt="@Model.Title">
-        </div>
+    <a asp-controller="Challenge"
+       asp-action="Details"
+       asp-route-id="@Model.ChallengeId"
+       class="text-decoration-none text-dark">
 
-        <div class="card-body">
+        <div class="card h-100 challenge-card">
 
-            <div class="d-flex justify-content-between mt-2">
+            <div class="challenge-image-container">
+                <img src="@Model.ImageUrl"
+                     class="challenge-image"
+                     alt="@Model.Title">
+            </div>
 
-                <h5 class="text-start">
-                    <a asp-controller="Challenge"
-                       asp-action="Details"
-                       asp-route-id="@Model.ChallengeId">
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between mt-2">
+
+                    <h5 class="text-start">
                         @Model.Title
-                    </a>
-                </h5>
+                    </h5>
 
-                <div class="text-end text-nowrap">
+                    <div class="text-end text-nowrap">
 
-                    <strong>
-                        @Model.MaxPoints points
-                    </strong>
+                        <strong>
+                            @Model.MaxPoints points
+                        </strong>
 
-                    <div class="small text-muted">
+                        <div class="small text-muted">
 
-                        @if (Model.TimeLimitMinutes.HasValue)
-                        {
-                            <span>
-                                @Model.TimeLimitMinutes min
-                            </span>
-                        }
-                        else
-                        {
-                            <span>
-                                Unlimited
-                            </span>
-                        }
+                            @if (Model.TimeLimitMinutes.HasValue)
+                            {
+                                <span>
+                                    @Model.TimeLimitMinutes min
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    Unlimited
+                                </span>
+                            }
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
+                <p class="card-text">
+                    @Model.Description
+                </p>
 
-            <p class="card-text">
-                @Model.Description
-            </p>
+            </div>
 
         </div>
 
-    </div>
+    </a>
+
 </div>
