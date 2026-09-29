@@ -32,6 +32,15 @@
 }
 
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div id="errorMessage"
+         class="alert alert-danger mt-4">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+
 <h3 class="my-5">
     @Model.Challenge.Title
 </h3>
