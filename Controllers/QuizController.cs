@@ -11,12 +11,15 @@ namespace GamificationPlatform.Controllers
     public class QuizController : Controller
     {
         private readonly ChallengeDbContext _challengeDbContext;
+        private readonly ILogger<QuizController> _logger;
 
 
         public QuizController(
-            ChallengeDbContext challengeDbContext)
+            ChallengeDbContext challengeDbContext,
+            ILogger<QuizController> logger)
         {
             _challengeDbContext = challengeDbContext;
+            _logger = logger;
         }
 
 
@@ -193,6 +196,12 @@ namespace GamificationPlatform.Controllers
 
                 await _challengeDbContext
                     .SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "User {UserId} started attempt {AttemptId} for challenge {ChallengeId}.",
+                    userId,
+                    challengeAttempt.ChallengeAttemptId,
+                    id);
             }
 
 
@@ -287,6 +296,12 @@ namespace GamificationPlatform.Controllers
 
             if (challengeAttempt == null)
             {
+                _logger.LogWarning(
+                    "Submission failed for challenge {ChallengeId}: attempt {AttemptId} was not valid for user {UserId}.",
+                    challengeId,
+                    challengeAttemptId,
+                    userId);
+
                 return NotFound();
             }
 
@@ -401,7 +416,14 @@ namespace GamificationPlatform.Controllers
             await _challengeDbContext
                 .SaveChangesAsync();
 
-
+            _logger.LogInformation(
+                "User {UserId} completed attempt {AttemptId} for challenge {ChallengeId} with score {Score}/{MaxScore}.",
+                userId,
+                challengeAttemptId,
+                challengeId,
+                result.Score,
+                result.MaxScore);
+                
             return View("Result", result);
         }
     }

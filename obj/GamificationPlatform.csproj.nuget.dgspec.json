@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj": {}
+    "C:\\Users\\Bruker\\Desktop\\v2 oblig webap\\GamificationPlatform\\GamificationPlatform.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj": {
+    "C:\\Users\\Bruker\\Desktop\\v2 oblig webap\\GamificationPlatform\\GamificationPlatform.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
+        "projectUniqueName": "C:\\Users\\Bruker\\Desktop\\v2 oblig webap\\GamificationPlatform\\GamificationPlatform.csproj",
         "projectName": "GamificationPlatform",
-        "projectPath": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\GamificationPlatform.csproj",
-        "packagesPath": "C:\\Users\\Kenne\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Kenne\\Dropbox\\Oslomet\\Dataingeniør 2024\\3.år\\ITPE 3200 Webapplikasjoner\\GamificationPlatform\\GamificationPlatform\\obj\\",
+        "projectPath": "C:\\Users\\Bruker\\Desktop\\v2 oblig webap\\GamificationPlatform\\GamificationPlatform.csproj",
+        "packagesPath": "C:\\Users\\Bruker\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Bruker\\Desktop\\v2 oblig webap\\GamificationPlatform\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Kenne\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Bruker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -63,6 +70,14 @@
             "Microsoft.Web.LibraryManager.Build": {
               "target": "Package",
               "version": "[3.0.114, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Serilog.Sinks.File": {
+              "target": "Package",
+              "version": "[7.0.0, )"
             }
           },
           "imports": [

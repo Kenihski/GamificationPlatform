@@ -4,6 +4,9 @@
 
 <form asp-action="Update">
 
+    <div asp-validation-summary="All"
+     class="text-danger mb-3">
+    </div>
     <input type="hidden" asp-for="ChallengeId" />
 
     <div class="form-group mb-3">

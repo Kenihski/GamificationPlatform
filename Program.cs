@@ -1,9 +1,22 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using GamificationPlatform.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Serilog to log application events to both the console
+// and a separate log file for each application run.
+var logFileName =
+    $"Logs/log-{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .WriteTo.Console()
+        .WriteTo.File(logFileName);
+});
 builder.Services.AddControllersWithViews();
 
 // Cookie authentication

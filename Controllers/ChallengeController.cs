@@ -11,12 +11,16 @@ namespace GamificationPlatform.Controllers
     public class ChallengeController : Controller
     {
         private readonly ChallengeDbContext _challengeDbContext;
+        // Logger is used to record important challenge operations
+        // and problems that occur while processing them.
+        private readonly ILogger<ChallengeController> _logger;
 
-
-        public ChallengeController(
-            ChallengeDbContext challengeDbContext)
+       public ChallengeController(
+            ChallengeDbContext challengeDbContext,
+            ILogger<ChallengeController> logger)
         {
             _challengeDbContext = challengeDbContext;
+            _logger = logger;
         }
 
 
@@ -128,6 +132,10 @@ namespace GamificationPlatform.Controllers
 
             if (challenge == null)
             {
+                _logger.LogWarning(
+                    "Publish failed because challenge {ChallengeId} was not found.",
+                    id);
+
                 return NotFound();
             }
 
@@ -151,11 +159,14 @@ namespace GamificationPlatform.Controllers
                 User.IsInRole("Admin");
 
 
-            // Normal users can only publish
-            // challenges they created.
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning(
+                    "User {UserId} attempted to publish challenge {ChallengeId} without permission.",
+                    userId,
+                    id);
+
                 return Forbid();
             }
 
@@ -164,6 +175,10 @@ namespace GamificationPlatform.Controllers
             // one question before publishing.
             if (!challenge.Questions.Any())
             {
+                 _logger.LogWarning(
+                    "Challenge {ChallengeId} could not be published because it has no questions.",
+                    id);
+
                 TempData["ErrorMessage"] =
                     "The challenge must have at least one question before it can be published.";
 
@@ -185,7 +200,10 @@ namespace GamificationPlatform.Controllers
 
             await _challengeDbContext
                 .SaveChangesAsync();
-
+            _logger.LogInformation(
+                "Challenge {ChallengeId} was published by user {UserId}.",
+                id,
+                userId);
 
             TempData["SuccessMessage"] =
                 "Challenge published successfully.";
@@ -256,7 +274,10 @@ namespace GamificationPlatform.Controllers
 
             await _challengeDbContext
                 .SaveChangesAsync();
-
+            _logger.LogInformation(
+                "Challenge {ChallengeId} was unpublished by user {UserId}.",
+                id,
+                userId);
 
             TempData["SuccessMessage"] =
                 "Challenge unpublished successfully.";
@@ -426,10 +447,13 @@ namespace GamificationPlatform.Controllers
                 _challengeDbContext.Challenges.Add(
                     challenge);
 
-
                 await _challengeDbContext
                     .SaveChangesAsync();
 
+                _logger.LogInformation(
+                    "Challenge {ChallengeId} was created by user {UserId}.",
+                    challenge.ChallengeId,
+                    userId);
 
                 return RedirectToAction(
                     nameof(Details),
@@ -572,7 +596,10 @@ namespace GamificationPlatform.Controllers
 
                 await _challengeDbContext
                     .SaveChangesAsync();
-
+                _logger.LogInformation(
+                    "Challenge {ChallengeId} was updated by user {UserId}.",
+                    existingChallenge.ChallengeId,
+                    userId);
 
                 return RedirectToAction(
                     nameof(Table));
@@ -683,7 +710,10 @@ namespace GamificationPlatform.Controllers
 
             await _challengeDbContext
                 .SaveChangesAsync();
-
+            _logger.LogInformation(
+                "Challenge {ChallengeId} was deleted by user {UserId}.",
+                id,
+                userId);
 
             return RedirectToAction(
                 nameof(Table));
