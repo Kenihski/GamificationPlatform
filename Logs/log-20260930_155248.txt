@@ -1409,3 +1409,1291 @@ ORDER BY "c"."ChallengeId"
 2026-09-30 16:00:38.853 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
 2026-09-30 16:00:38.853 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
 2026-09-30 16:00:38.853 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 19.9724ms
+2026-09-30 16:00:39.618 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Grid - null null
+2026-09-30 16:00:39.619 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform)'
+2026-09-30 16:00:39.639 +02:00 [INF] Route matched with {action = "Grid", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Grid() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:00:39.692 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."IsPublished"
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:00:39.710 +02:00 [INF] Executing ViewResult, running view Grid.
+2026-09-30 16:00:39.762 +02:00 [INF] Executed ViewResult - view Grid executed in 57.7951ms.
+2026-09-30 16:00:39.763 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform) in 123.5736ms
+2026-09-30 16:00:39.763 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform)'
+2026-09-30 16:00:39.763 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Grid - 200 null text/html; charset=utf-8 144.8466ms
+2026-09-30 16:00:39.833 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:00:39.833 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:00:39.834 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.834 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.836 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:00:39.837 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.837 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:00:39.837 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1336ms
+2026-09-30 16:00:39.837 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_2.png - null null
+2026-09-30 16:00:39.838 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.839 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_3.png - null null
+2026-09-30 16:00:39.840 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.840 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:00:39.841 +02:00 [INF] The file images/Question_mark_code_3.png was not modified
+2026-09-30 16:00:39.843 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:00:39.843 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.843 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 10.4013ms
+2026-09-30 16:00:39.844 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - null null
+2026-09-30 16:00:39.844 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.844 +02:00 [INF] The file images/Question_mark_code_2.png was not modified
+2026-09-30 16:00:39.844 +02:00 [INF] The file images/Question_mark_code_4.png was not modified
+2026-09-30 16:00:39.845 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.845 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.845 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_2.png - 304 null image/png 7.8339ms
+2026-09-30 16:00:39.845 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - 304 null image/png 1.6652ms
+2026-09-30 16:00:39.845 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.845 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_3.png - 304 null image/png 6.5523ms
+2026-09-30 16:00:39.841 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.846 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 12.4326ms
+2026-09-30 16:00:39.846 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:00:39.846 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.846 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 10.0634ms
+2026-09-30 16:00:39.862 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_5.png - null null
+2026-09-30 16:00:39.863 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.863 +02:00 [INF] The file images/Question_mark_code_5.png was not modified
+2026-09-30 16:00:39.864 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.864 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_5.png - 304 null image/png 1.2859ms
+2026-09-30 16:00:39.867 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_6.png - null null
+2026-09-30 16:00:39.867 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.868 +02:00 [INF] The file images/Question_mark_code_6.png was not modified
+2026-09-30 16:00:39.868 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.868 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_6.png - 304 null image/png 1.1163ms
+2026-09-30 16:00:39.871 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:00:39.873 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.877 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:00:39.877 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.877 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 6.3683ms
+2026-09-30 16:00:39.891 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - null null
+2026-09-30 16:00:39.892 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.893 +02:00 [INF] The file images/Question_mark_code_7.png was not modified
+2026-09-30 16:00:39.893 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.893 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - 304 null image/png 1.9145ms
+2026-09-30 16:00:39.901 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_11.png - null null
+2026-09-30 16:00:39.902 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.902 +02:00 [INF] The file images/Question_mark_code_11.png was not modified
+2026-09-30 16:00:39.902 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:39.902 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_11.png - 304 null image/png 1.2919ms
+2026-09-30 16:00:40.899 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Create - null null
+2026-09-30 16:00:40.900 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:00:40.901 +02:00 [INF] Route matched with {action = "Create", controller = "Challenge"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:00:40.901 +02:00 [INF] Executing ViewResult, running view Create.
+2026-09-30 16:00:40.903 +02:00 [INF] Executed ViewResult - view Create executed in 1.5592ms.
+2026-09-30 16:00:40.903 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform) in 2.1648ms
+2026-09-30 16:00:40.903 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:00:40.903 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Create - 200 null text/html; charset=utf-8 3.6656ms
+2026-09-30 16:00:40.975 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:00:40.977 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.977 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:00:40.977 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:00:40.977 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:00:40.977 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1524ms
+2026-09-30 16:00:40.977 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.978 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.980 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:00:40.980 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.980 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 3.3077ms
+2026-09-30 16:00:40.981 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:00:40.982 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.982 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:00:40.982 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.982 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 5.4759ms
+2026-09-30 16:00:40.986 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:00:40.986 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.986 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.2565ms
+2026-09-30 16:00:40.990 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:00:40.990 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:00:40.990 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 14.5201ms
+2026-09-30 16:01:06.259 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/User/Table - null null
+2026-09-30 16:01:06.261 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:01:06.280 +02:00 [INF] Route matched with {action = "Table", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Table() on controller GamificationPlatform.Controllers.UserController (GamificationPlatform).
+2026-09-30 16:01:06.327 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username", "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Users" AS "u"
+LEFT JOIN "Challenges" AS "c" ON "u"."UserId" = "c"."CreatedByUserId"
+ORDER BY "u"."UserId"
+2026-09-30 16:01:06.338 +02:00 [INF] Executing ViewResult, running view Table.
+2026-09-30 16:01:06.388 +02:00 [INF] Executed ViewResult - view Table executed in 51.193ms.
+2026-09-30 16:01:06.388 +02:00 [INF] Executed action GamificationPlatform.Controllers.UserController.Table (GamificationPlatform) in 107.5988ms
+2026-09-30 16:01:06.388 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:01:06.388 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/User/Table - 200 null text/html; charset=utf-8 129.3945ms
+2026-09-30 16:01:06.440 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:06.441 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.441 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:06.442 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.442 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:06.443 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 1.4745ms
+2026-09-30 16:01:06.444 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:06.445 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.448 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:06.449 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:06.454 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.454 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 12.7691ms
+2026-09-30 16:01:06.454 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.454 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:06.454 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.455 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 10.6592ms
+2026-09-30 16:01:06.461 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:06.461 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.462 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 21.2796ms
+2026-09-30 16:01:06.462 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:06.462 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:06.462 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 14.4011ms
+2026-09-30 16:01:06.924 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Question/Table - null null
+2026-09-30 16:01:06.925 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform)'
+2026-09-30 16:01:06.940 +02:00 [INF] Route matched with {action = "Table", controller = "Question"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Table() on controller GamificationPlatform.Controllers.QuestionController (GamificationPlatform).
+2026-09-30 16:01:06.960 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Questions" AS "q"
+2026-09-30 16:01:06.963 +02:00 [INF] Executing ViewResult, running view Table.
+2026-09-30 16:01:07.013 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.017 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:07.022 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.023 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:07.025 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.026 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:07.027 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.029 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:07.031 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.032 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:07.034 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.036 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.038 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:07.041 +02:00 [INF] Executed ViewResult - view Table executed in 79.7413ms.
+2026-09-30 16:01:07.042 +02:00 [INF] Executed action GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform) in 101.1145ms
+2026-09-30 16:01:07.042 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform)'
+2026-09-30 16:01:07.042 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Question/Table - 200 null text/html; charset=utf-8 117.9744ms
+2026-09-30 16:01:07.107 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:07.109 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.109 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:07.110 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:07.110 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.4387ms
+2026-09-30 16:01:07.111 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:07.111 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.111 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.113 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:07.114 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:07.115 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.115 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 4.0901ms
+2026-09-30 16:01:07.115 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.117 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:07.118 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.118 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 8.2415ms
+2026-09-30 16:01:07.119 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:07.119 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.119 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 12.38ms
+2026-09-30 16:01:07.120 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:07.120 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:07.120 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 6.5335ms
+2026-09-30 16:01:08.457 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Create - null null
+2026-09-30 16:01:08.457 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:01:08.457 +02:00 [INF] Route matched with {action = "Create", controller = "Challenge"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:08.458 +02:00 [INF] Executing ViewResult, running view Create.
+2026-09-30 16:01:08.460 +02:00 [INF] Executed ViewResult - view Create executed in 2.2686ms.
+2026-09-30 16:01:08.460 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform) in 2.8071ms
+2026-09-30 16:01:08.460 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:01:08.460 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Create - 200 null text/html; charset=utf-8 3.9732ms
+2026-09-30 16:01:08.525 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:08.525 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:08.525 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.526 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:08.526 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.144ms
+2026-09-30 16:01:08.526 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:08.527 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.527 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.528 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:08.532 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.533 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:08.534 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.534 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 7.4735ms
+2026-09-30 16:01:08.534 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:08.534 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.534 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 8.6274ms
+2026-09-30 16:01:08.535 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:08.535 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.535 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 7.5189ms
+2026-09-30 16:01:08.536 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:08.536 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:08.536 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 11.4295ms
+2026-09-30 16:01:09.680 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - null null
+2026-09-30 16:01:09.682 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:01:09.683 +02:00 [INF] Route matched with {action = "MyChallenges", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MyChallenges() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:09.685 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@userId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."CreatedByUserId" = @userId
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:01:09.686 +02:00 [INF] Executing ViewResult, running view MyChallenges.
+2026-09-30 16:01:09.688 +02:00 [INF] Executed ViewResult - view MyChallenges executed in 1.7012ms.
+2026-09-30 16:01:09.688 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform) in 5.3706ms
+2026-09-30 16:01:09.688 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:01:09.689 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - 200 null text/html; charset=utf-8 8.5975ms
+2026-09-30 16:01:09.744 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:09.745 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:09.746 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.747 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.747 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:09.747 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1751ms
+2026-09-30 16:01:09.747 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:09.748 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.751 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:09.751 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.751 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 3.8484ms
+2026-09-30 16:01:09.753 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:09.753 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.753 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:09.754 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 9.1893ms
+2026-09-30 16:01:09.754 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.755 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - null null
+2026-09-30 16:01:09.755 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:09.755 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.755 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 9.6018ms
+2026-09-30 16:01:09.755 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.756 +02:00 [INF] Sending file. Request path: 'js/myChallenges.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\ag4d5swz6x-{0}-of0sk59aul-of0sk59aul.gz'
+2026-09-30 16:01:09.756 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.756 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:09.756 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - 200 390 text/javascript 1.6944ms
+2026-09-30 16:01:09.756 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:09.757 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 3.2475ms
+2026-09-30 16:01:11.355 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/User/Table - null null
+2026-09-30 16:01:11.359 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:01:11.359 +02:00 [INF] Route matched with {action = "Table", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Table() on controller GamificationPlatform.Controllers.UserController (GamificationPlatform).
+2026-09-30 16:01:11.361 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username", "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Users" AS "u"
+LEFT JOIN "Challenges" AS "c" ON "u"."UserId" = "c"."CreatedByUserId"
+ORDER BY "u"."UserId"
+2026-09-30 16:01:11.363 +02:00 [INF] Executing ViewResult, running view Table.
+2026-09-30 16:01:11.367 +02:00 [INF] Executed ViewResult - view Table executed in 3.7524ms.
+2026-09-30 16:01:11.367 +02:00 [INF] Executed action GamificationPlatform.Controllers.UserController.Table (GamificationPlatform) in 8.0066ms
+2026-09-30 16:01:11.367 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:01:11.368 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/User/Table - 200 null text/html; charset=utf-8 12.1035ms
+2026-09-30 16:01:11.425 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:11.425 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:11.426 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.426 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.427 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:11.427 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1853ms
+2026-09-30 16:01:11.427 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:11.428 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.430 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:11.430 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:11.431 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.431 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 3.7844ms
+2026-09-30 16:01:11.431 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.432 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:11.432 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.432 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 7.1622ms
+2026-09-30 16:01:11.432 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:11.432 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.432 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 7.1222ms
+2026-09-30 16:01:11.435 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:11.436 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:11.436 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 6.4212ms
+2026-09-30 16:01:13.233 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Question/Table - null null
+2026-09-30 16:01:13.234 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform)'
+2026-09-30 16:01:13.234 +02:00 [INF] Route matched with {action = "Table", controller = "Question"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Table() on controller GamificationPlatform.Controllers.QuestionController (GamificationPlatform).
+2026-09-30 16:01:13.235 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Questions" AS "q"
+2026-09-30 16:01:13.236 +02:00 [INF] Executing ViewResult, running view Table.
+2026-09-30 16:01:13.240 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.242 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:13.244 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.246 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:13.249 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.252 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:13.254 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.255 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:13.258 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.260 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:13.261 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.262 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.264 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:13.266 +02:00 [INF] Executed ViewResult - view Table executed in 29.3126ms.
+2026-09-30 16:01:13.266 +02:00 [INF] Executed action GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform) in 31.9595ms
+2026-09-30 16:01:13.266 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform)'
+2026-09-30 16:01:13.266 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Question/Table - 200 null text/html; charset=utf-8 33.3721ms
+2026-09-30 16:01:13.328 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:13.329 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:13.329 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:13.329 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.330 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.3083ms
+2026-09-30 16:01:13.330 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.331 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:13.331 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.334 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:13.335 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.335 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 4.5025ms
+2026-09-30 16:01:13.335 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:13.336 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.337 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 8.1758ms
+2026-09-30 16:01:13.337 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:13.338 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.346 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:13.347 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.347 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 9.614ms
+2026-09-30 16:01:13.347 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:13.347 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:13.347 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 19.3567ms
+2026-09-30 16:01:15.293 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Create - null null
+2026-09-30 16:01:15.294 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:01:15.294 +02:00 [INF] Route matched with {action = "Create", controller = "Challenge"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:15.295 +02:00 [INF] Executing ViewResult, running view Create.
+2026-09-30 16:01:15.298 +02:00 [INF] Executed ViewResult - view Create executed in 3.1423ms.
+2026-09-30 16:01:15.298 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform) in 3.7498ms
+2026-09-30 16:01:15.298 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:01:15.299 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Create - 200 null text/html; charset=utf-8 5.3747ms
+2026-09-30 16:01:15.365 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:15.366 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.366 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:15.367 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:15.367 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1361ms
+2026-09-30 16:01:15.367 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.368 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:15.369 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:15.369 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.370 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.372 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:15.372 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.372 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 4.3947ms
+2026-09-30 16:01:15.374 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:15.374 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.374 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.1722ms
+2026-09-30 16:01:15.374 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:15.374 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.374 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 7.9136ms
+2026-09-30 16:01:15.374 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:15.374 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:15.374 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 9.2047ms
+2026-09-30 16:01:19.206 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - null null
+2026-09-30 16:01:19.206 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:01:19.206 +02:00 [INF] Route matched with {action = "MyChallenges", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MyChallenges() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:19.208 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@userId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."CreatedByUserId" = @userId
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:01:19.210 +02:00 [INF] Executing ViewResult, running view MyChallenges.
+2026-09-30 16:01:19.215 +02:00 [INF] Executed ViewResult - view MyChallenges executed in 4.7415ms.
+2026-09-30 16:01:19.216 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform) in 9.513ms
+2026-09-30 16:01:19.216 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:01:19.217 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - 200 null text/html; charset=utf-8 11.0104ms
+2026-09-30 16:01:19.276 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:19.278 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.279 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:19.280 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:19.280 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.280 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:19.281 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.281 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.3826ms
+2026-09-30 16:01:19.282 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:19.283 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:19.283 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.283 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.283 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 3.1255ms
+2026-09-30 16:01:19.283 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - null null
+2026-09-30 16:01:19.284 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.288 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:19.288 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.288 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 8.6363ms
+2026-09-30 16:01:19.288 +02:00 [INF] Sending file. Request path: 'js/myChallenges.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\ag4d5swz6x-{0}-of0sk59aul-of0sk59aul.gz'
+2026-09-30 16:01:19.288 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.288 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - 200 390 text/javascript 5.1798ms
+2026-09-30 16:01:19.289 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:19.289 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.289 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 7.027ms
+2026-09-30 16:01:19.290 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:19.290 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:19.290 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 14.3485ms
+2026-09-30 16:01:22.690 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Update/9 - null null
+2026-09-30 16:01:22.691 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Update (GamificationPlatform)'
+2026-09-30 16:01:22.717 +02:00 [INF] Route matched with {action = "Update", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Update(Int32) on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:22.760 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:22.765 +02:00 [INF] Executing ViewResult, running view Update.
+2026-09-30 16:01:22.904 +02:00 [INF] Executed ViewResult - view Update executed in 142.5659ms.
+2026-09-30 16:01:22.904 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Update (GamificationPlatform) in 186.4647ms
+2026-09-30 16:01:22.904 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Update (GamificationPlatform)'
+2026-09-30 16:01:22.904 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Update/9 - 200 null text/html; charset=utf-8 214.1704ms
+2026-09-30 16:01:22.967 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:22.968 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:22.968 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.969 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:22.969 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.969 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.970 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:22.970 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.2384ms
+2026-09-30 16:01:22.971 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:22.971 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.971 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 3.4748ms
+2026-09-30 16:01:22.971 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:22.972 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.975 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:22.976 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:22.976 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.976 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.977 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.127ms
+2026-09-30 16:01:22.976 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 8.0039ms
+2026-09-30 16:01:22.978 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:22.978 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:22.979 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 12.1539ms
+2026-09-30 16:01:40.548 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5087/Challenge/Update/9 - application/x-www-form-urlencoded 323
+2026-09-30 16:01:40.549 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Update (GamificationPlatform)'
+2026-09-30 16:01:40.570 +02:00 [INF] Route matched with {action = "Update", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Update(GamificationPlatform.Models.Challenge) on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:40.596 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@challenge_ChallengeId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @challenge_ChallengeId
+LIMIT 1
+2026-09-30 16:01:40.598 +02:00 [INF] Executing ViewResult, running view Update.
+2026-09-30 16:01:40.601 +02:00 [INF] Executed ViewResult - view Update executed in 3.4108ms.
+2026-09-30 16:01:40.601 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Update (GamificationPlatform) in 31.0002ms
+2026-09-30 16:01:40.601 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Update (GamificationPlatform)'
+2026-09-30 16:01:40.601 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5087/Challenge/Update/9 - 200 null text/html; charset=utf-8 53.6339ms
+2026-09-30 16:01:40.660 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:40.661 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:40.661 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.661 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.662 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:40.663 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.663 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:40.664 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1693ms
+2026-09-30 16:01:40.664 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:40.665 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:40.665 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.665 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 3.1691ms
+2026-09-30 16:01:40.665 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:40.665 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.665 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 4.7817ms
+2026-09-30 16:01:40.665 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.666 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:40.666 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.666 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 6.1147ms
+2026-09-30 16:01:40.669 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:40.669 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:40.670 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.0505ms
+2026-09-30 16:01:48.763 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Grid - null null
+2026-09-30 16:01:48.764 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform)'
+2026-09-30 16:01:48.764 +02:00 [INF] Route matched with {action = "Grid", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Grid() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:48.766 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."IsPublished"
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:01:48.770 +02:00 [INF] Executing ViewResult, running view Grid.
+2026-09-30 16:01:48.775 +02:00 [INF] Executed ViewResult - view Grid executed in 5.0716ms.
+2026-09-30 16:01:48.775 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform) in 10.7983ms
+2026-09-30 16:01:48.775 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform)'
+2026-09-30 16:01:48.775 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Grid - 200 null text/html; charset=utf-8 12.3421ms
+2026-09-30 16:01:48.827 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:48.828 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.831 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:48.831 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.831 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 4.0698ms
+2026-09-30 16:01:48.834 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:48.834 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:48.835 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.835 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.836 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_2.png - null null
+2026-09-30 16:01:48.836 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:48.836 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_3.png - null null
+2026-09-30 16:01:48.836 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.836 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.836 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.0657ms
+2026-09-30 16:01:48.836 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.837 +02:00 [INF] The file images/Question_mark_code_3.png was not modified
+2026-09-30 16:01:48.837 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.837 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_3.png - 304 null image/png 0.9677ms
+2026-09-30 16:01:48.837 +02:00 [INF] The file images/Question_mark_code_2.png was not modified
+2026-09-30 16:01:48.837 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.837 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_2.png - 304 null image/png 1.4438ms
+2026-09-30 16:01:48.837 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - null null
+2026-09-30 16:01:48.839 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:48.839 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1853ms
+2026-09-30 16:01:48.839 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:48.839 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.839 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 4.6985ms
+2026-09-30 16:01:48.840 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.840 +02:00 [INF] The file images/Question_mark_code_4.png was not modified
+2026-09-30 16:01:48.840 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.840 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - 304 null image/png 3.0631ms
+2026-09-30 16:01:48.855 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_5.png - null null
+2026-09-30 16:01:48.855 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_6.png - null null
+2026-09-30 16:01:48.855 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.856 +02:00 [INF] The file images/Question_mark_code_5.png was not modified
+2026-09-30 16:01:48.856 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.856 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.856 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_5.png - 304 null image/png 1.0377ms
+2026-09-30 16:01:48.856 +02:00 [INF] The file images/Question_mark_code_6.png was not modified
+2026-09-30 16:01:48.856 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.856 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_6.png - 304 null image/png 1.0757ms
+2026-09-30 16:01:48.862 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:48.862 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.865 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:48.865 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.865 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 3.9807ms
+2026-09-30 16:01:48.883 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - null null
+2026-09-30 16:01:48.884 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.884 +02:00 [INF] The file images/Question_mark_code_7.png was not modified
+2026-09-30 16:01:48.884 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.885 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - 304 null image/png 1.1552ms
+2026-09-30 16:01:48.921 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_11.png - null null
+2026-09-30 16:01:48.927 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.928 +02:00 [INF] The file images/Question_mark_code_11.png was not modified
+2026-09-30 16:01:48.928 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:48.928 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_11.png - 304 null image/png 7.2459ms
+2026-09-30 16:01:49.855 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/ - null null
+2026-09-30 16:01:49.856 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.HomeController.Index (GamificationPlatform)'
+2026-09-30 16:01:49.856 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GamificationPlatform.Controllers.HomeController (GamificationPlatform).
+2026-09-30 16:01:49.858 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."IsPublished"
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:01:49.864 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@challengeOfTheDay_ChallengeId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeAttemptId", "c"."Completed", "c"."CompletedAt", "c"."Score", "c"."StartedAt", "c"."UserChallengeId", "u"."UserChallengeId", "u"."ChallengeId", "u"."Completed", "u"."Score", "u"."UserId", "u0"."UserId", "u0"."Email", "u0"."IsAdmin", "u0"."PasswordHash", "u0"."Username"
+FROM "ChallengeAttempts" AS "c"
+INNER JOIN "UserChallenges" AS "u" ON "c"."UserChallengeId" = "u"."UserChallengeId"
+INNER JOIN "Users" AS "u0" ON "u"."UserId" = "u0"."UserId"
+WHERE "u"."ChallengeId" = @challengeOfTheDay_ChallengeId AND "c"."Completed"
+2026-09-30 16:01:49.868 +02:00 [INF] Executing ViewResult, running view Index.
+2026-09-30 16:01:49.872 +02:00 [INF] Executed ViewResult - view Index executed in 4.308ms.
+2026-09-30 16:01:49.872 +02:00 [INF] Executed action GamificationPlatform.Controllers.HomeController.Index (GamificationPlatform) in 16.3064ms
+2026-09-30 16:01:49.872 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.HomeController.Index (GamificationPlatform)'
+2026-09-30 16:01:49.873 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/ - 200 null text/html; charset=utf-8 17.4153ms
+2026-09-30 16:01:49.940 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:49.941 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.941 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:49.942 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.942 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:49.943 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.944 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_10.png - null null
+2026-09-30 16:01:49.944 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:49.944 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.2436ms
+2026-09-30 16:01:49.944 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:49.944 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.944 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.944 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 1.8592ms
+2026-09-30 16:01:49.944 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - null null
+2026-09-30 16:01:49.944 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:49.945 +02:00 [INF] The file images/Question_mark_code_10.png was not modified
+2026-09-30 16:01:49.945 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.945 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.945 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 3.677ms
+2026-09-30 16:01:49.945 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_10.png - 304 null image/png 1.2197ms
+2026-09-30 16:01:49.945 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.945 +02:00 [INF] The file images/Question_mark_code_7.png was not modified
+2026-09-30 16:01:49.945 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.945 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - 304 null image/png 1.1058ms
+2026-09-30 16:01:49.947 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:49.948 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.948 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 7.3738ms
+2026-09-30 16:01:49.948 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - null null
+2026-09-30 16:01:49.949 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.949 +02:00 [INF] The file images/Question_mark_code_4.png was not modified
+2026-09-30 16:01:49.950 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.950 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - 304 null image/png 1.8135ms
+2026-09-30 16:01:49.962 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:49.962 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/js/home.js?v=Tt-Pqdqk5PqKT3BF6IMsxu7wxVaIjQSx_pfJpbRhB0c - null null
+2026-09-30 16:01:49.962 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.962 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.964 +02:00 [INF] Sending file. Request path: 'js/home.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\2tq8bqv2zh-{0}-aej6164bp8-aej6164bp8.gz'
+2026-09-30 16:01:49.965 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.965 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/js/home.js?v=Tt-Pqdqk5PqKT3BF6IMsxu7wxVaIjQSx_pfJpbRhB0c - 200 278 text/javascript 2.6323ms
+2026-09-30 16:01:49.965 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:49.965 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:49.965 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 3.5689ms
+2026-09-30 16:01:53.547 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/User/Table - null null
+2026-09-30 16:01:53.548 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:01:53.548 +02:00 [INF] Route matched with {action = "Table", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Table() on controller GamificationPlatform.Controllers.UserController (GamificationPlatform).
+2026-09-30 16:01:53.549 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username", "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Users" AS "u"
+LEFT JOIN "Challenges" AS "c" ON "u"."UserId" = "c"."CreatedByUserId"
+ORDER BY "u"."UserId"
+2026-09-30 16:01:53.552 +02:00 [INF] Executing ViewResult, running view Table.
+2026-09-30 16:01:53.561 +02:00 [INF] Executed ViewResult - view Table executed in 8.6463ms.
+2026-09-30 16:01:53.561 +02:00 [INF] Executed action GamificationPlatform.Controllers.UserController.Table (GamificationPlatform) in 13.0437ms
+2026-09-30 16:01:53.561 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:01:53.561 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/User/Table - 200 null text/html; charset=utf-8 14.4244ms
+2026-09-30 16:01:53.626 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:53.626 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:53.626 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.627 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1889ms
+2026-09-30 16:01:53.627 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:53.627 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:53.627 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.628 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.628 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:53.628 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.631 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:53.632 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.632 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 4.7325ms
+2026-09-30 16:01:53.634 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:53.634 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:53.634 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.634 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.634 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 6.5805ms
+2026-09-30 16:01:53.634 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 7.6179ms
+2026-09-30 16:01:53.635 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:53.635 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:53.635 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 9.1672ms
+2026-09-30 16:01:55.073 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Question/Table - null null
+2026-09-30 16:01:55.074 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform)'
+2026-09-30 16:01:55.074 +02:00 [INF] Route matched with {action = "Table", controller = "Question"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Table() on controller GamificationPlatform.Controllers.QuestionController (GamificationPlatform).
+2026-09-30 16:01:55.076 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Questions" AS "q"
+2026-09-30 16:01:55.078 +02:00 [INF] Executing ViewResult, running view Table.
+2026-09-30 16:01:55.082 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.084 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:55.085 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.087 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:55.089 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.092 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:55.093 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.094 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:55.096 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.098 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:01:55.100 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.101 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.103 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @p
+LIMIT 1
+2026-09-30 16:01:55.105 +02:00 [INF] Executed ViewResult - view Table executed in 27.1267ms.
+2026-09-30 16:01:55.105 +02:00 [INF] Executed action GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform) in 30.4784ms
+2026-09-30 16:01:55.105 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.QuestionController.Table (GamificationPlatform)'
+2026-09-30 16:01:55.105 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Question/Table - 200 null text/html; charset=utf-8 31.7543ms
+2026-09-30 16:01:55.164 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:55.165 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:55.165 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.165 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.165 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:55.166 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.166 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:55.166 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.2562ms
+2026-09-30 16:01:55.166 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:55.167 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:55.167 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.167 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 1.3901ms
+2026-09-30 16:01:55.167 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.169 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:55.169 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.169 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 4.7605ms
+2026-09-30 16:01:55.170 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:55.170 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.170 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 6.2267ms
+2026-09-30 16:01:55.172 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:55.172 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:55.172 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.8224ms
+2026-09-30 16:01:58.223 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Create - null null
+2026-09-30 16:01:58.224 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:01:58.224 +02:00 [INF] Route matched with {action = "Create", controller = "Challenge"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:58.225 +02:00 [INF] Executing ViewResult, running view Create.
+2026-09-30 16:01:58.226 +02:00 [INF] Executed ViewResult - view Create executed in 1.6154ms.
+2026-09-30 16:01:58.227 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform) in 2.3818ms
+2026-09-30 16:01:58.227 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:01:58.227 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Create - 200 null text/html; charset=utf-8 3.9151ms
+2026-09-30 16:01:58.284 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:58.284 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:58.284 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1797ms
+2026-09-30 16:01:58.284 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.284 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:58.285 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:58.285 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.285 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.286 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:58.286 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.286 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.084ms
+2026-09-30 16:01:58.289 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:58.290 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.290 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:58.290 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.290 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 5.1585ms
+2026-09-30 16:01:58.292 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:58.292 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.293 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 8.93ms
+2026-09-30 16:01:58.293 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:58.293 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:58.293 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 3.8494ms
+2026-09-30 16:01:59.336 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - null null
+2026-09-30 16:01:59.338 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:01:59.339 +02:00 [INF] Route matched with {action = "MyChallenges", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MyChallenges() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:01:59.341 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@userId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."CreatedByUserId" = @userId
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:01:59.342 +02:00 [INF] Executing ViewResult, running view MyChallenges.
+2026-09-30 16:01:59.346 +02:00 [INF] Executed ViewResult - view MyChallenges executed in 3.8493ms.
+2026-09-30 16:01:59.346 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform) in 6.8132ms
+2026-09-30 16:01:59.346 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:01:59.346 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - 200 null text/html; charset=utf-8 10.4305ms
+2026-09-30 16:01:59.406 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:01:59.406 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.407 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:01:59.407 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:01:59.407 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.2495ms
+2026-09-30 16:01:59.408 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:01:59.408 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.409 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.411 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:01:59.413 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:01:59.413 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.413 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 5.4143ms
+2026-09-30 16:01:59.413 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.414 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - null null
+2026-09-30 16:01:59.415 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.415 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:01:59.415 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.415 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 7.9156ms
+2026-09-30 16:01:59.416 +02:00 [INF] Sending file. Request path: 'js/myChallenges.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\ag4d5swz6x-{0}-of0sk59aul-of0sk59aul.gz'
+2026-09-30 16:01:59.416 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.416 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - 200 390 text/javascript 2.0066ms
+2026-09-30 16:01:59.416 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:01:59.416 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.416 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 10.8592ms
+2026-09-30 16:01:59.417 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:01:59.417 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:01:59.417 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.9977ms
+2026-09-30 16:02:00.216 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Create - null null
+2026-09-30 16:02:00.216 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:02:00.216 +02:00 [INF] Route matched with {action = "Create", controller = "Challenge"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:02:00.217 +02:00 [INF] Executing ViewResult, running view Create.
+2026-09-30 16:02:00.220 +02:00 [INF] Executed ViewResult - view Create executed in 2.9546ms.
+2026-09-30 16:02:00.220 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform) in 3.7854ms
+2026-09-30 16:02:00.220 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Create (GamificationPlatform)'
+2026-09-30 16:02:00.221 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Create - 200 null text/html; charset=utf-8 5.0154ms
+2026-09-30 16:02:00.278 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:02:00.279 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.280 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:02:00.280 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1881ms
+2026-09-30 16:02:00.281 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:02:00.282 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.282 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:02:00.282 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.283 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:02:00.283 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.283 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:02:00.283 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.5174ms
+2026-09-30 16:02:00.284 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.285 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:02:00.286 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.286 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 7.9034ms
+2026-09-30 16:02:00.287 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:02:00.287 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.287 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 5.5024ms
+2026-09-30 16:02:00.289 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:02:00.289 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.289 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.7279ms
+2026-09-30 16:02:00.689 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/User/Table - null null
+2026-09-30 16:02:00.690 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:02:00.690 +02:00 [INF] Route matched with {action = "Table", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Table() on controller GamificationPlatform.Controllers.UserController (GamificationPlatform).
+2026-09-30 16:02:00.691 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username", "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Users" AS "u"
+LEFT JOIN "Challenges" AS "c" ON "u"."UserId" = "c"."CreatedByUserId"
+ORDER BY "u"."UserId"
+2026-09-30 16:02:00.693 +02:00 [INF] Executing ViewResult, running view Table.
+2026-09-30 16:02:00.695 +02:00 [INF] Executed ViewResult - view Table executed in 1.8626ms.
+2026-09-30 16:02:00.695 +02:00 [INF] Executed action GamificationPlatform.Controllers.UserController.Table (GamificationPlatform) in 4.7925ms
+2026-09-30 16:02:00.695 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.UserController.Table (GamificationPlatform)'
+2026-09-30 16:02:00.695 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/User/Table - 200 null text/html; charset=utf-8 6.2782ms
+2026-09-30 16:02:00.761 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:02:00.761 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:02:00.762 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.1208ms
+2026-09-30 16:02:00.762 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:02:00.762 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:02:00.762 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.762 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.764 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:02:00.764 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.765 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.765 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.8332ms
+2026-09-30 16:02:00.765 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:02:00.765 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.766 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:02:00.798 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.798 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 35.9983ms
+2026-09-30 16:02:00.801 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:02:00.801 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.802 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 36.5203ms
+2026-09-30 16:02:00.807 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:02:00.807 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:00.807 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 45.6285ms
+2026-09-30 16:02:03.935 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Grid - null null
+2026-09-30 16:02:03.936 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform)'
+2026-09-30 16:02:03.936 +02:00 [INF] Route matched with {action = "Grid", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Grid() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:02:03.938 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."IsPublished"
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:02:03.943 +02:00 [INF] Executing ViewResult, running view Grid.
+2026-09-30 16:02:03.947 +02:00 [INF] Executed ViewResult - view Grid executed in 4.6215ms.
+2026-09-30 16:02:03.948 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform) in 11.1786ms
+2026-09-30 16:02:03.948 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Grid (GamificationPlatform)'
+2026-09-30 16:02:03.948 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Grid - 200 null text/html; charset=utf-8 12.6266ms
+2026-09-30 16:02:04.012 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:02:04.013 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.014 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:02:04.014 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:02:04.015 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.015 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.015 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_2.png - null null
+2026-09-30 16:02:04.015 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_3.png - null null
+2026-09-30 16:02:04.015 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.016 +02:00 [INF] The file images/Question_mark_code_2.png was not modified
+2026-09-30 16:02:04.016 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.016 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_2.png - 304 null image/png 1.2133ms
+2026-09-30 16:02:04.016 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.017 +02:00 [INF] The file images/Question_mark_code_3.png was not modified
+2026-09-30 16:02:04.017 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.017 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_3.png - 304 null image/png 1.8995ms
+2026-09-30 16:02:04.018 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:02:04.018 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.018 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 4.0269ms
+2026-09-30 16:02:04.018 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:02:04.018 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.019 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 4.6728ms
+2026-09-30 16:02:04.020 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - null null
+2026-09-30 16:02:04.020 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:02:04.021 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.3815ms
+2026-09-30 16:02:04.022 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.022 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:02:04.022 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.022 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 10.0627ms
+2026-09-30 16:02:04.022 +02:00 [INF] The file images/Question_mark_code_4.png was not modified
+2026-09-30 16:02:04.022 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.023 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - 304 null image/png 2.1654ms
+2026-09-30 16:02:04.036 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_5.png - null null
+2026-09-30 16:02:04.036 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_6.png - null null
+2026-09-30 16:02:04.037 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.037 +02:00 [INF] The file images/Question_mark_code_6.png was not modified
+2026-09-30 16:02:04.037 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.037 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.037 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_6.png - 304 null image/png 1.049ms
+2026-09-30 16:02:04.038 +02:00 [INF] The file images/Question_mark_code_5.png was not modified
+2026-09-30 16:02:04.038 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.038 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_5.png - 304 null image/png 2.1069ms
+2026-09-30 16:02:04.050 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:02:04.051 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.056 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:02:04.056 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.056 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.9213ms
+2026-09-30 16:02:04.075 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - null null
+2026-09-30 16:02:04.075 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_11.png - null null
+2026-09-30 16:02:04.076 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.077 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.077 +02:00 [INF] The file images/Question_mark_code_7.png was not modified
+2026-09-30 16:02:04.078 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.080 +02:00 [INF] The file images/Question_mark_code_11.png was not modified
+2026-09-30 16:02:04.083 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - 304 null image/png 7.9345ms
+2026-09-30 16:02:04.090 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:04.090 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_11.png - 304 null image/png 14.6155ms
+2026-09-30 16:02:06.154 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - null null
+2026-09-30 16:02:06.155 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:02:06.155 +02:00 [INF] Route matched with {action = "MyChallenges", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MyChallenges() on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:02:06.156 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@userId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."CreatedByUserId" = @userId
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:02:06.157 +02:00 [INF] Executing ViewResult, running view MyChallenges.
+2026-09-30 16:02:06.159 +02:00 [INF] Executed ViewResult - view MyChallenges executed in 1.6325ms.
+2026-09-30 16:02:06.159 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform) in 3.8891ms
+2026-09-30 16:02:06.159 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.MyChallenges (GamificationPlatform)'
+2026-09-30 16:02:06.159 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/MyChallenges - 200 null text/html; charset=utf-8 5.2495ms
+2026-09-30 16:02:06.230 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:02:06.230 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:02:06.230 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.2626ms
+2026-09-30 16:02:06.230 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:02:06.231 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.231 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.231 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:02:06.233 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.235 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:02:06.236 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:02:06.236 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.236 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.236 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - null null
+2026-09-30 16:02:06.236 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 5.762ms
+2026-09-30 16:02:06.237 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.237 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:02:06.237 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.237 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:02:06.237 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 7.6553ms
+2026-09-30 16:02:06.237 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.238 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 6.3858ms
+2026-09-30 16:02:06.238 +02:00 [INF] Sending file. Request path: 'js/myChallenges.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\ag4d5swz6x-{0}-of0sk59aul-of0sk59aul.gz'
+2026-09-30 16:02:06.238 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.238 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/js/myChallenges.js - 200 390 text/javascript 2.0401ms
+2026-09-30 16:02:06.240 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:02:06.240 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:06.241 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 5.4934ms
+2026-09-30 16:02:08.012 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Challenge/Details/9 - null null
+2026-09-30 16:02:08.013 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.ChallengeController.Details (GamificationPlatform)'
+2026-09-30 16:02:08.013 +02:00 [INF] Route matched with {action = "Details", controller = "Challenge"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Details(Int32) on controller GamificationPlatform.Controllers.ChallengeController (GamificationPlatform).
+2026-09-30 16:02:08.016 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@id='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c0"."ChallengeId", "c0"."CreatedByUserId", "c0"."Description", "c0"."ImageUrl", "c0"."IsPublished", "c0"."MaxPoints", "c0"."TimeLimitMinutes", "c0"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM (
+    SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+    FROM "Challenges" AS "c"
+    WHERE "c"."ChallengeId" = @id
+    LIMIT 1
+) AS "c0"
+LEFT JOIN "Questions" AS "q" ON "c0"."ChallengeId" = "q"."ChallengeId"
+ORDER BY "c0"."ChallengeId"
+2026-09-30 16:02:08.018 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@userId='?' (DbType = Int32), @_8__locals1_id='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeAttemptId", "c"."Completed", "c"."CompletedAt", "c"."Score", "c"."StartedAt", "c"."UserChallengeId"
+FROM "ChallengeAttempts" AS "c"
+INNER JOIN "UserChallenges" AS "u" ON "c"."UserChallengeId" = "u"."UserChallengeId"
+WHERE "u"."UserId" = @userId AND "u"."ChallengeId" = @_8__locals1_id AND "c"."Completed"
+ORDER BY "c"."CompletedAt" DESC
+2026-09-30 16:02:08.018 +02:00 [INF] Executing ViewResult, running view Details.
+2026-09-30 16:02:08.024 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "u"."UserId", "u"."Email", "u"."IsAdmin", "u"."PasswordHash", "u"."Username"
+FROM "Users" AS "u"
+WHERE "u"."UserId" = @p
+LIMIT 1
+2026-09-30 16:02:08.026 +02:00 [INF] Executed ViewResult - view Details executed in 7.6244ms.
+2026-09-30 16:02:08.026 +02:00 [INF] Executed action GamificationPlatform.Controllers.ChallengeController.Details (GamificationPlatform) in 12.4472ms
+2026-09-30 16:02:08.026 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.ChallengeController.Details (GamificationPlatform)'
+2026-09-30 16:02:08.026 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Challenge/Details/9 - 200 null text/html; charset=utf-8 14.035ms
+2026-09-30 16:02:08.087 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:02:08.089 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:02:08.090 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.090 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.090 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:02:08.091 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:02:08.091 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.3785ms
+2026-09-30 16:02:08.091 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_9.png - null null
+2026-09-30 16:02:08.091 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.091 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.092 +02:00 [INF] The file images/Question_mark_code_9.png was not modified
+2026-09-30 16:02:08.092 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.092 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_9.png - 304 null image/png 0.9502ms
+2026-09-30 16:02:08.093 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:02:08.093 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:02:08.093 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.093 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.5782ms
+2026-09-30 16:02:08.093 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.095 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:02:08.095 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.095 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:02:08.095 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 5.9976ms
+2026-09-30 16:02:08.095 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.096 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 8.0377ms
+2026-09-30 16:02:08.097 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:02:08.097 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.097 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 4.3573ms
+2026-09-30 16:02:08.101 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/js/challengeDetails.js - null null
+2026-09-30 16:02:08.102 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.103 +02:00 [INF] Sending file. Request path: 'js/challengeDetails.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\ad2jgxepyl-{0}-gzis5h7n38-gzis5h7n38.gz'
+2026-09-30 16:02:08.103 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:08.104 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/js/challengeDetails.js - 200 398 text/javascript 2.2252ms
+2026-09-30 16:02:09.522 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/Question/Create?challengeId=9 - null null
+2026-09-30 16:02:09.523 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.QuestionController.Create (GamificationPlatform)'
+2026-09-30 16:02:09.523 +02:00 [INF] Route matched with {action = "Create", controller = "Question"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create(System.Nullable`1[System.Int32]) on controller GamificationPlatform.Controllers.QuestionController (GamificationPlatform).
+2026-09-30 16:02:09.526 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+2026-09-30 16:02:09.527 +02:00 [INF] Executing ViewResult, running view Create.
+2026-09-30 16:02:09.539 +02:00 [INF] Executed ViewResult - view Create executed in 12.1691ms.
+2026-09-30 16:02:09.539 +02:00 [INF] Executed action GamificationPlatform.Controllers.QuestionController.Create (GamificationPlatform) in 15.7087ms
+2026-09-30 16:02:09.539 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.QuestionController.Create (GamificationPlatform)'
+2026-09-30 16:02:09.540 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/Question/Create?challengeId=9 - 200 null text/html; charset=utf-8 17.481ms
+2026-09-30 16:02:09.601 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:02:09.602 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.602 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:02:09.602 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.3212ms
+2026-09-30 16:02:09.603 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:02:09.603 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:02:09.603 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.603 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.604 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:02:09.605 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.605 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:02:09.605 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.605 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.1402ms
+2026-09-30 16:02:09.606 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:02:09.606 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.606 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 3.4902ms
+2026-09-30 16:02:09.609 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:02:09.609 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.609 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 8.0944ms
+2026-09-30 16:02:09.610 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:02:09.610 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:09.611 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 6.7761ms
+2026-09-30 16:02:11.503 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5087/Question/Create - application/x-www-form-urlencoded 431
+2026-09-30 16:02:11.504 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.QuestionController.Create (GamificationPlatform)'
+2026-09-30 16:02:11.504 +02:00 [INF] Route matched with {action = "Create", controller = "Question"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Create(GamificationPlatform.ViewModels.CreateQuestionViewModel) on controller GamificationPlatform.Controllers.QuestionController (GamificationPlatform).
+2026-09-30 16:02:11.506 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@model_Question_ChallengeId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+WHERE "c"."ChallengeId" = @model_Question_ChallengeId
+LIMIT 1
+2026-09-30 16:02:11.507 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title"
+FROM "Challenges" AS "c"
+2026-09-30 16:02:11.508 +02:00 [INF] Executing ViewResult, running view Create.
+2026-09-30 16:02:11.522 +02:00 [INF] Executed ViewResult - view Create executed in 14.0043ms.
+2026-09-30 16:02:11.522 +02:00 [INF] Executed action GamificationPlatform.Controllers.QuestionController.Create (GamificationPlatform) in 17.6083ms
+2026-09-30 16:02:11.522 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.QuestionController.Create (GamificationPlatform)'
+2026-09-30 16:02:11.522 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5087/Question/Create - 200 null text/html; charset=utf-8 19.314ms
+2026-09-30 16:02:11.582 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:02:11.583 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.587 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:02:11.587 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.588 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 5.4942ms
+2026-09-30 16:02:11.591 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:02:11.591 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:02:11.591 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:02:11.592 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.2345ms
+2026-09-30 16:02:11.592 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.592 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.593 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:02:11.593 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.593 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.419ms
+2026-09-30 16:02:11.594 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:02:11.595 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.596 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:02:11.596 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.596 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 5.2312ms
+2026-09-30 16:02:11.598 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:02:11.598 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:02:11.601 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 4.5797ms
+2026-09-30 16:03:55.515 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/ - null null
+2026-09-30 16:03:55.516 +02:00 [INF] Executing endpoint 'GamificationPlatform.Controllers.HomeController.Index (GamificationPlatform)'
+2026-09-30 16:03:55.516 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller GamificationPlatform.Controllers.HomeController (GamificationPlatform).
+2026-09-30 16:03:55.518 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeId", "c"."CreatedByUserId", "c"."Description", "c"."ImageUrl", "c"."IsPublished", "c"."MaxPoints", "c"."TimeLimitMinutes", "c"."Title", "q"."QuestionId", "q"."ChallengeId", "q"."Description", "q"."ImageUrl", "q"."Points", "q"."Title"
+FROM "Challenges" AS "c"
+LEFT JOIN "Questions" AS "q" ON "c"."ChallengeId" = "q"."ChallengeId"
+WHERE "c"."IsPublished"
+ORDER BY "c"."ChallengeId"
+2026-09-30 16:03:55.521 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@challengeOfTheDay_ChallengeId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT "c"."ChallengeAttemptId", "c"."Completed", "c"."CompletedAt", "c"."Score", "c"."StartedAt", "c"."UserChallengeId", "u"."UserChallengeId", "u"."ChallengeId", "u"."Completed", "u"."Score", "u"."UserId", "u0"."UserId", "u0"."Email", "u0"."IsAdmin", "u0"."PasswordHash", "u0"."Username"
+FROM "ChallengeAttempts" AS "c"
+INNER JOIN "UserChallenges" AS "u" ON "c"."UserChallengeId" = "u"."UserChallengeId"
+INNER JOIN "Users" AS "u0" ON "u"."UserId" = "u0"."UserId"
+WHERE "u"."ChallengeId" = @challengeOfTheDay_ChallengeId AND "c"."Completed"
+2026-09-30 16:03:55.526 +02:00 [INF] Executing ViewResult, running view Index.
+2026-09-30 16:03:55.530 +02:00 [INF] Executed ViewResult - view Index executed in 4.0174ms.
+2026-09-30 16:03:55.530 +02:00 [INF] Executed action GamificationPlatform.Controllers.HomeController.Index (GamificationPlatform) in 13.6674ms
+2026-09-30 16:03:55.530 +02:00 [INF] Executed endpoint 'GamificationPlatform.Controllers.HomeController.Index (GamificationPlatform)'
+2026-09-30 16:03:55.530 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/ - 200 null text/html; charset=utf-8 15.3501ms
+2026-09-30 16:03:55.602 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - null null
+2026-09-30 16:03:55.603 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.604 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - null null
+2026-09-30 16:03:55.605 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.606 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - null null
+2026-09-30 16:03:55.606 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.608 +02:00 [INF] Sending file. Request path: 'css/site.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vlykgdm0lo-{0}-w72eow95zo-w72eow95zo.gz'
+2026-09-30 16:03:55.608 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.608 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/css/site.css?v=RJWIvu8a437y8wz9uTxrsM1e-RlB0ynOh6LBiHVpbRU - 200 2334 text/css 2.6997ms
+2026-09-30 16:03:55.609 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-30 16:03:55.610 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/_framework/aspnetcore-browser-refresh.js - 200 14901 application/javascript; charset=utf-8 0.5687ms
+2026-09-30 16:03:55.614 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_10.png - null null
+2026-09-30 16:03:55.615 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.615 +02:00 [INF] Sending file. Request path: 'lib/jquery/dist/jquery.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\1kvrqlopgj-{0}-o1o13a6vjx-o1o13a6vjx.gz'
+2026-09-30 16:03:55.615 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\lrpbyji945-{0}-46ein0sx1k-46ein0sx1k.gz'
+2026-09-30 16:03:55.616 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.616 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.616 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/css/bootstrap.min.css - 200 232871 text/css 13.5243ms
+2026-09-30 16:03:55.616 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/jquery/dist/jquery.min.js - 200 87576 text/javascript 12.2129ms
+2026-09-30 16:03:55.616 +02:00 [INF] The file images/Question_mark_code_10.png was not modified
+2026-09-30 16:03:55.616 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.616 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_10.png - 304 null image/png 1.9619ms
+2026-09-30 16:03:55.617 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - null null
+2026-09-30 16:03:55.617 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - null null
+2026-09-30 16:03:55.617 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.618 +02:00 [INF] The file images/Question_mark_code_4.png was not modified
+2026-09-30 16:03:55.618 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.618 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.618 +02:00 [INF] The file images/Question_mark_code_7.png was not modified
+2026-09-30 16:03:55.618 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.618 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_4.png - 304 null image/png 1.7611ms
+2026-09-30 16:03:55.619 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/images/Question_mark_code_7.png - 304 null image/png 2.101ms
+2026-09-30 16:03:55.630 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - null null
+2026-09-30 16:03:55.631 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.634 +02:00 [INF] Sending file. Request path: 'lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\vgnf0fayfb-{0}-493y06b0oq-493y06b0oq.gz'
+2026-09-30 16:03:55.634 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.634 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/lib/bootstrap/dist/js/bootstrap.bundle.min.js - 200 80764 text/javascript 3.3725ms
+2026-09-30 16:03:55.635 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5087/js/home.js?v=Tt-Pqdqk5PqKT3BF6IMsxu7wxVaIjQSx_pfJpbRhB0c - null null
+2026-09-30 16:03:55.636 +02:00 [INF] Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.637 +02:00 [INF] Sending file. Request path: 'js/home.js'. Physical path: 'C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\compressed\2tq8bqv2zh-{0}-aej6164bp8-aej6164bp8.gz'
+2026-09-30 16:03:55.637 +02:00 [INF] Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+2026-09-30 16:03:55.637 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5087/js/home.js?v=Tt-Pqdqk5PqKT3BF6IMsxu7wxVaIjQSx_pfJpbRhB0c - 200 278 text/javascript 1.88ms
+2026-09-30 16:09:43.263 +02:00 [INF] Application is shutting down...
