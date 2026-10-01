@@ -1,0 +1,846 @@
+2026-10-01 19:28:54.250 +02:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+PRAGMA journal_mode = 'wal';
+2026-10-01 19:28:54.355 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Users" (
+    "UserId" INTEGER NOT NULL CONSTRAINT "PK_Users" PRIMARY KEY AUTOINCREMENT,
+    "Username" TEXT NOT NULL,
+    "Email" TEXT NOT NULL,
+    "PasswordHash" TEXT NOT NULL,
+    "IsAdmin" INTEGER NOT NULL
+);
+2026-10-01 19:28:54.357 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Challenges" (
+    "ChallengeId" INTEGER NOT NULL CONSTRAINT "PK_Challenges" PRIMARY KEY AUTOINCREMENT,
+    "Title" TEXT NOT NULL,
+    "Description" TEXT NOT NULL,
+    "MaxPoints" INTEGER NOT NULL,
+    "ImageUrl" TEXT NOT NULL,
+    "TimeLimitMinutes" INTEGER NULL,
+    "IsPublished" INTEGER NOT NULL,
+    "CreatedByUserId" INTEGER NOT NULL,
+    CONSTRAINT "FK_Challenges_Users_CreatedByUserId" FOREIGN KEY ("CreatedByUserId") REFERENCES "Users" ("UserId") ON DELETE RESTRICT
+);
+2026-10-01 19:28:54.358 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Questions" (
+    "QuestionId" INTEGER NOT NULL CONSTRAINT "PK_Questions" PRIMARY KEY AUTOINCREMENT,
+    "Title" TEXT NOT NULL,
+    "Description" TEXT NOT NULL,
+    "Points" INTEGER NOT NULL,
+    "ImageUrl" TEXT NULL,
+    "ChallengeId" INTEGER NOT NULL,
+    CONSTRAINT "FK_Questions_Challenges_ChallengeId" FOREIGN KEY ("ChallengeId") REFERENCES "Challenges" ("ChallengeId") ON DELETE CASCADE
+);
+2026-10-01 19:28:54.359 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "UserChallenges" (
+    "UserChallengeId" INTEGER NOT NULL CONSTRAINT "PK_UserChallenges" PRIMARY KEY AUTOINCREMENT,
+    "UserId" INTEGER NOT NULL,
+    "ChallengeId" INTEGER NOT NULL,
+    "Score" INTEGER NOT NULL,
+    "Completed" INTEGER NOT NULL,
+    CONSTRAINT "FK_UserChallenges_Challenges_ChallengeId" FOREIGN KEY ("ChallengeId") REFERENCES "Challenges" ("ChallengeId") ON DELETE CASCADE,
+    CONSTRAINT "FK_UserChallenges_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("UserId") ON DELETE CASCADE
+);
+2026-10-01 19:28:54.362 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "QuestionOptions" (
+    "QuestionOptionId" INTEGER NOT NULL CONSTRAINT "PK_QuestionOptions" PRIMARY KEY AUTOINCREMENT,
+    "Text" TEXT NOT NULL,
+    "IsCorrect" INTEGER NOT NULL,
+    "QuestionId" INTEGER NOT NULL,
+    CONSTRAINT "FK_QuestionOptions_Questions_QuestionId" FOREIGN KEY ("QuestionId") REFERENCES "Questions" ("QuestionId") ON DELETE CASCADE
+);
+2026-10-01 19:28:54.363 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "ChallengeAttempts" (
+    "ChallengeAttemptId" INTEGER NOT NULL CONSTRAINT "PK_ChallengeAttempts" PRIMARY KEY AUTOINCREMENT,
+    "UserChallengeId" INTEGER NOT NULL,
+    "Score" INTEGER NOT NULL,
+    "Completed" INTEGER NOT NULL,
+    "StartedAt" TEXT NOT NULL,
+    "CompletedAt" TEXT NULL,
+    CONSTRAINT "FK_ChallengeAttempts_UserChallenges_UserChallengeId" FOREIGN KEY ("UserChallengeId") REFERENCES "UserChallenges" ("UserChallengeId") ON DELETE CASCADE
+);
+2026-10-01 19:28:54.364 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "AttemptAnswers" (
+    "AttemptAnswerId" INTEGER NOT NULL CONSTRAINT "PK_AttemptAnswers" PRIMARY KEY AUTOINCREMENT,
+    "ChallengeAttemptId" INTEGER NOT NULL,
+    "QuestionId" INTEGER NOT NULL,
+    "SelectedOptionId" INTEGER NULL,
+    CONSTRAINT "FK_AttemptAnswers_ChallengeAttempts_ChallengeAttemptId" FOREIGN KEY ("ChallengeAttemptId") REFERENCES "ChallengeAttempts" ("ChallengeAttemptId") ON DELETE CASCADE,
+    CONSTRAINT "FK_AttemptAnswers_QuestionOptions_SelectedOptionId" FOREIGN KEY ("SelectedOptionId") REFERENCES "QuestionOptions" ("QuestionOptionId"),
+    CONSTRAINT "FK_AttemptAnswers_Questions_QuestionId" FOREIGN KEY ("QuestionId") REFERENCES "Questions" ("QuestionId") ON DELETE CASCADE
+);
+2026-10-01 19:28:54.365 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_AttemptAnswers_ChallengeAttemptId" ON "AttemptAnswers" ("ChallengeAttemptId");
+2026-10-01 19:28:54.366 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_AttemptAnswers_QuestionId" ON "AttemptAnswers" ("QuestionId");
+2026-10-01 19:28:54.367 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_AttemptAnswers_SelectedOptionId" ON "AttemptAnswers" ("SelectedOptionId");
+2026-10-01 19:28:54.369 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_ChallengeAttempts_UserChallengeId" ON "ChallengeAttempts" ("UserChallengeId");
+2026-10-01 19:28:54.370 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Challenges_CreatedByUserId" ON "Challenges" ("CreatedByUserId");
+2026-10-01 19:28:54.371 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_QuestionOptions_QuestionId" ON "QuestionOptions" ("QuestionId");
+2026-10-01 19:28:54.372 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Questions_ChallengeId" ON "Questions" ("ChallengeId");
+2026-10-01 19:28:54.373 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserChallenges_ChallengeId" ON "UserChallenges" ("ChallengeId");
+2026-10-01 19:28:54.374 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_UserChallenges_UserId" ON "UserChallenges" ("UserId");
+2026-10-01 19:28:54.720 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (Size = 17), @p1='?' (DbType = Boolean), @p2='?' (Size = 84), @p3='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Email", "IsAdmin", "PasswordHash", "Username")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserId";
+2026-10-01 19:28:54.732 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (Size = 17), @p1='?' (DbType = Boolean), @p2='?' (Size = 84), @p3='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Email", "IsAdmin", "PasswordHash", "Username")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserId";
+2026-10-01 19:28:54.734 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (Size = 15), @p1='?' (DbType = Boolean), @p2='?' (Size = 84), @p3='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Email", "IsAdmin", "PasswordHash", "Username")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserId";
+2026-10-01 19:28:54.735 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (Size = 19), @p1='?' (DbType = Boolean), @p2='?' (Size = 84), @p3='?' (Size = 7)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Email", "IsAdmin", "PasswordHash", "Username")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserId";
+2026-10-01 19:28:54.737 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (Size = 16), @p1='?' (DbType = Boolean), @p2='?' (Size = 84), @p3='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Email", "IsAdmin", "PasswordHash", "Username")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserId";
+2026-10-01 19:28:54.739 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (Size = 17), @p1='?' (DbType = Boolean), @p2='?' (Size = 84), @p3='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Email", "IsAdmin", "PasswordHash", "Username")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserId";
+2026-10-01 19:28:54.777 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 28), @p2='?' (Size = 32), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 9)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.781 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 38), @p2='?' (Size = 32), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 21)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.782 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 39), @p2='?' (Size = 32), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.784 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?' (Size = 32), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 7)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.785 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 29), @p2='?' (Size = 32), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 13)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.786 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 39), @p2='?' (Size = 32), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 13)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.788 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 33), @p2='?' (Size = 33), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 17)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.789 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 42), @p2='?' (Size = 32), @p3='?' (DbType = Boolean), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (Size = 15)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Challenges" ("CreatedByUserId", "Description", "ImageUrl", "IsPublished", "MaxPoints", "TimeLimitMinutes", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "ChallengeId";
+2026-10-01 19:28:54.806 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 25)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.809 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 39)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.810 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 30)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.812 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 42)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.814 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 37)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.815 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 24)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.817 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 49)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.818 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 24)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.819 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 44)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.821 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 38)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.823 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 36)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.824 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 39)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.825 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 35)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.827 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 58)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.829 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 31)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.830 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 33)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.831 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 38)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.832 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 48)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.834 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 40)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.835 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 24)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.839 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 40)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.840 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 46)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.842 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 48)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.843 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 48)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.845 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (Size = 26), @p2='?', @p3='?' (DbType = Int32), @p4='?' (Size = 55)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Questions" ("ChallengeId", "Description", "ImageUrl", "Points", "Title")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "QuestionId";
+2026-10-01 19:28:54.861 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 26)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.863 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 25)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.865 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 30)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.866 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.868 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.869 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.871 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.872 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.873 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.874 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.876 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 8)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.878 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.880 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 1)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.882 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 1)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.884 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 1)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.885 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 14)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.886 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.887 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.889 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.890 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.891 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.893 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 22)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.894 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 21)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.896 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 21)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.897 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.899 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.901 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 7)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.902 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.903 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.904 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.905 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.907 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.908 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.909 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.910 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.912 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.913 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.915 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.916 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.917 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.919 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.920 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.921 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 26)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.922 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 28)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.923 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 19)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.924 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.926 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.927 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.928 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.930 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.931 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.932 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 16)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.934 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.935 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.936 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 1)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.937 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 1)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.939 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 1)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.940 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 21)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.941 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 19)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.942 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.943 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.945 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.946 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.948 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.949 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 10)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.951 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 8)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.952 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 22)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.953 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 19)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.954 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 14)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.955 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.957 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.958 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.959 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 13)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.960 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 7)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.962 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = Int32), @p2='?' (Size = 19)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "QuestionOptions" ("IsCorrect", "QuestionId", "Text")
+VALUES (@p0, @p1, @p2)
+RETURNING "QuestionOptionId";
+2026-10-01 19:28:54.979 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.982 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.984 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.985 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.987 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.989 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.990 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.992 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.993 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.995 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.997 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:54.998 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.000 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.001 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.003 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.004 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.005 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.006 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.007 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Boolean), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "UserChallenges" ("ChallengeId", "Completed", "Score", "UserId")
+VALUES (@p0, @p1, @p2, @p3)
+RETURNING "UserChallengeId";
+2026-10-01 19:28:55.030 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.033 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.034 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.035 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.036 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.038 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.039 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.040 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.042 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.043 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.045 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.046 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.048 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.049 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.051 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.052 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.053 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.055 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.056 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.057 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.058 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.060 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "ChallengeAttempts" ("Completed", "CompletedAt", "Score", "StartedAt", "UserChallengeId")
+VALUES (@p0, @p1, @p2, @p3, @p4)
+RETURNING "ChallengeAttemptId";
+2026-10-01 19:28:55.081 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.085 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.086 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.088 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.089 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.090 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.091 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.093 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.094 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.095 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.096 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.098 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.099 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.101 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.102 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.103 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.104 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.105 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.107 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.108 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.109 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.110 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.112 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.113 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.114 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.116 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.117 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.118 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.119 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.121 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.122 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.123 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.124 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AttemptAnswers" ("ChallengeAttemptId", "QuestionId", "SelectedOptionId")
+VALUES (@p0, @p1, @p2)
+RETURNING "AttemptAnswerId";
+2026-10-01 19:28:55.191 +02:00 [INF] User profile is available. Using 'C:\Users\Kenne\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-01 19:28:55.268 +02:00 [INF] Now listening on: http://localhost:5087
+2026-10-01 19:28:55.270 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-01 19:28:55.271 +02:00 [INF] Hosting environment: Development
+2026-10-01 19:28:55.271 +02:00 [INF] Content root path: C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform
+2026-10-01 19:29:51.059 +02:00 [INF] Application is shutting down...

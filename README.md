@@ -214,7 +214,7 @@ This is intentional for the current MVP version and ensures that the same test d
 
 ---
 
-## Validation and Error Handling
+## Validation, Error Handling and Logging
 
 The application uses server-side validation for submitted forms.
 
@@ -224,6 +224,8 @@ The application also handles common errors and access restrictions, including:
 - Resources that cannot be found
 - Unauthorized access
 - Forbidden access to resources owned by other users
+
+Server-side logging is implemented using Serilog to log relevant application events and errors.
 
 ---
 
@@ -259,4 +261,8 @@ The current application demonstrates the main concept and core functionality, in
 
 The application is intended to be further developed for the final Exam Group Project.
 
-Test edit from Salman-branch.
+A Data Access Layer (DAL) and the Repository Pattern have not yet been implemented in this MVP version. These will be introduced during further development to improve the separation between the controllers and the data access logic.
+
+Additional functionality and improvements to the existing features are also planned for the Exam Group Project. The current authentication and user management solution may also be further developed, including evaluating the use of ASP.NET Core Identity.
+
+The architecture and existing functionality may therefore be adjusted as the project develops toward the final Exam Group Project.

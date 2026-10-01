@@ -423,3 +423,12 @@ C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\re
 C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\GamificationPlatform.pdb
 C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\GamificationPlatform.genruntimeconfig.cache
 C:\Users\Bruker\Desktop\v2 oblig webap\GamificationPlatform\obj\Debug\net10.0\ref\GamificationPlatform.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.AspNetCore.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.Extensions.Hosting.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.Extensions.Logging.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.Formatting.Compact.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.Settings.Configuration.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.Sinks.Console.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.Sinks.Debug.dll
+C:\Users\Kenne\Dropbox\Oslomet\Dataingeniør 2024\3.år\ITPE 3200 Webapplikasjoner\GamificationPlatform\GamificationPlatform\bin\Debug\net10.0\Serilog.Sinks.File.dll
