@@ -20,14 +20,14 @@ All dummy users use the same password:
 Password123!
 ```
 
-| Username | Email | Role |
-|---|---|---|
-| admin | admin@example.com | Administrator |
-| Alice | alice@example.com | User |
-| Bob | bob@example.com | User |
-| Charlie | charlie@example.com | User |
-| Emma | emma@example.com | User |
-| David | david@example.com | User |
+| Username | Email               | Role          |
+| -------- | ------------------- | ------------- |
+| admin    | admin@example.com   | Administrator |
+| Alice    | alice@example.com   | User          |
+| Bob      | bob@example.com     | User          |
+| Charlie  | charlie@example.com | User          |
+| Emma     | emma@example.com    | User          |
+| David    | david@example.com   | User          |
 
 ### Testing as a User
 
@@ -258,3 +258,5 @@ This is the Basic Project / MVP version of the application.
 The current application demonstrates the main concept and core functionality, including creating and managing challenges, completing quizzes, calculating scores, storing attempts, displaying history, and displaying leaderboards.
 
 The application is intended to be further developed for the final Exam Group Project.
+
+Test edit from Salman-branch.
