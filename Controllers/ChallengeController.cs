@@ -94,14 +94,35 @@ namespace GamificationPlatform.Controllers
                 await _challengeRepository
                     .GetChallengesByUserIdAsync(userId);
 
-            // Calculates max points from the questions.
+            // Prepares the challenge information
+            // needed by the view.
+            var viewModel =
+                new MyChallengesViewModel();
+
             foreach (var challenge in challenges)
             {
-                challenge.MaxPoints =
-                    challenge.Questions.Sum(q => q.Points);
+                viewModel.Challenges.Add(
+                    new MyChallengeViewModel
+                    {
+                        ChallengeId =
+                            challenge.ChallengeId,
+
+                        Title =
+                            challenge.Title,
+
+                        QuestionCount =
+                            challenge.Questions.Count,
+
+                        MaxPoints =
+                            challenge.Questions
+                                .Sum(q => q.Points),
+
+                        IsPublished =
+                            challenge.IsPublished
+                    });
             }
 
-            return View(challenges);
+            return View(viewModel);
         }
 
 

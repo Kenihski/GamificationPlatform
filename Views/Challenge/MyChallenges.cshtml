@@ -1,4 +1,4 @@
-@model IEnumerable<GamificationPlatform.Models.Challenge>
+@model GamificationPlatform.ViewModels.MyChallengesViewModel
 
 @{
     ViewData["Title"] = "My Challenges";
@@ -22,7 +22,7 @@
     </div>
 }
 
-@if (!Model.Any())
+@if (!Model.Challenges.Any())
 {
     <div class="alert alert-info">
         You have not created any challenges yet.
@@ -44,7 +44,7 @@ else
 
         <tbody>
 
-            @foreach (var challenge in Model)
+            @foreach (var challenge in Model.Challenges)
             {
                 <tr>
                     <td>
@@ -52,7 +52,7 @@ else
                     </td>
 
                     <td>
-                        @challenge.Questions.Count
+                        @challenge.QuestionCount
                     </td>
 
                     <td>
