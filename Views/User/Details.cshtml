@@ -182,36 +182,10 @@ else
 }
 else
 {
-    @foreach (var userChallenge in Model.ChallengeHistory)
+    @foreach (var challenge in Model.ChallengeHistory)
     {
-        var attempts =
-            userChallenge.Attempts
-                .Where(a => a.Completed)
-                .OrderByDescending(a => a.CompletedAt)
-                .ToList();
-
-        var chronologicalAttempts =
-            attempts
-                .OrderBy(a => a.CompletedAt)
-                .ToList();
-
-        var latestAttempt =
-            attempts.FirstOrDefault();
-
-        var bestAttempt =
-            attempts
-                .OrderByDescending(a => a.Score)
-                .ThenBy(a =>
-                    (a.CompletedAt ?? a.StartedAt)
-                    - a.StartedAt)
-                .FirstOrDefault();
-
-        var maxPoints =
-            userChallenge.Challenge.Questions
-                .Sum(q => q.Points);
-
         <h5 class="mt-4">
-            @userChallenge.Challenge.Title
+            @challenge.ChallengeTitle
         </h5>
 
         <table class="table table-striped">
@@ -228,109 +202,55 @@ else
 
             <tbody>
 
-                @foreach (var attempt in attempts)
+                @foreach (var attempt in challenge.Attempts)
                 {
-                    // Finds the real attempt number
-                    int attemptNumber =
-                        chronologicalAttempts
-                            .FindIndex(a =>
-                                a.ChallengeAttemptId ==
-                                attempt.ChallengeAttemptId) + 1;
-
-                    // Calculates time used
-                    TimeSpan? timeUsed = null;
-
-                    if (attempt.CompletedAt.HasValue)
-                    {
-                        timeUsed =
-                            attempt.CompletedAt.Value -
-                            attempt.StartedAt;
-                    }
-
-                    bool isBest =
-                        bestAttempt != null &&
-                        attempt.ChallengeAttemptId ==
-                        bestAttempt.ChallengeAttemptId;
-
-                    bool isLatest =
-                        latestAttempt != null &&
-                        attempt.ChallengeAttemptId ==
-                        latestAttempt.ChallengeAttemptId;
-
                     <tr>
-
                         <td>
-
-                            @if (isBest && isLatest)
+                            @if (attempt.IsBest &&
+                                 attempt.IsLatest)
                             {
                                 <strong>
                                     BEST / LATEST
                                 </strong>
                             }
-                            else if (isBest)
+                            else if (attempt.IsBest)
                             {
                                 <strong>
                                     BEST
                                 </strong>
                             }
-                            else if (isLatest)
+                            else if (attempt.IsLatest)
                             {
                                 <strong>
                                     LATEST
                                 </strong>
                             }
-
                         </td>
 
                         <td>
-
                             <a asp-controller="Quiz"
                                asp-action="AttemptDetails"
                                asp-route-id="@attempt.ChallengeAttemptId">
 
-                                Attempt @attemptNumber
+                                Attempt @attempt.AttemptNumber
 
                             </a>
-
                         </td>
 
                         <td>
-
-                            @if (timeUsed.HasValue)
-                            {
-                                if (timeUsed.Value.TotalMinutes >= 1)
-                                {
-                                    <span>
-                                        @Math.Round(
-                                            timeUsed.Value.TotalMinutes) min
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span>
-                                        @Math.Round(
-                                            timeUsed.Value.TotalSeconds) sec
-                                    </span>
-                                }
-                            }
-
+                            @attempt.TimeUsed
                         </td>
 
                         <td>
-
                             <strong>
-                                @attempt.Score / @maxPoints
+                                @attempt.Score /
+                                @challenge.MaxPoints
                             </strong>
-
                         </td>
 
                         <td>
-
-                            @attempt.CompletedAt?.ToString(
-                                "dd.MM.yyyy HH:mm")
-
+                            @attempt.CompletedAt
                         </td>
-
                     </tr>
                 }
 
@@ -345,6 +265,7 @@ else
    class="btn btn-secondary mt-3">
     Back to Users
 </a>
+
 
 @section Scripts
 {

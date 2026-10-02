@@ -53,7 +53,8 @@ namespace GamificationPlatform.Controllers
             foreach (var challenge in user.CreatedChallenges)
             {
                 challenge.MaxPoints =
-                    challenge.Questions.Sum(q => q.Points);
+                    challenge.Questions
+                        .Sum(q => q.Points);
             }
 
             var viewModel =
@@ -62,17 +63,123 @@ namespace GamificationPlatform.Controllers
                     User = user,
 
                     CreatedChallenges =
-                        user.CreatedChallenges,
-
-                    // Only includes challenges
-                    // that the user has completed.
-                    ChallengeHistory =
-                        user.UserChallenges
-                            .Where(uc =>
-                                uc.Attempts.Any(a =>
-                                    a.Completed))
-                            .ToList()
+                        user.CreatedChallenges
                 };
+
+            // Prepares completed challenge history
+            // for the view.
+            foreach (var userChallenge in
+                user.UserChallenges)
+            {
+                var attempts =
+                    userChallenge.Attempts
+                        .Where(a => a.Completed)
+                        .OrderByDescending(a =>
+                            a.CompletedAt)
+                        .ToList();
+
+                if (!attempts.Any())
+                {
+                    continue;
+                }
+
+                var chronologicalAttempts =
+                    attempts
+                        .OrderBy(a => a.CompletedAt)
+                        .ToList();
+
+                var latestAttempt =
+                    attempts.First();
+
+                var bestAttempt =
+                    attempts
+                        .OrderByDescending(a =>
+                            a.Score)
+                        .ThenBy(a =>
+                            (a.CompletedAt ??
+                             a.StartedAt)
+                            - a.StartedAt)
+                        .First();
+
+                int maxPoints =
+                    userChallenge.Challenge
+                        .Questions
+                        .Sum(q => q.Points);
+
+                var challengeHistory =
+                    new UserChallengeHistoryViewModel
+                    {
+                        ChallengeTitle =
+                            userChallenge.Challenge.Title,
+
+                        MaxPoints =
+                            maxPoints
+                    };
+
+                foreach (var attempt in attempts)
+                {
+                    int attemptNumber =
+                        chronologicalAttempts
+                            .FindIndex(a =>
+                                a.ChallengeAttemptId ==
+                                attempt.ChallengeAttemptId)
+                        + 1;
+
+                    string? timeUsed = null;
+
+                    if (attempt.CompletedAt.HasValue)
+                    {
+                        var duration =
+                            attempt.CompletedAt.Value -
+                            attempt.StartedAt;
+
+                        if (duration.TotalMinutes >= 1)
+                        {
+                            timeUsed =
+                                $"{Math.Round(duration.TotalMinutes)} min";
+                        }
+                        else
+                        {
+                            timeUsed =
+                                $"{Math.Round(duration.TotalSeconds)} sec";
+                        }
+                    }
+
+                    challengeHistory.Attempts.Add(
+                        new UserAttemptHistoryViewModel
+                        {
+                            ChallengeAttemptId =
+                                attempt.ChallengeAttemptId,
+
+                            AttemptNumber =
+                                attemptNumber,
+
+                            Score =
+                                attempt.Score,
+
+                            TimeUsed =
+                                timeUsed,
+
+                            CompletedAt =
+                                attempt.CompletedAt?
+                                    .ToString(
+                                        "dd.MM.yyyy HH:mm"),
+
+                            IsBest =
+                                attempt.ChallengeAttemptId ==
+                                bestAttempt
+                                    .ChallengeAttemptId,
+
+                            IsLatest =
+                                attempt.ChallengeAttemptId ==
+                                latestAttempt
+                                    .ChallengeAttemptId
+                        });
+                }
+
+                viewModel.ChallengeHistory.Add(
+                    challengeHistory);
+            }
 
             return View(viewModel);
         }
