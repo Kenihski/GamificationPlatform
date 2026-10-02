@@ -76,7 +76,7 @@ namespace GamificationPlatform.Controllers
             }
 
             var model =
-                new CreateQuestionViewModel
+                new QuestionFormViewModel
                 {
                     Challenges = challenges
                 };
@@ -108,7 +108,7 @@ namespace GamificationPlatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            CreateQuestionViewModel model)
+            QuestionFormViewModel model)
         {
             var userIdString =
                 User.FindFirstValue(
@@ -285,7 +285,7 @@ namespace GamificationPlatform.Controllers
             }
 
             var model =
-                new CreateQuestionViewModel
+                new QuestionFormViewModel
                 {
                     Question = question,
 
@@ -336,7 +336,7 @@ namespace GamificationPlatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(
-            CreateQuestionViewModel model)
+            QuestionFormViewModel model)
         {
             var userIdString =
                 User.FindFirstValue(
