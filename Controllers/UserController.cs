@@ -3,51 +3,45 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
+
+using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
+
 using System.Security.Claims;
 
 namespace GamificationPlatform.Controllers
 {
     public class UserController : Controller
     {
-        private readonly ChallengeDbContext _challengeDbContext;
+        private readonly IUserRepository _userRepository;
 
         public UserController(
-            ChallengeDbContext challengeDbContext)
+            IUserRepository userRepository)
         {
-            _challengeDbContext = challengeDbContext;
+            _userRepository = userRepository;
         }
 
 
-        // Shows all users - admin only
+        // Shows all users - admin only.
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Table()
         {
             List<User> users =
-                await _challengeDbContext.Users
-                    .Include(u => u.CreatedChallenges)
-                    .ToListAsync();
+                await _userRepository
+                    .GetAllUsersAsync();
 
             return View(users);
         }
 
 
-        // Shows details and history for one user - admin only
+        // Shows details and history for one user - admin only.
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int id)
         {
             var user =
-                await _challengeDbContext.Users
-                    .Include(u => u.CreatedChallenges)
-                        .ThenInclude(c => c.Questions)
-                    .Include(u => u.UserChallenges)
-                        .ThenInclude(uc => uc.Challenge)
-                    .Include(u => u.UserChallenges)
-                        .ThenInclude(uc => uc.Attempts)
-                    .FirstOrDefaultAsync(u =>
-                        u.UserId == id);
+                await _userRepository
+                    .GetUserWithDetailsAsync(id);
 
             if (user == null)
             {
@@ -84,7 +78,7 @@ namespace GamificationPlatform.Controllers
         }
 
 
-        // Shows the registration form
+        // Shows the registration form.
         [HttpGet]
         public IActionResult Register(string? returnUrl)
         {
@@ -94,7 +88,7 @@ namespace GamificationPlatform.Controllers
         }
 
 
-        // Creates a new user
+        // Creates a new user.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(
@@ -103,14 +97,15 @@ namespace GamificationPlatform.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User
-                {
-                    Username = model.Username,
-                    Email = model.Email,
+                var user =
+                    new User
+                    {
+                        Username = model.Username,
+                        Email = model.Email,
 
-                    // New users are normal users by default
-                    IsAdmin = false
-                };
+                        // New users are normal users by default.
+                        IsAdmin = false
+                    };
 
                 var passwordHasher =
                     new PasswordHasher<User>();
@@ -120,12 +115,10 @@ namespace GamificationPlatform.Controllers
                         user,
                         model.Password);
 
-                _challengeDbContext.Users.Add(user);
+                await _userRepository
+                    .CreateUserAsync(user);
 
-                await _challengeDbContext
-                    .SaveChangesAsync();
-
-                // Sends the ReturnUrl to the login page
+                // Sends the ReturnUrl to the login page.
                 return RedirectToAction(
                     nameof(Login),
                     new
@@ -140,7 +133,7 @@ namespace GamificationPlatform.Controllers
         }
 
 
-        // Shows the login form
+        // Shows the login form.
         [HttpGet]
         public IActionResult Login(string? returnUrl)
         {
@@ -154,7 +147,7 @@ namespace GamificationPlatform.Controllers
         }
 
 
-        // Logs the user in
+        // Logs the user in.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(
@@ -166,9 +159,9 @@ namespace GamificationPlatform.Controllers
             }
 
             var user =
-                await _challengeDbContext.Users
-                    .FirstOrDefaultAsync(u =>
-                        u.Username == model.Username);
+                await _userRepository
+                    .GetUserByUsernameAsync(
+                        model.Username);
 
             if (user == null)
             {
@@ -201,17 +194,17 @@ namespace GamificationPlatform.Controllers
             var claims =
                 new List<Claim>
                 {
-                    // Stores the user's ID
+                    // Stores the user's ID.
                     new Claim(
                         ClaimTypes.NameIdentifier,
                         user.UserId.ToString()),
 
-                    // Stores the username
+                    // Stores the username.
                     new Claim(
                         ClaimTypes.Name,
                         user.Username),
 
-                    // Stores the user's role
+                    // Stores the user's role.
                     new Claim(
                         ClaimTypes.Role,
                         user.IsAdmin
@@ -235,7 +228,7 @@ namespace GamificationPlatform.Controllers
                 claimsPrincipal);
 
             // Returns the user to the page
-            // they came from
+            // they came from.
             if (!string.IsNullOrEmpty(
                     model.ReturnUrl)
                 && Url.IsLocalUrl(
@@ -245,14 +238,14 @@ namespace GamificationPlatform.Controllers
                     model.ReturnUrl);
             }
 
-            // Normal login from the navbar
+            // Normal login from the navbar.
             return RedirectToAction(
                 "Grid",
                 "Challenge");
         }
 
 
-        // Logs the user out
+        // Logs the user out.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

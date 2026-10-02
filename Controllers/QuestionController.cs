@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
+using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
 
@@ -10,32 +10,38 @@ namespace GamificationPlatform.Controllers
 {
     public class QuestionController : Controller
     {
-        private readonly ChallengeDbContext _challengeDbContext;
-
+        private readonly IQuestionRepository _questionRepository;
+        private readonly IChallengeRepository _challengeRepository;
+        private readonly IAttemptRepository _attemptRepository;
 
         public QuestionController(
-            ChallengeDbContext challengeDbContext)
+            IQuestionRepository questionRepository,
+            IChallengeRepository challengeRepository,
+            IAttemptRepository attemptRepository)
         {
-            _challengeDbContext = challengeDbContext;
+            _questionRepository = questionRepository;
+            _challengeRepository = challengeRepository;
+            _attemptRepository = attemptRepository;
         }
 
 
-        // Shows all questions - admin only
+        // Shows all questions - admin only.
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Table()
         {
             List<Question> questions =
-                await _challengeDbContext.Questions
-                    .ToListAsync();
+                await _questionRepository
+                    .GetAllQuestionsAsync();
 
             return View(questions);
         }
 
 
-        // Shows the Create Question form
+        // Shows the Create Question form.
         [Authorize]
         [HttpGet]
-        public IActionResult Create(int? challengeId)
+        public async Task<IActionResult> Create(
+            int? challengeId)
         {
             var userIdString =
                 User.FindFirstValue(
@@ -52,25 +58,28 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-
-            // Admin can use all challenges.
+            // Admin can use all published challenges.
             // Normal users can only use their own challenges.
-            var challenges =
-                isAdmin
-                    ? _challengeDbContext.Challenges
-                        .ToList()
-                    : _challengeDbContext.Challenges
-                        .Where(c =>
-                            c.CreatedByUserId == userId)
-                        .ToList();
+            List<Challenge> challenges;
 
+            if (isAdmin)
+            {
+                challenges =
+                    await _challengeRepository
+                        .GetAllChallengesAsync();
+            }
+            else
+            {
+                challenges =
+                    await _challengeRepository
+                        .GetChallengesByUserIdAsync(userId);
+            }
 
             var model =
                 new CreateQuestionViewModel
                 {
                     Challenges = challenges
                 };
-
 
             // Automatically selects the challenge
             // if we came from Challenge Details.
@@ -90,16 +99,15 @@ namespace GamificationPlatform.Controllers
                     challengeId.Value;
             }
 
-
             return View(model);
         }
 
 
-        // Creates a new question with answer options
+        // Creates a new question with answer options.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(
+        public async Task<IActionResult> Create(
             CreateQuestionViewModel model)
         {
             var userIdString =
@@ -117,11 +125,9 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-
             var challenge =
-                _challengeDbContext.Challenges
-                    .FirstOrDefault(c =>
-                        c.ChallengeId ==
+                await _challengeRepository
+                    .GetChallengeByIdAsync(
                         model.Question.ChallengeId);
 
             if (challenge == null)
@@ -129,12 +135,10 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-
             // Challenge is a navigation property
             // and is not submitted by the form.
             ModelState.Remove(
                 "Question.Challenge");
-
 
             // Normal users can only add questions
             // to challenges they created.
@@ -143,7 +147,6 @@ namespace GamificationPlatform.Controllers
             {
                 return Forbid();
             }
-
 
             // At least two answer options
             // must be filled in.
@@ -158,7 +161,6 @@ namespace GamificationPlatform.Controllers
                     "You must enter at least two answer options.");
             }
 
-
             // The correct answer must be one
             // of the filled answer options.
             if (model.CorrectOption < 0 ||
@@ -171,18 +173,16 @@ namespace GamificationPlatform.Controllers
                     "You must select a filled answer as the correct answer.");
             }
 
-
             if (ModelState.IsValid)
             {
                 // The challenge content is changing,
                 // so previous attempt history is reset.
-                DeleteChallengeHistory(
-                    model.Question.ChallengeId);
-
+                await _attemptRepository
+                    .DeleteChallengeHistoryAsync(
+                        model.Question.ChallengeId);
 
                 var question =
                     model.Question;
-
 
                 // Add the filled answer options.
                 for (int i = 0;
@@ -195,7 +195,6 @@ namespace GamificationPlatform.Controllers
                     {
                         continue;
                     }
-
 
                     var option =
                         new QuestionOption
@@ -210,23 +209,14 @@ namespace GamificationPlatform.Controllers
                                 question
                         };
 
-
                     question.Options.Add(option);
                 }
 
-
-                _challengeDbContext.Questions.Add(
-                    question);
-
-
-                // History deletion and new question
-                // are saved together.
-                _challengeDbContext.SaveChanges();
-
+                await _questionRepository
+                    .CreateQuestionAsync(question);
 
                 TempData["SuccessMessage"] =
                     "Question created. Previous attempts and scores were reset.";
-
 
                 // Return to the challenge
                 // after creating the question.
@@ -239,26 +229,28 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
-
             // Reload challenges if validation fails.
-            model.Challenges =
-                isAdmin
-                    ? _challengeDbContext.Challenges
-                        .ToList()
-                    : _challengeDbContext.Challenges
-                        .Where(c =>
-                            c.CreatedByUserId == userId)
-                        .ToList();
-
+            if (isAdmin)
+            {
+                model.Challenges =
+                    await _challengeRepository
+                        .GetAllChallengesAsync();
+            }
+            else
+            {
+                model.Challenges =
+                    await _challengeRepository
+                        .GetChallengesByUserIdAsync(userId);
+            }
 
             return View(model);
         }
 
 
-        // Shows the Update Question form
+        // Shows the Update Question form.
         [Authorize]
         [HttpGet]
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
             var userIdString =
                 User.FindFirstValue(
@@ -275,20 +267,14 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-
             var question =
-                _challengeDbContext.Questions
-                    .Include(q => q.Options)
-                    .Include(q => q.Challenge)
-                    .FirstOrDefault(q =>
-                        q.QuestionId == id);
-
+                await _questionRepository
+                    .GetQuestionWithOptionsAndChallengeAsync(id);
 
             if (question == null)
             {
                 return NotFound();
             }
-
 
             // Normal users can only edit questions
             // belonging to their own challenges.
@@ -297,7 +283,6 @@ namespace GamificationPlatform.Controllers
             {
                 return Forbid();
             }
-
 
             var model =
                 new CreateQuestionViewModel
@@ -311,13 +296,11 @@ namespace GamificationPlatform.Controllers
                         }
                 };
 
-
             // Get existing answer options.
             model.Options =
                 question.Options
                     .Select(option => option.Text)
                     .ToList();
-
 
             // Find which option is correct
             // before adding empty option fields.
@@ -332,13 +315,11 @@ namespace GamificationPlatform.Controllers
                     .FirstOrDefault(x =>
                         x.option.IsCorrect);
 
-
             if (correctOption != null)
             {
                 model.CorrectOption =
                     correctOption.index;
             }
-
 
             // Always show four option fields.
             while (model.Options.Count < 4)
@@ -346,16 +327,15 @@ namespace GamificationPlatform.Controllers
                 model.Options.Add("");
             }
 
-
             return View(model);
         }
 
 
-        // Updates an existing question
+        // Updates an existing question.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(
+        public async Task<IActionResult> Update(
             CreateQuestionViewModel model)
         {
             var userIdString =
@@ -373,21 +353,15 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-
             var question =
-                _challengeDbContext.Questions
-                    .Include(q => q.Options)
-                    .Include(q => q.Challenge)
-                    .FirstOrDefault(q =>
-                        q.QuestionId ==
+                await _questionRepository
+                    .GetQuestionWithOptionsAndChallengeAsync(
                         model.Question.QuestionId);
-
 
             if (question == null)
             {
                 return NotFound();
             }
-
 
             // Normal users can only edit questions
             // belonging to their own challenges.
@@ -397,12 +371,10 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-
             // Navigation property is not submitted
             // by the form.
             ModelState.Remove(
                 "Question.Challenge");
-
 
             // At least two answer options
             // must be filled in.
@@ -410,14 +382,12 @@ namespace GamificationPlatform.Controllers
                 model.Options.Count(option =>
                     !string.IsNullOrWhiteSpace(option));
 
-
             if (filledOptions < 2)
             {
                 ModelState.AddModelError(
                     "",
                     "You must enter at least two answer options.");
             }
-
 
             // The selected correct answer
             // cannot be an empty option.
@@ -431,14 +401,13 @@ namespace GamificationPlatform.Controllers
                     "You must select a filled answer as the correct answer.");
             }
 
-
             if (ModelState.IsValid)
             {
                 // The challenge content is changing,
                 // so previous attempt history is reset.
-                DeleteChallengeHistory(
-                    question.ChallengeId);
-
+                await _attemptRepository
+                    .DeleteChallengeHistoryAsync(
+                        question.ChallengeId);
 
                 // Update question information.
                 question.Title =
@@ -453,19 +422,12 @@ namespace GamificationPlatform.Controllers
                 question.ImageUrl =
                     model.Question.ImageUrl;
 
-
                 // ChallengeId is deliberately
                 // not changed here.
 
-
-                // Remove the old answer options.
-                _challengeDbContext.QuestionOptions
-                    .RemoveRange(question.Options);
-
+                // Replace the old answer options.
                 question.Options.Clear();
 
-
-                // Add the current answer options.
                 for (int i = 0;
                      i < model.Options.Count;
                      i++)
@@ -476,7 +438,6 @@ namespace GamificationPlatform.Controllers
                     {
                         continue;
                     }
-
 
                     var option =
                         new QuestionOption
@@ -491,19 +452,14 @@ namespace GamificationPlatform.Controllers
                                 question
                         };
 
-
                     question.Options.Add(option);
                 }
 
-
-                // History deletion and question update
-                // are saved together.
-                _challengeDbContext.SaveChanges();
-
+                await _questionRepository
+                    .UpdateQuestionAsync(question);
 
                 TempData["SuccessMessage"] =
                     "Question updated. Previous attempts and scores were reset.";
-
 
                 // Return to the challenge
                 // after updating the question.
@@ -516,12 +472,10 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
-
             // Reload the challenge
             // if validation fails.
             model.Question.ChallengeId =
                 question.ChallengeId;
-
 
             model.Challenges =
                 new List<Challenge>
@@ -529,22 +483,20 @@ namespace GamificationPlatform.Controllers
                     question.Challenge
                 };
 
-
             // Always show four option fields.
             while (model.Options.Count < 4)
             {
                 model.Options.Add("");
             }
 
-
             return View(model);
         }
 
 
-        // Shows the Delete Question confirmation page
+        // Shows the Delete Question confirmation page.
         [Authorize]
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var userIdString =
                 User.FindFirstValue(
@@ -561,20 +513,14 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-
             var question =
-                _challengeDbContext.Questions
-                    .Include(q => q.Options)
-                    .Include(q => q.Challenge)
-                    .FirstOrDefault(q =>
-                        q.QuestionId == id);
-
+                await _questionRepository
+                    .GetQuestionWithOptionsAndChallengeAsync(id);
 
             if (question == null)
             {
                 return NotFound();
             }
-
 
             // Normal users can only delete questions
             // belonging to their own challenges.
@@ -583,17 +529,17 @@ namespace GamificationPlatform.Controllers
             {
                 return Forbid();
             }
-
 
             return View(question);
         }
 
 
-        // Deletes the question
+        // Deletes the question.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(
+            int id)
         {
             var userIdString =
                 User.FindFirstValue(
@@ -610,20 +556,14 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-
             var question =
-                _challengeDbContext.Questions
-                    .Include(q => q.Options)
-                    .Include(q => q.Challenge)
-                    .FirstOrDefault(q =>
-                        q.QuestionId == id);
-
+                await _questionRepository
+                    .GetQuestionWithOptionsAndChallengeAsync(id);
 
             if (question == null)
             {
                 return NotFound();
             }
-
 
             // Normal users can only delete questions
             // belonging to their own challenges.
@@ -633,36 +573,20 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-
             int challengeId =
                 question.ChallengeId;
 
-
             // The challenge content is changing,
             // so previous attempt history is reset.
-            DeleteChallengeHistory(
-                challengeId);
+            await _attemptRepository
+                .DeleteChallengeHistoryAsync(
+                    challengeId);
 
-
-            // Delete the answer options
-            // belonging to the question.
-            _challengeDbContext.QuestionOptions
-                .RemoveRange(question.Options);
-
-
-            // Delete the question.
-            _challengeDbContext.Questions.Remove(
-                question);
-
-
-            // History deletion and question deletion
-            // are saved together.
-            _challengeDbContext.SaveChanges();
-
+            await _questionRepository
+                .DeleteQuestionAsync(question);
 
             TempData["SuccessMessage"] =
                 "Question deleted. Previous attempts and scores were reset.";
-
 
             // Return to the challenge
             // after deleting the question.
@@ -673,35 +597,6 @@ namespace GamificationPlatform.Controllers
                 {
                     id = challengeId
                 });
-        }
-
-
-        // Deletes all previous attempts and answers
-        // when the content of a challenge changes.
-        private void DeleteChallengeHistory(
-            int challengeId)
-        {
-            var attempts =
-                _challengeDbContext.ChallengeAttempts
-                    .Include(a => a.Answers)
-                    .Where(a =>
-                        a.UserChallenge.ChallengeId ==
-                        challengeId)
-                    .ToList();
-
-
-            // Delete answers first because they
-            // reference attempts and answer options.
-            foreach (var attempt in attempts)
-            {
-                _challengeDbContext.AttemptAnswers
-                    .RemoveRange(attempt.Answers);
-            }
-
-
-            // Delete the attempts after their answers.
-            _challengeDbContext.ChallengeAttempts
-                .RemoveRange(attempts);
         }
     }
 }

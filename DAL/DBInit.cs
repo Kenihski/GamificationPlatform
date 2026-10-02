@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using GamificationPlatform.Models;
 
-
-namespace GamificationPlatform.Models
+namespace GamificationPlatform.DAL
 {
     public static class DBInit
     {

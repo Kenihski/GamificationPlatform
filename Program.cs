@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using GamificationPlatform.Models;
+using GamificationPlatform.DAL;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +17,7 @@ builder.Host.UseSerilog((context, configuration) =>
         .WriteTo.Console()
         .WriteTo.File(logFileName);
 });
+
 builder.Services.AddControllersWithViews();
 
 // Cookie authentication
@@ -32,6 +33,12 @@ builder.Services.AddDbContext<ChallengeDbContext>(options =>
     options.UseSqlite(
         builder.Configuration["ConnectionStrings:ChallengeDbContextConnection"]);
 });
+
+// Register repositories for dependency injection.
+builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
+builder.Services.AddScoped<IAttemptRepository, AttemptRepository>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 

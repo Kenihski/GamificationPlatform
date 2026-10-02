@@ -1,19 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-using GamificationPlatform.Models;
+using GamificationPlatform.DAL;
 using GamificationPlatform.ViewModels;
 
 namespace GamificationPlatform.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ChallengeDbContext _challengeDbContext;
+        private readonly IChallengeRepository _challengeRepository;
+        private readonly IAttemptRepository _attemptRepository;
 
         public HomeController(
-            ChallengeDbContext challengeDbContext)
+            IChallengeRepository challengeRepository,
+            IAttemptRepository attemptRepository)
         {
-            _challengeDbContext = challengeDbContext;
+            _challengeRepository = challengeRepository;
+            _attemptRepository = attemptRepository;
         }
 
 
@@ -21,11 +23,16 @@ namespace GamificationPlatform.Controllers
         {
             // Gets all published challenges.
             var challenges =
-                await _challengeDbContext.Challenges
-                    .Include(c => c.Questions)
-                    .Where(c => c.IsPublished)
+                await _challengeRepository
+                    .GetPublishedChallengesAsync();
+
+
+            // Keeps the challenge order consistent
+            // for Challenge of the Day.
+            challenges =
+                challenges
                     .OrderBy(c => c.ChallengeId)
-                    .ToListAsync();
+                    .ToList();
 
 
             var viewModel =
@@ -72,14 +79,9 @@ namespace GamificationPlatform.Controllers
             // Gets all completed attempts for
             // Challenge of the Day.
             var attempts =
-                await _challengeDbContext.ChallengeAttempts
-                    .Include(a => a.UserChallenge)
-                        .ThenInclude(uc => uc.User)
-                    .Where(a =>
-                        a.UserChallenge.ChallengeId ==
-                            challengeOfTheDay.ChallengeId &&
-                        a.Completed)
-                    .ToListAsync();
+                await _attemptRepository
+                    .GetCompletedAttemptsForChallengeAsync(
+                        challengeOfTheDay.ChallengeId);
 
 
             // Gets the best attempt from each user.
