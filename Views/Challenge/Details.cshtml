@@ -286,56 +286,24 @@
 
                 @foreach (var attempt in Model.Attempts)
                 {
-                    // Finds the real attempt number
-                    var chronologicalAttempts =
-                        Model.Attempts
-                            .OrderBy(a => a.CompletedAt)
-                            .ToList();
-
-                    int attemptNumber =
-                        chronologicalAttempts
-                            .FindIndex(a =>
-                                a.ChallengeAttemptId ==
-                                attempt.ChallengeAttemptId) + 1;
-
-
-                    // Calculates time used
-                    TimeSpan? timeUsed = null;
-
-                    if (attempt.CompletedAt.HasValue)
-                    {
-                        timeUsed =
-                            attempt.CompletedAt.Value -
-                            attempt.StartedAt;
-                    }
-
-
-                    bool isBest =
-                        attempt.ChallengeAttemptId ==
-                        Model.BestAttemptId;
-
-                    bool isLatest =
-                        attempt.ChallengeAttemptId ==
-                        Model.LatestAttemptId;
-
-
                     <tr>
 
                         <td>
 
-                            @if (isBest && isLatest)
+                            @if (attempt.IsBest &&
+                                 attempt.IsLatest)
                             {
                                 <strong>
                                     BEST / LATEST
                                 </strong>
                             }
-                            else if (isBest)
+                            else if (attempt.IsBest)
                             {
                                 <strong>
                                     BEST
                                 </strong>
                             }
-                            else if (isLatest)
+                            else if (attempt.IsLatest)
                             {
                                 <strong>
                                     LATEST
@@ -351,7 +319,7 @@
                                asp-action="AttemptDetails"
                                asp-route-id="@attempt.ChallengeAttemptId">
 
-                                Attempt @attemptNumber
+                                Attempt @attempt.AttemptNumber
 
                             </a>
 
@@ -359,25 +327,7 @@
 
 
                         <td>
-
-                            @if (timeUsed.HasValue)
-                            {
-                                if (timeUsed.Value.TotalMinutes >= 1)
-                                {
-                                    <span>
-                                        @Math.Round(
-                                            timeUsed.Value.TotalMinutes) min
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span>
-                                        @Math.Round(
-                                            timeUsed.Value.TotalSeconds) sec
-                                    </span>
-                                }
-                            }
-
+                            @attempt.TimeUsed
                         </td>
 
 
@@ -391,10 +341,7 @@
 
 
                         <td>
-
-                            @attempt.CompletedAt?.ToString(
-                                "dd.MM.yyyy HH:mm")
-
+                            @attempt.CompletedAt
                         </td>
 
                     </tr>

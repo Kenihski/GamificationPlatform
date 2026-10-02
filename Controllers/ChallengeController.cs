@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+
 using System.Security.Claims;
 
 using GamificationPlatform.DAL;
@@ -327,41 +328,102 @@ namespace GamificationPlatform.Controllers
                         User.IsInRole("Admin") ||
                         challenge.CreatedByUserId == userId;
 
-                    // Gets the user's completed attempts
-                    // for this challenge.
-                    viewModel.Attempts =
+                    var attempts =
                         await _attemptRepository
                             .GetCompletedAttemptsAsync(
                                 userId,
                                 id);
 
-                    if (viewModel.Attempts.Any())
+                    if (attempts.Any())
                     {
+                        var chronologicalAttempts =
+                            attempts
+                                .OrderBy(a => a.CompletedAt)
+                                .ToList();
+
                         // Gets the latest completed attempt.
-                        viewModel.LatestAttemptId =
-                            viewModel.Attempts
-                                .First()
-                                .ChallengeAttemptId;
+                        var latestAttempt =
+                            attempts.First();
 
                         // Gets the best completed attempt.
-                        viewModel.BestAttemptId =
-                            viewModel.Attempts
+                        var bestAttempt =
+                            attempts
                                 .OrderByDescending(a =>
                                     a.Score)
                                 .ThenByDescending(a =>
                                     a.CompletedAt)
-                                .First()
-                                .ChallengeAttemptId;
+                                .First();
 
                         // Places the best attempt first.
-                        viewModel.Attempts =
-                            viewModel.Attempts
+                        attempts =
+                            attempts
                                 .OrderByDescending(a =>
                                     a.ChallengeAttemptId ==
-                                    viewModel.BestAttemptId)
+                                    bestAttempt.ChallengeAttemptId)
                                 .ThenByDescending(a =>
                                     a.CompletedAt)
                                 .ToList();
+
+                        // Prepares attempt history
+                        // for the view.
+                        foreach (var attempt in attempts)
+                        {
+                            int attemptNumber =
+                                chronologicalAttempts
+                                    .FindIndex(a =>
+                                        a.ChallengeAttemptId ==
+                                        attempt.ChallengeAttemptId)
+                                + 1;
+
+                            string? timeUsed = null;
+
+                            if (attempt.CompletedAt.HasValue)
+                            {
+                                var duration =
+                                    attempt.CompletedAt.Value -
+                                    attempt.StartedAt;
+
+                                if (duration.TotalMinutes >= 1)
+                                {
+                                    timeUsed =
+                                        $"{Math.Round(duration.TotalMinutes)} min";
+                                }
+                                else
+                                {
+                                    timeUsed =
+                                        $"{Math.Round(duration.TotalSeconds)} sec";
+                                }
+                            }
+
+                            viewModel.Attempts.Add(
+                                new ChallengeAttemptHistoryViewModel
+                                {
+                                    ChallengeAttemptId =
+                                        attempt.ChallengeAttemptId,
+
+                                    AttemptNumber =
+                                        attemptNumber,
+
+                                    Score =
+                                        attempt.Score,
+
+                                    TimeUsed =
+                                        timeUsed,
+
+                                    CompletedAt =
+                                        attempt.CompletedAt?
+                                            .ToString(
+                                                "dd.MM.yyyy HH:mm"),
+
+                                    IsBest =
+                                        attempt.ChallengeAttemptId ==
+                                        bestAttempt.ChallengeAttemptId,
+
+                                    IsLatest =
+                                        attempt.ChallengeAttemptId ==
+                                        latestAttempt.ChallengeAttemptId
+                                });
+                        }
                     }
                 }
             }
