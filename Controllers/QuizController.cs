@@ -64,7 +64,114 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            return View(attempt);
+            var challenge =
+                attempt.UserChallenge.Challenge;
+
+            // Prepares the attempt information
+            // needed by the view.
+            var viewModel =
+                new AttemptDetailsViewModel
+                {
+                    ChallengeId =
+                        challenge.ChallengeId,
+
+                    ChallengeTitle =
+                        challenge.Title,
+
+                    Score =
+                        attempt.Score,
+
+                    MaxPoints =
+                        challenge.Questions
+                            .Sum(q => q.Points),
+
+                    CompletedAt =
+                        attempt.CompletedAt?
+                            .ToString("dd.MM.yyyy HH:mm")
+                };
+
+            // Calculates how long the attempt took.
+            if (attempt.CompletedAt.HasValue)
+            {
+                var timeUsed =
+                    attempt.CompletedAt.Value -
+                    attempt.StartedAt;
+
+                if (timeUsed.TotalMinutes >= 1)
+                {
+                    viewModel.TimeUsed =
+                        $"{Math.Round(timeUsed.TotalMinutes)} min";
+                }
+                else
+                {
+                    viewModel.TimeUsed =
+                        $"{Math.Round(timeUsed.TotalSeconds)} sec";
+                }
+            }
+
+            // Prepares the answers for the view.
+            foreach (var answer in attempt.Answers)
+            {
+                var correctOption =
+                    answer.Question.Options
+                        .FirstOrDefault(o =>
+                            o.IsCorrect);
+
+                var selectedOption =
+                    answer.Question.Options
+                        .FirstOrDefault(o =>
+                            o.QuestionOptionId ==
+                            answer.SelectedOptionId);
+
+                var answerViewModel =
+                    new AttemptAnswerViewModel
+                    {
+                        QuestionTitle =
+                            answer.Question.Title,
+
+                        QuestionDescription =
+                            answer.Question.Description,
+
+                        ImageUrl =
+                            answer.Question.ImageUrl,
+
+                        Points =
+                            answer.Question.Points,
+
+                        SelectedOptionId =
+                            answer.SelectedOptionId,
+
+                        IsCorrect =
+                            selectedOption != null &&
+                            selectedOption.IsCorrect,
+
+                        CorrectAnswer =
+                            correctOption?.Text
+                    };
+
+                foreach (var option in
+                    answer.Question.Options)
+                {
+                    answerViewModel.Options.Add(
+                        new AttemptOptionViewModel
+                        {
+                            QuestionOptionId =
+                                option.QuestionOptionId,
+
+                            Text =
+                                option.Text,
+
+                            IsSelected =
+                                option.QuestionOptionId ==
+                                answer.SelectedOptionId
+                        });
+                }
+
+                viewModel.Answers.Add(
+                    answerViewModel);
+            }
+
+            return View(viewModel);
         }
 
 

@@ -1,44 +1,31 @@
-@model GamificationPlatform.Models.ChallengeAttempt
+@model GamificationPlatform.ViewModels.AttemptDetailsViewModel
 
 <h2 class="mb-4">
     Attempt Details
 </h2>
 
 <h4>
-    @Model.UserChallenge.Challenge.Title
+    @Model.ChallengeTitle
 </h4>
 
 <p>
     <strong>Score:</strong>
-    @Model.Score /
-    @Model.UserChallenge.Challenge.Questions.Sum(q => q.Points)
+    @Model.Score / @Model.MaxPoints
 </p>
 
-@if (Model.CompletedAt.HasValue)
+@if (Model.TimeUsed != null)
 {
-    var timeUsed =
-        Model.CompletedAt.Value - Model.StartedAt;
-
     <p>
         <strong>Time:</strong>
-
-        @if (timeUsed.TotalMinutes >= 1)
-        {
-            <span>
-                @Math.Round(timeUsed.TotalMinutes) min
-            </span>
-        }
-        else
-        {
-            <span>
-                @Math.Round(timeUsed.TotalSeconds) sec
-            </span>
-        }
+        @Model.TimeUsed
     </p>
+}
 
+@if (Model.CompletedAt != null)
+{
     <p>
         <strong>Completed:</strong>
-        @Model.CompletedAt.Value.ToString("dd.MM.yyyy HH:mm")
+        @Model.CompletedAt
     </p>
 }
 
@@ -51,17 +38,17 @@
         <div class="card-body">
 
             <h4>
-                @answer.Question.Title
+                @answer.QuestionTitle
             </h4>
 
             <p>
-                @answer.Question.Description
+                @answer.QuestionDescription
             </p>
 
-            @if (!string.IsNullOrEmpty(answer.Question.ImageUrl))
+            @if (!string.IsNullOrEmpty(answer.ImageUrl))
             {
-                <img src="@answer.Question.ImageUrl"
-                     alt="@answer.Question.Title"
+                <img src="@answer.ImageUrl"
+                     alt="@answer.QuestionTitle"
                      style="width: 300px;
                             height: 180px;
                             object-fit: contain;"
@@ -70,18 +57,18 @@
 
             <p>
                 <strong>
-                    @answer.Question.Points points
+                    @answer.Points points
                 </strong>
             </p>
 
-            @foreach (var option in answer.Question.Options)
+            @foreach (var option in answer.Options)
             {
                 <div class="form-check mb-2">
 
                     <input class="form-check-input"
                            type="radio"
                            disabled
-                           checked="@(option.QuestionOptionId == answer.SelectedOptionId)" />
+                           checked="@option.IsSelected" />
 
                     <label class="form-check-label">
                         @option.Text
@@ -92,29 +79,13 @@
 
             <hr />
 
-            @{
-                var selectedOption =
-                    answer.Question.Options
-                        .FirstOrDefault(o =>
-                            o.QuestionOptionId ==
-                            answer.SelectedOptionId);
-
-                var correctOption =
-                    answer.Question.Options
-                        .FirstOrDefault(o => o.IsCorrect);
-
-                bool isCorrect =
-                    selectedOption != null &&
-                    selectedOption.IsCorrect;
-            }
-
             @if (answer.SelectedOptionId == null)
             {
                 <p class="text-danger">
                     <strong>Not answered</strong>
                 </p>
             }
-            else if (isCorrect)
+            else if (answer.IsCorrect)
             {
                 <p class="text-success">
                     <strong>✓ Correct</strong>
@@ -127,11 +98,13 @@
                 </p>
             }
 
-            @if (correctOption != null)
+            @if (answer.CorrectAnswer != null)
             {
                 <p>
                     Correct answer:
-                    <strong>@correctOption.Text</strong>
+                    <strong>
+                        @answer.CorrectAnswer
+                    </strong>
                 </p>
             }
 
@@ -142,7 +115,7 @@
 
 <a asp-controller="Challenge"
    asp-action="Details"
-   asp-route-id="@Model.UserChallenge.ChallengeId"
+   asp-route-id="@Model.ChallengeId"
    class="btn btn-secondary">
     Back to Challenge
 </a>
