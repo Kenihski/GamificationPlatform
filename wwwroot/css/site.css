@@ -11,10 +11,23 @@ body {
     min-height: 100vh;
 }
 
+
 /* Carousel */
 
-#carouselImages .carousel-item {
+.home-carousel {
+    width: 100%;
     height: clamp(240px, 40vh, 400px);
+    max-width: 750px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+#carouselImages,
+#carouselImages .carousel-inner,
+#carouselImages .carousel-item {
+    width: 100%;
+    height: 100%;
 }
 
 #carouselImages .carousel-item img {
@@ -22,6 +35,7 @@ body {
     height: 100%;
     object-fit: cover;
     object-position: center;
+    display: block;
 }
 
 
@@ -55,13 +69,6 @@ body {
     margin-bottom: 10px;
 }
 
-.home-carousel {
-    max-width: 750px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
 .home-feature-card {
     border: none;
     border-radius: 14px;
@@ -91,6 +98,7 @@ body {
     font-weight: bold;
 }
 
+
 /* Challenge of the Day and Leaderboard */
 
 .home-daily-card {
@@ -111,6 +119,7 @@ body {
     font-size: 1.35rem;
     font-weight: 700;
 }
+
 
 /* Makes the entire challenge card feel clickable */
 

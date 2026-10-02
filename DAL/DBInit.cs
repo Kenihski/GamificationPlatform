@@ -110,7 +110,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_2.png",
+                        "/images/Question_2.png",
 
                     TimeLimitMinutes = 10,
 
@@ -131,7 +131,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_3.png",
+                        "/images/Question_3.png",
 
                     TimeLimitMinutes = 20,
 
@@ -152,7 +152,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_4.png",
+                        "/images/Question_4.png",
 
                     TimeLimitMinutes = 30,
 
@@ -173,7 +173,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_5.png",
+                        "/images/Question_5.png",
 
                     TimeLimitMinutes = 20,
 
@@ -194,7 +194,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_6.png",
+                        "/images/Question_6.png",
 
                     TimeLimitMinutes = null,
 
@@ -215,7 +215,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_7.png",
+                        "/images/Question_7.png",
 
                     TimeLimitMinutes = 10,
 
@@ -236,7 +236,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_11.png",
+                        "/images/Question_11.png",
 
                     TimeLimitMinutes = 60,
 
@@ -258,7 +258,7 @@ namespace GamificationPlatform.DAL
                     MaxPoints = 0,
 
                     ImageUrl =
-                        "/images/Question_mark_code_9.png",
+                        "/images/Question_9.png",
 
                     TimeLimitMinutes = 30,
 

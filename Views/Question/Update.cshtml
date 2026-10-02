@@ -92,50 +92,63 @@
         </label>
 
         <select asp-for="Question.ImageUrl"
-                class="form-control">
+                class="form-control"
+                id="imageSelect">
 
             <option value="">
                 -- No Image --
             </option>
 
-            <option value="/images/Question_mark_code_2.png">
+            <option value="/images/Question_1.png">
                 Question 1
             </option>
 
-            <option value="/images/Question_mark_code_3.png">
+            <option value="/images/Question_2.png">
                 Question 2
             </option>
 
-            <option value="/images/Question_mark_code_4.png">
+            <option value="/images/Question_3.png">
                 Question 3
             </option>
 
-            <option value="/images/Question_mark_code_5.png">
+            <option value="/images/Question_4.png">
                 Question 4
             </option>
 
-            <option value="/images/Question_mark_code_6.png">
+            <option value="/images/Question_5.png">
                 Question 5
             </option>
 
-            <option value="/images/Question_mark_code_7.png">
+            <option value="/images/Question_6.png">
                 Question 6
             </option>
 
-            <option value="/images/Question_mark_code_8.png">
+            <option value="/images/Question_7.png">
                 Question 7
             </option>
 
-            <option value="/images/Question_mark_code_9.png">
+            <option value="/images/Question_8.png">
                 Question 8
             </option>
 
-            <option value="/images/Question_mark_code_10.png">
+            <option value="/images/Question_9.png">
                 Question 9
             </option>
 
-            <option value="/images/Question_mark_code_11.png">
+            <option value="/images/Question_10.png">
                 Question 10
+            </option>
+
+            <option value="/images/Question_11.png">
+                Question 11
+            </option>
+
+            <option value="/images/Question_12.png">
+                Question 12
+            </option>
+
+            <option value="/images/Question_13.png">
+                Question 13
             </option>
 
         </select>
@@ -143,6 +156,16 @@
         <span asp-validation-for="Question.ImageUrl"
               class="text-danger">
         </span>
+
+        <div class="mt-3">
+            <img id="imagePreview"
+                 src=""
+                 alt="Selected image preview"
+                 style="width: 300px;
+                        height: 180px;
+                        object-fit: contain;
+                        display: none;" />
+        </div>
 
     </div>
 
@@ -218,3 +241,11 @@
     </a>
 
 </form>
+
+
+@section Scripts
+{
+    <script src="~/js/image-preview.js"
+            asp-append-version="true"
+            defer></script>
+}
