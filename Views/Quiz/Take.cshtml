@@ -90,12 +90,12 @@ else
             Submit Answers
         </button>
 
-        <a asp-controller="Challenge"
-           asp-action="Details"
-           asp-route-id="@Model.Challenge.ChallengeId"
-           class="btn btn-secondary">
-            Back to Challenge
-        </a>
+        <button type="submit"
+                id="exitChallengeButton"
+                formaction="@Url.Action("Exit", "Quiz")"
+                class="btn btn-secondary">
+            Exit Challenge
+        </button>
 
     </form>
 }

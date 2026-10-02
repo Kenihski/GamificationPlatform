@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 endTime - now;
 
 
-            // Time has expired
+            // Time has expired.
             if (remaining <= 0) {
 
                 timeRemaining.textContent =
@@ -151,6 +151,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // --------------------------------
+    // Exit confirmation
+    // --------------------------------
+
+    const exitButton =
+        document.getElementById("exitChallengeButton");
+
+
+    if (exitButton) {
+
+        exitButton.addEventListener(
+            "click",
+            function (event) {
+
+                const confirmed = confirm(
+                    "Are you sure you want to exit the challenge?\n\n" +
+                    "Your attempt will be submitted and unanswered " +
+                    "questions will receive 0 points."
+                );
+
+
+                if (!confirmed) {
+                    event.preventDefault();
+                }
+
+            }
+        );
+    }
+
+
+    // --------------------------------
     // Submit confirmation
     // --------------------------------
 
@@ -159,6 +189,21 @@ document.addEventListener("DOMContentLoaded", function () {
         // Do not show confirmation when
         // the timer submits automatically.
         if (timeExpired) {
+            return;
+        }
+
+
+        // Exit has its own confirmation.
+        if (event.submitter &&
+            event.submitter.id ===
+                "exitChallengeButton") {
+
+            // The attempt is being ended,
+            // so temporary answers are removed.
+            sessionStorage.removeItem(
+                storageKey
+            );
+
             return;
         }
 
