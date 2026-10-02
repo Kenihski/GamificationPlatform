@@ -287,7 +287,8 @@ namespace GamificationPlatform.Controllers
                     MaxPoints = maxPoints
                 };
 
-            // Gets history only if the user is logged in.
+            // Gets history and management permission
+            // only if the user is logged in.
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userIdString =
@@ -298,6 +299,12 @@ namespace GamificationPlatform.Controllers
                 {
                     int userId =
                         int.Parse(userIdString);
+
+                    // The challenge owner and admins
+                    // can manage the challenge.
+                    viewModel.CanManage =
+                        User.IsInRole("Admin") ||
+                        challenge.CreatedByUserId == userId;
 
                     // Gets the user's completed attempts
                     // for this challenge.

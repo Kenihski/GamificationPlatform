@@ -1,28 +1,5 @@
 @model GamificationPlatform.ViewModels.ChallengeDetailsHistoryViewModel
 
-@using System.Security.Claims
-
-@{
-    int? currentUserId = null;
-
-    if (User.Identity?.IsAuthenticated == true)
-    {
-        var userIdString =
-            User.FindFirstValue(
-                ClaimTypes.NameIdentifier);
-
-        if (int.TryParse(userIdString, out int userId))
-        {
-            currentUserId = userId;
-        }
-    }
-
-    bool canManage =
-        User.IsInRole("Admin") ||
-        currentUserId == Model.Challenge.CreatedByUserId;
-}
-
-
 @if (TempData["SuccessMessage"] != null)
 {
     <div id="successMessage"
@@ -30,7 +7,6 @@
         @TempData["SuccessMessage"]
     </div>
 }
-
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -132,7 +108,7 @@
 @* Question management is only visible
    to the challenge owner or admin. *@
 
-@if (canManage)
+@if (Model.CanManage)
 {
     <hr class="my-5" />
 
