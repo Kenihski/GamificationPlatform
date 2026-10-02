@@ -219,13 +219,14 @@ namespace GamificationPlatform.Controllers
                     "Question created. Previous attempts and scores were reset.";
 
                 // Return to the challenge
-                // after creating the question.
+                // and show the question section.
                 return RedirectToAction(
                     "Details",
                     "Challenge",
                     new
                     {
-                        id = question.ChallengeId
+                        id = question.ChallengeId,
+                        showQuestions = true
                     });
             }
 
@@ -462,13 +463,14 @@ namespace GamificationPlatform.Controllers
                     "Question updated. Previous attempts and scores were reset.";
 
                 // Return to the challenge
-                // after updating the question.
+                // and show the question section.
                 return RedirectToAction(
                     "Details",
                     "Challenge",
                     new
                     {
-                        id = question.ChallengeId
+                        id = question.ChallengeId,
+                        showQuestions = true
                     });
             }
 
@@ -612,13 +614,14 @@ namespace GamificationPlatform.Controllers
             }
 
             // Return to the challenge
-            // after deleting the question.
+            // and show the question section.
             return RedirectToAction(
                 "Details",
                 "Challenge",
                 new
                 {
-                    id = challengeId
+                    id = challengeId,
+                    showQuestions = true
                 });
         }
     }

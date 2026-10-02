@@ -15,6 +15,10 @@ namespace GamificationPlatform.ViewModels
         // Determines whether the current user can
         // manage the challenge and its questions.
         public bool CanManage { get; set; }
+
+        // Determines whether the question section
+        // should be open when the page loads.
+        public bool ShowQuestions { get; set; }
     }
 
 

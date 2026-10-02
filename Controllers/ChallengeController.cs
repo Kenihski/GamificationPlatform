@@ -285,7 +285,9 @@ namespace GamificationPlatform.Controllers
 
         // Shows information about a challenge
         // and the user's attempt history.
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(
+            int id,
+            bool showQuestions = false)
         {
             var challenge =
                 await _challengeRepository
@@ -306,7 +308,8 @@ namespace GamificationPlatform.Controllers
                 new ChallengeDetailsHistoryViewModel
                 {
                     Challenge = challenge,
-                    MaxPoints = maxPoints
+                    MaxPoints = maxPoints,
+                    ShowQuestions = showQuestions
                 };
 
             // Gets history and management permission
