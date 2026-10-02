@@ -5,14 +5,31 @@
 
 <div class="alert alert-warning mt-4">
 
-    <strong>Warning:</strong>
+    <p class="mb-2">
+        <strong>Warning:</strong>
+        Deleting this question will reset all previous attempts
+        and scores for this challenge.
+    </p>
 
-    Deleting this question will reset all previous attempts
-    and scores for this challenge.
 
-    <br />
+    @if (Model.Challenge.IsPublished &&
+         Model.Challenge.Questions.Count == 1)
+    {
+        <p class="mb-2">
+            <strong>
+                This is the last question in this published challenge.
+            </strong>
+        </p>
 
-    Are you sure you want to delete this question?
+        <p class="mb-2">
+            Deleting it will automatically unpublish the challenge.
+        </p>
+    }
+
+
+    <p class="mb-0">
+        Are you sure you want to delete this question?
+    </p>
 
 </div>
 

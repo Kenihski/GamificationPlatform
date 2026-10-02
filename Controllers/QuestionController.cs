@@ -576,17 +576,40 @@ namespace GamificationPlatform.Controllers
             int challengeId =
                 question.ChallengeId;
 
+            // A published challenge must always
+            // contain at least one question.
+            bool shouldUnpublish =
+                question.Challenge.IsPublished &&
+                question.Challenge.Questions.Count == 1;
+
             // The challenge content is changing,
             // so previous attempt history is reset.
             await _attemptRepository
                 .DeleteChallengeHistoryAsync(
                     challengeId);
 
+            if (shouldUnpublish)
+            {
+                question.Challenge.IsPublished = false;
+
+                await _challengeRepository
+                    .UpdateChallengeAsync(
+                        question.Challenge);
+            }
+
             await _questionRepository
                 .DeleteQuestionAsync(question);
 
-            TempData["SuccessMessage"] =
-                "Question deleted. Previous attempts and scores were reset.";
+            if (shouldUnpublish)
+            {
+                TempData["SuccessMessage"] =
+                    "Question deleted. The challenge was automatically unpublished because it has no questions left. Previous attempts and scores were reset.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] =
+                    "Question deleted. Previous attempts and scores were reset.";
+            }
 
             // Return to the challenge
             // after deleting the question.
