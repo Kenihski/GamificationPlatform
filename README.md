@@ -227,6 +227,10 @@ The application also handles common errors and access restrictions, including:
 
 Server-side logging is implemented using Serilog to log relevant application events and errors.
 
+The four DAL repositories use injected `ILogger<T>` instances to log database query and save failures at Error level, including the exception, repository, operation name, and relevant numeric IDs for queries. Username and email query values are not added to these log messages. Cancelled operations are not logged as database errors. Exceptions are rethrown with `throw;` to preserve the original stack trace and allow error handling upstream.
+
+Create, update, and delete operations persist through each repository's `SaveChangesAsync`, where save failures are logged once by the DAL. Successful user actions continue to be logged by the controllers. Framework logs, including EF Core diagnostics, may also describe the same failure.
+
 ---
 
 ## Code Structure
@@ -261,8 +265,9 @@ The current application demonstrates the main concept and core functionality, in
 
 The application is intended to be further developed for the final Exam Group Project.
 
-A Data Access Layer (DAL) and the Repository Pattern have not yet been implemented in this MVP version. These will be introduced during further development to improve the separation between the controllers and the data access logic.
+A Data Access Layer (DAL) and the Repository Pattern are implemented. Controllers use injected repository interfaces for database access, and the repositories use Entity Framework Core for asynchronous queries and persistence.
 
 Additional functionality and improvements to the existing features are also planned for the Exam Group Project. The current authentication and user management solution may also be further developed, including evaluating the use of ASP.NET Core Identity.
 
 The architecture and existing functionality may therefore be adjusted as the project develops toward the final Exam Group Project.
+
