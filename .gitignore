@@ -14,3 +14,8 @@ Logs/
 # Temporary SQLite files
 *.db-shm
 *.db-wal
+
+# Python verification caches
+__pycache__/
+*.pyc
+

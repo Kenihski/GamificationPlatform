@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
@@ -15,11 +17,14 @@ namespace GamificationPlatform.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
+        private readonly ILogger<UserController> _logger;
 
         public UserController(
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            ILogger<UserController> logger)
         {
             _userRepository = userRepository;
+            _logger = logger;
         }
 
 
@@ -202,8 +207,20 @@ namespace GamificationPlatform.Controllers
             RegisterViewModel model,
             string? returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
+
             if (ModelState.IsValid)
             {
+                model.Username = model.Username.Trim();
+                model.Email = model.Email.Trim();
+
+                if (await _userRepository.GetUserByUsernameAsync(model.Username) != null)
+                {
+                    ModelState.AddModelError(nameof(model.Username), "This username is already taken.");
+                    _logger.LogWarning("Registration rejected because the username is already taken.");
+                    return View(model);
+                }
+
                 var user =
                     new User
                     {
@@ -222,8 +239,22 @@ namespace GamificationPlatform.Controllers
                         user,
                         model.Password);
 
-                await _userRepository
-                    .CreateUserAsync(user);
+                try
+                {
+                    await _userRepository.CreateUserAsync(user);
+                }
+                catch (DbUpdateException ex) when (
+                    ex.InnerException is SqliteException sqlite &&
+                    sqlite.SqliteExtendedErrorCode == 2067 &&
+                    sqlite.Message.Contains("Users.Username", StringComparison.Ordinal))
+                {
+                    // A competing registration may win after the initial check.
+                    ModelState.AddModelError(nameof(model.Username), "This username is already taken.");
+                    _logger.LogWarning("Registration rejected by the unique username constraint.");
+                    return View(model);
+                }
+
+                _logger.LogInformation("User {UserId} registered successfully.", user.UserId);
 
                 // Sends the ReturnUrl to the login page.
                 return RedirectToAction(
@@ -234,8 +265,7 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
-            ViewBag.ReturnUrl = returnUrl;
-
+            _logger.LogWarning("Registration rejected because form validation failed.");
             return View(model);
         }
 
@@ -262,8 +292,11 @@ namespace GamificationPlatform.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("Login rejected because form validation failed.");
                 return View(model);
             }
+
+            model.Username = model.Username.Trim();
 
             var user =
                 await _userRepository
@@ -272,6 +305,7 @@ namespace GamificationPlatform.Controllers
 
             if (user == null)
             {
+                _logger.LogWarning("Login failed because the credentials were invalid.");
                 ModelState.AddModelError(
                     "",
                     "Invalid username or password.");
@@ -291,6 +325,7 @@ namespace GamificationPlatform.Controllers
             if (result ==
                 PasswordVerificationResult.Failed)
             {
+                _logger.LogWarning("Login failed because the credentials were invalid.");
                 ModelState.AddModelError(
                     "",
                     "Invalid username or password.");
@@ -334,6 +369,8 @@ namespace GamificationPlatform.Controllers
                     .AuthenticationScheme,
                 claimsPrincipal);
 
+            _logger.LogInformation("User {UserId} logged in successfully.", user.UserId);
+
             // Returns the user to the page
             // they came from.
             if (!string.IsNullOrEmpty(
@@ -357,9 +394,13 @@ namespace GamificationPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults
                     .AuthenticationScheme);
+
+            _logger.LogInformation("User {UserId} logged out successfully.", userId);
 
             TempData["SuccessMessage"] =
                 "You have been logged out successfully.";

@@ -187,6 +187,8 @@
 
 
     <h4>Answer Options</h4>
+    <span asp-validation-for="Options" class="text-danger"></span>
+    <span asp-validation-for="CorrectOption" class="text-danger"></span>
 
     <p class="text-muted">
         Enter between 2 and 4 answer options.
@@ -201,7 +203,7 @@
                 Option @(i + 1)
             </label>
 
-            <input asp-for="Options[i]"
+            <input maxlength="200" asp-for="Options[i]"
                    class="form-control" />
 
 

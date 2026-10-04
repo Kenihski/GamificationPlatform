@@ -216,26 +216,19 @@ This is intentional for the current MVP version and ensures that the same test d
 
 ## Validation, Error Handling and Logging
 
-The application uses server-side validation for submitted forms.
+The application validates forms and quiz submissions on the server before saving data. Validation covers required fields, lengths, question points, allowed images/time limits, answer options, correct-answer selection, and duplicate usernames.
 
-The application also handles common errors and access restrictions, including:
+Expected errors receive form messages or friendly HTTP 400/401/403/404 pages. Unexpected failures outside Development receive a generic HTTP 500 page with a request reference. DAL exceptions are logged and rethrown for upstream handling.
 
-- Invalid form input
-- Resources that cannot be found
-- Unauthorized access
-- Forbidden access to resources owned by other users
+Serilog records controller events, database failures, initialization events, and HTTP requests in the console and per-run files under `Logs/`. Logs include request references and do not deliberately record submitted credentials or entire models.
 
-Server-side logging is implemented using Serilog to log relevant application events and errors.
-
-The four DAL repositories use injected `ILogger<T>` instances to log database query and save failures at Error level, including the exception, repository, operation name, and relevant numeric IDs for queries. Username and email query values are not added to these log messages. Cancelled operations are not logged as database errors. Exceptions are rethrown with `throw;` to preserve the original stack trace and allow error handling upstream.
-
-Create, update, and delete operations persist through each repository's `SaveChangesAsync`, where save failures are logged once by the DAL. Successful user actions continue to be logged by the controllers. Framework logs, including EF Core diagnostics, may also describe the same failure.
+See [Task 5 implementation summary](docs/Task5.md) for the complete rules, the DAL logging added in this chat, database setup, and verification instructions. GitHub Actions builds the application and runs isolated HTTP/database checks on `Salman-branch`.
 
 ---
 
 ## Code Structure
 
-The project is structured according to the MVC pattern and separates different responsibilities into models, views, controllers, and view models.
+The project is structured according to the MVC pattern and separates responsibilities into models, views, controllers, view models, validation attributes, and DAL repositories.
 
 Quiz functionality and leaderboard functionality are separated into their own controllers to keep the challenge management code more modular and easier to maintain.
 
@@ -270,4 +263,5 @@ A Data Access Layer (DAL) and the Repository Pattern are implemented. Controller
 Additional functionality and improvements to the existing features are also planned for the Exam Group Project. The current authentication and user management solution may also be further developed, including evaluating the use of ASP.NET Core Identity.
 
 The architecture and existing functionality may therefore be adjusted as the project develops toward the final Exam Group Project.
+
 

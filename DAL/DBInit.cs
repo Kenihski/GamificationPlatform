@@ -18,10 +18,29 @@ namespace GamificationPlatform.DAL
                     .GetRequiredService<ChallengeDbContext>();
 
 
+            var logger = serviceScope.ServiceProvider
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger("GamificationPlatform.DAL.DBInit");
+
+            logger.LogInformation("Development database initialization started.");
+            try
+            {
+                SeedDatabase(context);
+                logger.LogInformation("Development database initialization completed.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Development database initialization failed.");
+                throw;
+            }
+        }
+
+        private static void SeedDatabase(ChallengeDbContext context)
+        {
             // Delete the existing database and create it again.
             // Useful while testing with dummy data.
             context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            context.Database.Migrate();
 
 
             // --------------------------------

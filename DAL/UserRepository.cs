@@ -106,7 +106,7 @@ namespace GamificationPlatform.DAL
             {
                 return await _challengeDbContext.Users
                     .FirstOrDefaultAsync(u =>
-                        u.Username == username);
+                        EF.Functions.Collate(u.Username, "NOCASE") == username.Trim());
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
@@ -193,3 +193,4 @@ namespace GamificationPlatform.DAL
         }
     }
 }
+

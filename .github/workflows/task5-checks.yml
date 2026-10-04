@@ -1,0 +1,25 @@
+name: Task 5 checks
+
+on:
+  push:
+    branches: [Salman-branch]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.100'
+      - name: Build application
+        run: dotnet build GamificationPlatform.csproj --configuration Release
+      - name: Check validation, error handling, logging, and migrations
+        run: python3 tests/task5_smoke.py

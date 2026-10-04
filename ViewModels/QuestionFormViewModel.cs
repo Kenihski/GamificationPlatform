@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.ViewModels
@@ -6,6 +8,7 @@ namespace GamificationPlatform.ViewModels
     // forms for questions.
     public class QuestionFormViewModel
     {
+        [Required]
         public Question Question { get; set; }
             = new Question();
 
@@ -18,8 +21,11 @@ namespace GamificationPlatform.ViewModels
                 ""
             };
 
-        public int CorrectOption { get; set; }
+        [Required(ErrorMessage = "Please select the correct answer.")]
+        [Range(0, 3, ErrorMessage = "Please select one of the four answer fields.")]
+        public int? CorrectOption { get; set; }
 
+        [BindNever]
         public List<Challenge> Challenges { get; set; }
             = new List<Challenge>();
     }

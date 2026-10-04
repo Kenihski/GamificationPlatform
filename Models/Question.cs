@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GamificationPlatform.Validation;
 namespace GamificationPlatform.Models
 {
     public class Question
@@ -20,6 +21,7 @@ namespace GamificationPlatform.Models
             100,
             ErrorMessage = "Points must be between 1 and 100.")]
         public int Points { get; set; }
+        [AllowedImage(ErrorMessage = "Please select one of the available images.")]
         public string? ImageUrl { get; set; }
         public int ChallengeId { get; set; }
         // Navigation: Each question belongs to one challenge.

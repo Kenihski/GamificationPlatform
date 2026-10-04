@@ -256,6 +256,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
                 return Forbid();
             }
 
@@ -478,8 +479,17 @@ namespace GamificationPlatform.Controllers
 
             if (ModelState.IsValid)
             {
-                await _challengeRepository
-                    .CreateChallengeAsync(challenge);
+                challenge = new Challenge
+                {
+                    Title = challenge.Title,
+                    Description = challenge.Description,
+                    ImageUrl = challenge.ImageUrl,
+                    TimeLimitMinutes = challenge.TimeLimitMinutes,
+                    CreatedByUserId = userId,
+                    IsPublished = false
+                };
+
+                await _challengeRepository.CreateChallengeAsync(challenge);
 
                 _logger.LogInformation(
                     "Challenge {ChallengeId} was created by user {UserId}.",
@@ -494,6 +504,7 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
+            _logger.LogWarning("Challenge creation rejected because validation failed for user {UserId}.", userId);
             return View(challenge);
         }
 
@@ -532,6 +543,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
                 return Forbid();
             }
 
@@ -577,6 +589,7 @@ namespace GamificationPlatform.Controllers
                 existingChallenge.CreatedByUserId !=
                     userId)
             {
+                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
                 return Forbid();
             }
 
@@ -615,6 +628,7 @@ namespace GamificationPlatform.Controllers
                     nameof(Table));
             }
 
+            _logger.LogWarning("Challenge update rejected because validation failed for user {UserId} on challenge {ChallengeId}.", userId, existingChallenge.ChallengeId);
             return View(challenge);
         }
 
@@ -653,6 +667,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
                 return Forbid();
             }
 
@@ -696,6 +711,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
                 return Forbid();
             }
 
