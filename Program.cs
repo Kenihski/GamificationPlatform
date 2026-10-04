@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using GamificationPlatform.Authentication;
 using GamificationPlatform.DAL;
 using Serilog;
 using Serilog.Context;
@@ -29,12 +30,8 @@ builder.Services
     .AddCookie(options =>
     {
         options.LoginPath = "/User/Login";
-        // Render the shared 403 page instead of redirecting to a missing route.
-        options.Events.OnRedirectToAccessDenied = context =>
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
-        };
+        // Reject cookies for users removed after the cookie was issued.
+        options.EventsType = typeof(ValidateUserCookieEvents);
     });
 
 builder.Services.AddDbContext<ChallengeDbContext>(options =>
@@ -48,6 +45,7 @@ builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
 builder.Services.AddScoped<IAttemptRepository, AttemptRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ValidateUserCookieEvents>();
 
 var app = builder.Build();
 

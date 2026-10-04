@@ -36,6 +36,7 @@ Invalid quiz answers are rejected before any answers are added or an attempt is 
 | Invalid ordinary form | Re-displays the form with field/summary messages |
 | Missing resource | Returns HTTP 404 with the shared error page |
 | Authentication required | Cookie authentication redirects to login, or returns HTTP 401 where appropriate |
+| Cookie references a deleted user | Cookie validation checks the current database user, rejects the stale principal, expires the cookie, and redirects protected requests to login before a database write can occur |
 | Forbidden action | Returns HTTP 403 with an understandable access-denied page |
 | Malformed quiz request or missing anti-forgery token | Returns HTTP 400 with the shared error page |
 | Failed login | Generic “Invalid username or password” message |
@@ -49,6 +50,8 @@ Invalid quiz answers are rejected before any answers are added or an attempt is 
 
 Error pages are available to anonymous users, do not query the database, and are not cached. Status-code re-execution retains the original HTTP status. Question history deletion, last-question unpublishing, and question deletion are saved together through the shared scoped DbContext.
 
+Cookie validation is centralized in `Authentication/ValidateUserCookieEvents.cs`. A signed cookie can remain in a browser after the development database is recreated, or after an account is deleted. Without validation, the cookie's old user ID can pass `[Authorize]` and later cause a foreign-key failure when a new challenge or other owned record is saved. The validator looks up the numeric user ID through `IUserRepository`; a missing or malformed identity is rejected and signed out before controller actions run. Centralizing this rule protects every authenticated controller instead of duplicating user-existence checks in individual actions.
+
 ## Logging, including the DAL work from this chat
 
 Serilog receives injected `ILogger<T>` events and writes them to the console and a separate file under `Logs/` for each application run. These generated files remain ignored by Git.
@@ -59,6 +62,7 @@ Serilog receives injected `ILogger<T>` events and writes them to the console and
 | Question controller | Creation, update, deletion, reset of previous attempts/scores, and automatic unpublishing; invalid forms and denied management actions | Information / Warning |
 | User controller | Registration, successful login/logout, failed login, duplicate registration, and invalid forms | Information / Warning |
 | Quiz controller | Start/completion, explicit exit, invalid attempts, invalid question/option IDs, late submissions, and denied attempt access | Information / Warning |
+| Cookie validation | Rejection of cookies with a malformed user ID or an account that no longer exists | Warning |
 | Four DAL repositories | Failed reads and saves, with the exception, repository, operation name, and relevant numeric IDs for reads | Error |
 | DBInit | Development initialization start/completion and initialization failure | Information / Error |
 | Request middleware | HTTP method, path, response status, duration, and diagnostic user/request IDs | Information / Error |
@@ -72,7 +76,7 @@ Successful user actions belong in controllers, while database failures belong in
 
 ## Database setup
 
-The `AddUniqueUsernames` migration adds the username collation and unique index. Development initialization still recreates and seeds the dummy database, as it did before this work, but now applies migrations to build the schema. Development data is therefore reset on startup.
+The `AddUniqueUsernames` migration adds the username collation and unique index. Development initialization still recreates and seeds the dummy database, as it did before this work, but now applies migrations to build the schema. Development data is therefore reset on startup. Browser cookies can survive that reset, so cookie validation signs out identities whose database account disappeared instead of allowing a later foreign-key failure.
 
 Production does not delete, seed, or automatically migrate databases. Apply migrations as a separate setup step before using an existing production database. Back up data first. Case-colliding usernames must be resolved before adding the unique index; migration failure must not be bypassed by silently discarding accounts.
 
@@ -89,7 +93,7 @@ dotnet build GamificationPlatform.csproj --configuration Release
 python tests/task5_smoke.py
 ```
 
-The smoke checks exercise real HTTP requests, MVC binding/validation, anti-forgery tokens, cookies, authorization, migrations, database uniqueness, invalid quiz option IDs, score calculation, timeout handling, question history resets, automatic unpublishing, production database read/save failures, and the resulting log files. They check that invalid quiz submissions do not change the attempt and that browser error pages hide technical details. They also check that the test password and email do not appear in logs.
+The smoke checks exercise real HTTP requests, MVC binding/validation, anti-forgery tokens, cookies, authorization, migrations, database uniqueness, invalid quiz option IDs, score calculation, timeout handling, question history resets, automatic unpublishing, production database read/save failures, and the resulting log files. They delete an authenticated test user directly from the isolated database and confirm that the remaining browser cookie is rejected before a protected operation can run. They also check that invalid quiz submissions do not change the attempt, browser error pages hide technical details, and the test password and email do not appear in logs.
 
 For a group demonstration, show an invalid form and its message, a denied action, a valid question change and its log, and an isolated database failure with the HTTP 500 page and matching request reference. Use temporary test data for failure demonstrations.
 

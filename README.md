@@ -216,7 +216,7 @@ This is intentional for the current MVP version and ensures that the same test d
 
 ## Validation, Error Handling and Logging
 
-The application validates forms and quiz submissions on the server before saving data. Validation covers required fields, lengths, question points, allowed images/time limits, answer options, correct-answer selection, and duplicate usernames.
+The application validates forms and quiz submissions on the server before saving data. Validation covers required fields, lengths, question points, allowed images/time limits, answer options, correct-answer selection, and duplicate usernames. Authentication cookies are checked against the current user database so a cookie for a deleted account is rejected before a protected database operation.
 
 Expected errors receive form messages or friendly HTTP 400/401/403/404 pages. Unexpected failures outside Development receive a generic HTTP 500 page with a request reference. DAL exceptions are logged and rethrown for upstream handling.
 
@@ -263,5 +263,4 @@ A Data Access Layer (DAL) and the Repository Pattern are implemented. Controller
 Additional functionality and improvements to the existing features are also planned for the Exam Group Project. The current authentication and user management solution may also be further developed, including evaluating the use of ASP.NET Core Identity.
 
 The architecture and existing functionality may therefore be adjusted as the project develops toward the final Exam Group Project.
-
 

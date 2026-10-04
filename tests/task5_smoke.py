@@ -275,6 +275,30 @@ def main():
             check(client.post("/User/Logout", {}, "/")[0] == 302 and client.request("/Challenge/MyChallenges")[0] == 302,
                   "Logout removes authenticated access")
 
+            # A database reset or account deletion can leave a valid browser
+            # cookie pointing to a user that no longer exists.
+            stale_client = Client(client.base)
+            stale_registration = dict(registration, Username="StaleCookieUser",
+                                      Email="stale-cookie@example.test")
+            check(stale_client.post("/User/Register", stale_registration, "/User/Register")[0] == 302 and
+                  stale_client.post("/User/Login", dict(Username="StaleCookieUser", Password=password),
+                                    "/User/Login")[0] == 302,
+                  "Stale-cookie test account can authenticate")
+            status, stale_form, _ = stale_client.request("/Challenge/Create")
+            stale_token = re.search(r'name="__RequestVerificationToken"[^>]*value="([^"]+)"', stale_form)
+            assert status == 200 and stale_token
+            stale_user_id = scalar(database, "SELECT UserId FROM Users WHERE Username='StaleCookieUser'")
+            with sqlite3.connect(database) as connection:
+                connection.execute("DELETE FROM Users WHERE UserId=?", (stale_user_id,))
+            stale_title = "Stale cookie challenge"
+            stale_challenge = dict(challenge, Title=stale_title,
+                                   __RequestVerificationToken=html.unescape(stale_token.group(1)))
+            status, _, headers = stale_client.request("/Challenge/Create", stale_challenge)
+            login_redirect = urllib.parse.urlparse(headers["Location"]).path
+            check(status == 302 and login_redirect == "/User/Login" and
+                  scalar(database, "SELECT COUNT(*) FROM Challenges WHERE Title=?", (stale_title,)) == 0,
+                  "Cookie for a deleted user is rejected before a protected database operation")
+
         # Production preserves the isolated migrated database and exercises both
         # save and read failures through the friendly global exception handler.
         with server(directory, database, "Production") as client:
@@ -296,7 +320,7 @@ def main():
         for message in ("UserRepository", "SaveChangesAsync", "ChallengeRepository", "GetPublishedChallengesAsync",
                         "registered successfully", "logged in successfully", "logged out successfully",
                         "created question", "updated question", "deleted question", "automatically unpublished",
-                        "HTTP", "denied", "initialization completed"):
+                        "Authentication cookie rejected", "HTTP", "denied", "initialization completed"):
             check(message in logs, f"Logs include {message}")
         check(password not in logs and registration["Email"] not in logs,
               "Logs do not include submitted passwords or email values")
