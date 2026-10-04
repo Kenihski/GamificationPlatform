@@ -179,6 +179,13 @@ def main():
                         "Question.ImageUrl": "", "Question.ChallengeId": str(challenge_id),
                         "Options[0]": "A", "Options[1]": "B", "Options[2]": "", "Options[3]": "", "CorrectOption": "0"}
             page = f"/Question/Create?challengeId={challenge_id}"
+            status, body, _ = client.request(page)
+            required_description = re.search(
+                r'<label[^>]*for="Question_Description"[^>]*>\s*Description\s*</label>\s*'
+                r'<span class="text-danger">\*</span>',
+                body)
+            check(status == 200 and required_description is not None,
+                  "Question description is visibly marked as required")
             invalid_questions = [
                 (dict(question, **{"Question.Points": "0"}), "Question points outside the allowed range"),
                 ({k: v for k, v in question.items() if k != "CorrectOption"}, "Missing correct-answer selection"),
