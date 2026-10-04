@@ -223,13 +223,20 @@ def main():
             status, _, _ = client.post("/Quiz/Submit", dict(submission, **{f"answers[{q1}]": option1}), take)
             check(status == 200 and scalar(database, "SELECT Score FROM ChallengeAttempts WHERE ChallengeAttemptId=?", (attempt,)) == 10,
                   "Server calculates score and gives unanswered questions zero points")
-            check(client.post("/Quiz/Submit", submission, take)[0] == 404,
-                  "Completed attempt cannot be submitted again")
+            repeat_status, repeat_body, _ = client.post("/Quiz/Submit", submission, take)
+            check(repeat_status == 404,
+                  f"Completed attempt cannot be submitted again (HTTP {repeat_status}; {repeat_body[:300]})")
             exit_attempt = scalar(database, "SELECT MAX(ChallengeAttemptId) FROM ChallengeAttempts")
             client.post("/Quiz/Exit", dict(challengeId=challenge_id, challengeAttemptId=exit_attempt,
                                          **{f"answers[{q1}]": option1}), take)
             check(scalar(database, "SELECT Completed FROM ChallengeAttempts WHERE ChallengeAttemptId=?", (exit_attempt,)) == 1,
                   "Exit Challenge completes the attempt")
+            client.request(take)
+            unanswered_attempt = scalar(database, "SELECT MAX(ChallengeAttemptId) FROM ChallengeAttempts")
+            unanswered_status, _, _ = client.post("/Quiz/Submit", dict(challengeId=challenge_id, challengeAttemptId=unanswered_attempt), take)
+            check(unanswered_status == 200 and scalar(database, "SELECT Score FROM ChallengeAttempts WHERE ChallengeAttemptId=?", (unanswered_attempt,)) == 0 and
+                  scalar(database, "SELECT Completed FROM ChallengeAttempts WHERE ChallengeAttemptId=?", (unanswered_attempt,)) == 1,
+                  "A quiz with no selected answers can be submitted with zero points")
             update_page = f"/Challenge/Update/{challenge_id}"
             update = dict(challenge, ChallengeId=challenge_id, TimeLimitMinutes="0")
             check(client.post("/Challenge/Update", update, update_page)[0] == 200 and

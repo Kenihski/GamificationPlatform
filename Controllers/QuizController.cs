@@ -304,7 +304,7 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Submit(
             int challengeId,
             int challengeAttemptId,
-            Dictionary<int, int>? answers)
+            [FromForm(Name = "answers")] Dictionary<int, int>? answers)
         {
             if (!ModelState.IsValid || challengeId <= 0 || challengeAttemptId <= 0)
             {
@@ -337,7 +337,7 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Exit(
             int challengeId,
             int challengeAttemptId,
-            Dictionary<int, int>? answers)
+            [FromForm(Name = "answers")] Dictionary<int, int>? answers)
         {
             if (!ModelState.IsValid || challengeId <= 0 || challengeAttemptId <= 0)
             {
