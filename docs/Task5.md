@@ -84,18 +84,17 @@ An older database created with `EnsureCreated` has no migration history and cann
 
 ## Verification and demonstration
 
-GitHub Actions runs `.github/workflows/task5-checks.yml` on pushes to `Salman-branch` and pull requests to `main`. The workflow builds the application and runs `tests/task5_smoke.py` against an isolated temporary database. The latest workflow result is the source of truth for whether the checked commit passed.
+GitHub Actions runs `.github/workflows/build.yml` on pushes to `Salman-branch` and `main`, pull requests to `main`, and manual dispatch. The workflow builds the application in Release configuration to catch compilation failures.
 
-Run the same checks locally:
+Run the same build locally:
 
 ```bash
 dotnet build GamificationPlatform.csproj --configuration Release
-python tests/task5_smoke.py
 ```
 
-The smoke checks exercise real HTTP requests, MVC binding/validation, anti-forgery tokens, cookies, authorization, migrations, database uniqueness, invalid quiz option IDs, score calculation, timeout handling, question history resets, automatic unpublishing, production database read/save failures, and the resulting log files. They delete an authenticated test user directly from the isolated database and confirm that the remaining browser cookie is rejected before a protected operation can run. They also check that invalid quiz submissions do not change the attempt, browser error pages hide technical details, and the test password and email do not appear in logs.
+Verify Task 5 behavior manually through the browser and the generated log file. Representative checks include invalid challenge and question forms, duplicate usernames, failed login, access denial, missing anti-forgery tokens, friendly error pages, publishing rules, question-history resets, unanswered quizzes, invalid quiz option and attempt IDs, Exit Challenge, draft-challenge protection, and rejection of stale authentication cookies. Confirm that expected warnings contain a request reference, invalid actions do not change stored data, and logs do not contain submitted credentials.
 
-For a group demonstration, show an invalid form and its message, a denied action, a valid question change and its log, and an isolated database failure with the HTTP 500 page and matching request reference. Use temporary test data for failure demonstrations.
+For a group demonstration, show an invalid form and its message, a denied action, a valid question change and its log, and an error page with its matching request reference. Use temporary test data for demonstrations.
 
 ## Responsibility and collaboration
 

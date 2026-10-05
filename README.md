@@ -222,7 +222,7 @@ Expected errors receive form messages or friendly HTTP 400/401/403/404 pages. Un
 
 Serilog records controller events, database failures, initialization events, and HTTP requests in the console and per-run files under `Logs/`. Logs include request references and do not deliberately record submitted credentials or entire models.
 
-See [Task 5 implementation summary](docs/Task5.md) for the complete rules, the DAL logging added in this chat, database setup, and verification instructions. GitHub Actions builds the application and runs isolated HTTP/database checks on `Salman-branch`.
+See [Task 5 implementation summary](docs/Task5.md) for the complete rules, the DAL logging added in this chat, database setup, and manual verification guidance. GitHub Actions checks that the application builds in Release configuration.
 
 ---
 
@@ -263,4 +263,3 @@ A Data Access Layer (DAL) and the Repository Pattern are implemented. Controller
 Additional functionality and improvements to the existing features are also planned for the Exam Group Project. The current authentication and user management solution may also be further developed, including evaluating the use of ASP.NET Core Identity.
 
 The architecture and existing functionality may therefore be adjusted as the project develops toward the final Exam Group Project.
-
