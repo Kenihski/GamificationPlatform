@@ -133,3 +133,24 @@ body {
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
+
+/* Shows that a challenge has been completed. */
+.completed-corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 55px solid #198754;
+    border-left: 55px solid transparent;
+    z-index: 2;
+}
+
+.completed-corner span {
+    position: absolute;
+    top: -50px;
+    right: 7px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}

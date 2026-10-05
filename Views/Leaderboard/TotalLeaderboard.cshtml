@@ -1,0 +1,110 @@
+@model GamificationPlatform.ViewModels.TotalLeaderboardViewModel
+
+@{
+    ViewData["Title"] = "Core Leaderboard";
+}
+
+<div class="container mt-4">
+
+    <h1 class="mb-4">
+        Core Leaderboard
+    </h1>
+
+    <p class="text-muted mb-4">
+        Rankings are based on your first completed attempt
+        in each Core Challenge.
+    </p>
+
+    @if (Model.Entries.Any())
+    {
+        <div class="table-responsive">
+
+            <table class="table table-striped table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>User</th>
+                        <th>Total Points</th>
+                        <th>Core Completed</th>
+                        <th>Total Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var entry in Model.Entries)
+                    {
+                        <tr>
+
+                            <td class="fw-bold">
+
+                                @entry.Rank
+
+                                @if (entry.Rank == 1)
+                                {
+                                    <span title="Gold">
+                                        🥇
+                                    </span>
+                                }
+                                else if (entry.Rank == 2)
+                                {
+                                    <span title="Silver">
+                                        🥈
+                                    </span>
+                                }
+                                else if (entry.Rank == 3)
+                                {
+                                    <span title="Bronze">
+                                        🥉
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td>
+                                @entry.Username
+                            </td>
+
+                            <td>
+                                @entry.TotalPoints.ToString("0.#")
+                            </td>
+
+                            <td>
+                                @entry.CoreChallengesCompleted
+                            </td>
+
+                            <td>
+                                @if (entry.TotalTime.TotalHours >= 1)
+                                {
+                                    @($"{(int)entry.TotalTime.TotalHours}h {entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
+                                }
+                                else
+                                {
+                                    @($"{entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
+                                }
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No leaderboard results yet.
+        </div>
+    }
+
+    <a asp-controller="Challenge"
+       asp-action="Grid"
+       class="btn btn-secondary mt-3">
+        Back to Challenges
+    </a>
+
+</div>

@@ -1,5 +1,10 @@
 @model Challenge
 
+@{
+    bool isCompleted =
+        ViewData["IsCompleted"] as bool? ?? false;
+}
+
 <div class="col">
 
     <a asp-controller="Challenge"
@@ -7,7 +12,14 @@
        asp-route-id="@Model.ChallengeId"
        class="text-decoration-none text-dark">
 
-        <div class="card h-100 challenge-card">
+        <div class="card h-100 challenge-card position-relative">
+
+            @if (isCompleted)
+            {
+                <div class="completed-corner">
+                    <span>✓</span>
+                </div>
+            }
 
             <div class="challenge-image-container">
                 <img src="@Model.ImageUrl"
@@ -17,40 +29,55 @@
 
             <div class="card-body">
 
-                <div class="d-flex justify-content-between mt-2">
+                <div class="d-flex justify-content-between
+                            align-items-center">
 
-                    <h5 class="text-start">
-                        @Model.Title
-                    </h5>
+                    @if (Model.IsCore)
+                    {
+                        <span class="badge bg-primary">
+                            Core
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">
+                            Community
+                        </span>
+                    }
 
-                    <div class="text-end text-nowrap">
-
-                        <strong>
-                            @Model.MaxPoints points
-                        </strong>
-
-                        <div class="small text-muted">
-
-                            @if (Model.TimeLimitMinutes.HasValue)
-                            {
-                                <span>
-                                    @Model.TimeLimitMinutes min
-                                </span>
-                            }
-                            else
-                            {
-                                <span>
-                                    Unlimited
-                                </span>
-                            }
-
-                        </div>
-
-                    </div>
+                    <strong>
+                        @Model.MaxPoints points
+                    </strong>
 
                 </div>
 
-                <p class="card-text">
+                <div class="d-flex justify-content-between
+                            align-items-center">
+
+                    <h5 class="text-start mb-0">
+                        @Model.Title
+                    </h5>
+
+                    <span class="small text-muted text-nowrap">
+
+                        @if (Model.TimeLimitMinutes.HasValue)
+                        {
+                            <span>
+                                @Model.TimeLimitMinutes min
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                Unlimited
+                            </span>
+                        }
+
+                    </span>
+
+                </div>
+
+                <p class="card-text mt-3">
                     @Model.Description
                 </p>
 

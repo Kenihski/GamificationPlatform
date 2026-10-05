@@ -1,26 +1,65 @@
 @model ChallengesViewModel
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="mb-3">
 
-    <h1 class="mb-0">
+    <h1>
         List of Challenges
     </h1>
 
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
     <div class="btn-group">
+
         <a asp-controller="Challenge"
            asp-action="Table"
+           asp-route-filter="All"
+           class="btn @(Model.CurrentFilter == "All"
+               ? "btn-primary"
+               : "btn-outline-primary")">
+            All
+        </a>
+
+        <a asp-controller="Challenge"
+           asp-action="Table"
+           asp-route-filter="Core"
+           class="btn @(Model.CurrentFilter == "Core"
+               ? "btn-primary"
+               : "btn-outline-primary")">
+            Core
+        </a>
+
+        <a asp-controller="Challenge"
+           asp-action="Table"
+           asp-route-filter="Community"
+           class="btn @(Model.CurrentFilter == "Community"
+               ? "btn-primary"
+               : "btn-outline-primary")">
+            Community
+        </a>
+
+    </div>
+
+    <div class="btn-group">
+
+        <a asp-controller="Challenge"
+           asp-action="Table"
+           asp-route-filter="@Model.CurrentFilter"
            class="btn btn-primary">
             Table
         </a>
 
         <a asp-controller="Challenge"
            asp-action="Grid"
+           asp-route-filter="@Model.CurrentFilter"
            class="btn btn-outline-primary">
             Grid
         </a>
+
     </div>
 
 </div>
 
 <partial name="_ChallengeTable"
-         model="Model.Challenges" />
+         model="Model" />

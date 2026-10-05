@@ -38,6 +38,12 @@ else
                 <th>Questions</th>
                 <th>Max Points</th>
                 <th>Status</th>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <th>Type</th>
+                }
+
                 <th>Actions</th>
             </tr>
         </thead>
@@ -74,11 +80,29 @@ else
                         }
                     </td>
 
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            @if (challenge.IsCore)
+                            {
+                                <span class="badge bg-primary">
+                                    Core
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    Community
+                                </span>
+                            }
+                        </td>
+                    }
+
                     <td>
                         <a asp-controller="Challenge"
                            asp-action="Details"
                            asp-route-id="@challenge.ChallengeId"
-                           class="btn btn-sm btn-primary">
+                           class="btn btn-sm btn-info">
                             View
                         </a>
 
@@ -133,6 +157,48 @@ else
                                 </button>
 
                             </form>
+                        }
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            @if (challenge.IsCore)
+                            {
+                                <form asp-controller="Challenge"
+                                      asp-action="MakeCommunity"
+                                      asp-route-id="@challenge.ChallengeId"
+                                      method="post"
+                                      class="d-inline">
+
+                                    <input type="hidden"
+                                           name="returnUrl"
+                                           value="@Context.Request.Path" />
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-secondary">
+                                        Make Community
+                                    </button>
+
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="Challenge"
+                                      asp-action="MakeCore"
+                                      asp-route-id="@challenge.ChallengeId"
+                                      method="post"
+                                      class="d-inline">
+
+                                    <input type="hidden"
+                                           name="returnUrl"
+                                           value="@Context.Request.Path" />
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-primary">
+                                        Make Core
+                                    </button>
+
+                                </form>
+                            }
                         }
                     </td>
                 </tr>
