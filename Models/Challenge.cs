@@ -33,6 +33,10 @@ namespace GamificationPlatform.Models
         // False = Draft, True = Published. 
         public bool IsPublished { get; set; } = false; 
 
+        // False = Community, True = Core.
+        // New challenges are Community by default.
+        public bool IsCore { get; set; } = false;
+
         // Foreign key: The user who created the challenge. 
         public int CreatedByUserId { get; set; } 
 

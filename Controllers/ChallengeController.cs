@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
 using System.Security.Claims;
-
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
@@ -30,11 +28,32 @@ namespace GamificationPlatform.Controllers
 
 
         // Shows published challenges in a table.
-        public async Task<IActionResult> Table()
+        public async Task<IActionResult> Table(
+            string filter = "All")
         {
             List<Challenge> challenges =
                 await _challengeRepository
                     .GetPublishedChallengesAsync();
+
+            // Filters challenges by type.
+            if (filter == "Core")
+            {
+                challenges =
+                    challenges
+                        .Where(c => c.IsCore)
+                        .ToList();
+            }
+            else if (filter == "Community")
+            {
+                challenges =
+                    challenges
+                        .Where(c => !c.IsCore)
+                        .ToList();
+            }
+            else
+            {
+                filter = "All";
+            }
 
             // Calculates max points from the questions.
             foreach (var challenge in challenges)
@@ -43,21 +62,67 @@ namespace GamificationPlatform.Controllers
                     challenge.Questions.Sum(q => q.Points);
             }
 
+            var completedChallengeIds =
+                new List<int>();
+
+            // Gets completed challenges only
+            // when the user is logged in.
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userIdString =
+                    User.FindFirstValue(
+                        ClaimTypes.NameIdentifier);
+
+                if (userIdString != null)
+                {
+                    int userId =
+                        int.Parse(userIdString);
+
+                    completedChallengeIds =
+                        await _attemptRepository
+                            .GetCompletedChallengeIdsAsync(
+                                userId);
+                }
+            }
+
             var challengesViewModel =
                 new ChallengesViewModel(
                     challenges,
-                    "Table");
+                    "Table",
+                    filter,
+                    completedChallengeIds);
 
             return View(challengesViewModel);
         }
 
 
         // Shows published challenges in a grid.
-        public async Task<IActionResult> Grid()
+        public async Task<IActionResult> Grid(
+            string filter = "All")
         {
             List<Challenge> challenges =
                 await _challengeRepository
                     .GetPublishedChallengesAsync();
+
+            // Filters challenges by type.
+            if (filter == "Core")
+            {
+                challenges =
+                    challenges
+                        .Where(c => c.IsCore)
+                        .ToList();
+            }
+            else if (filter == "Community")
+            {
+                challenges =
+                    challenges
+                        .Where(c => !c.IsCore)
+                        .ToList();
+            }
+            else
+            {
+                filter = "All";
+            }
 
             // Calculates max points from the questions.
             foreach (var challenge in challenges)
@@ -66,10 +131,35 @@ namespace GamificationPlatform.Controllers
                     challenge.Questions.Sum(q => q.Points);
             }
 
+            var completedChallengeIds =
+                new List<int>();
+
+            // Gets completed challenges only
+            // when the user is logged in.
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userIdString =
+                    User.FindFirstValue(
+                        ClaimTypes.NameIdentifier);
+
+                if (userIdString != null)
+                {
+                    int userId =
+                        int.Parse(userIdString);
+
+                    completedChallengeIds =
+                        await _attemptRepository
+                            .GetCompletedChallengeIdsAsync(
+                                userId);
+                }
+            }
+
             var challengesViewModel =
                 new ChallengesViewModel(
                     challenges,
-                    "Grid");
+                    "Grid",
+                    filter,
+                    completedChallengeIds);
 
             return View(challengesViewModel);
         }
@@ -119,7 +209,10 @@ namespace GamificationPlatform.Controllers
                                 .Sum(q => q.Points),
 
                         IsPublished =
-                            challenge.IsPublished
+                            challenge.IsPublished,
+
+                        IsCore =
+                            challenge.IsCore
                     });
             }
 
@@ -256,7 +349,10 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied challenge management access.",
+                    userId);
+
                 return Forbid();
             }
 
@@ -281,6 +377,90 @@ namespace GamificationPlatform.Controllers
 
             return RedirectToAction(
                 nameof(MyChallenges));
+        }
+
+
+        // Marks a challenge as Core.
+        // Only admins can change the challenge type.
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MakeCore(
+            int id,
+            string? returnUrl)
+        {
+            var challenge =
+                await _challengeRepository
+                    .GetChallengeByIdAsync(id);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            challenge.IsCore = true;
+
+            await _challengeRepository
+                .SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Challenge {ChallengeId} was marked as Core.",
+                id);
+
+            TempData["SuccessMessage"] =
+                "Challenge marked as Core.";
+
+            if (!string.IsNullOrEmpty(returnUrl) &&
+                Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction(
+                nameof(Details),
+                new { id });
+        }
+
+
+        // Marks a challenge as Community.
+        // Only admins can change the challenge type.
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MakeCommunity(
+            int id,
+            string? returnUrl)
+        {
+            var challenge =
+                await _challengeRepository
+                    .GetChallengeByIdAsync(id);
+
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+
+            challenge.IsCore = false;
+
+            await _challengeRepository
+                .SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Challenge {ChallengeId} was marked as Community.",
+                id);
+
+            TempData["SuccessMessage"] =
+                "Challenge marked as Community.";
+
+            if (!string.IsNullOrEmpty(returnUrl) &&
+                Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction(
+                nameof(Details),
+                new { id });
         }
 
 
@@ -474,6 +654,9 @@ namespace GamificationPlatform.Controllers
             // New challenges start as drafts.
             challenge.IsPublished = false;
 
+            // New challenges are Community by default.
+            challenge.IsCore = false;
+
             // Navigation property is not received from the form.
             ModelState.Remove("CreatedByUser");
 
@@ -486,10 +669,12 @@ namespace GamificationPlatform.Controllers
                     ImageUrl = challenge.ImageUrl,
                     TimeLimitMinutes = challenge.TimeLimitMinutes,
                     CreatedByUserId = userId,
-                    IsPublished = false
+                    IsPublished = false,
+                    IsCore = false
                 };
 
-                await _challengeRepository.CreateChallengeAsync(challenge);
+                await _challengeRepository
+                    .CreateChallengeAsync(challenge);
 
                 _logger.LogInformation(
                     "Challenge {ChallengeId} was created by user {UserId}.",
@@ -504,7 +689,10 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
-            _logger.LogWarning("Challenge creation rejected because validation failed for user {UserId}.", userId);
+            _logger.LogWarning(
+                "Challenge creation rejected because validation failed for user {UserId}.",
+                userId);
+
             return View(challenge);
         }
 
@@ -543,7 +731,10 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied challenge management access.",
+                    userId);
+
                 return Forbid();
             }
 
@@ -589,7 +780,10 @@ namespace GamificationPlatform.Controllers
                 existingChallenge.CreatedByUserId !=
                     userId)
             {
-                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied challenge management access.",
+                    userId);
+
                 return Forbid();
             }
 
@@ -615,6 +809,9 @@ namespace GamificationPlatform.Controllers
 
                 // CreatedByUserId is not changed.
                 // The original owner stays the owner.
+                // IsCore is also not changed here.
+                // Only admins can change it using
+                // MakeCore or MakeCommunity.
 
                 await _challengeRepository
                     .SaveChangesAsync();
@@ -628,7 +825,11 @@ namespace GamificationPlatform.Controllers
                     nameof(Table));
             }
 
-            _logger.LogWarning("Challenge update rejected because validation failed for user {UserId} on challenge {ChallengeId}.", userId, existingChallenge.ChallengeId);
+            _logger.LogWarning(
+                "Challenge update rejected because validation failed for user {UserId} on challenge {ChallengeId}.",
+                userId,
+                existingChallenge.ChallengeId);
+
             return View(challenge);
         }
 
@@ -667,7 +868,10 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied challenge management access.",
+                    userId);
+
                 return Forbid();
             }
 
@@ -711,7 +915,10 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied challenge management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied challenge management access.",
+                    userId);
+
                 return Forbid();
             }
 

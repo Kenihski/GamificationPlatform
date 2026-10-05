@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.DAL
@@ -54,6 +55,38 @@ namespace GamificationPlatform.DAL
         }
 
 
+        // Returns the IDs of all challenges
+        // completed by a specific user.
+        public async Task<List<int>> GetCompletedChallengeIdsAsync(
+            int userId)
+        {
+            try
+            {
+                return await _challengeDbContext
+                    .ChallengeAttempts
+                    .Where(a =>
+                        a.UserChallenge.UserId == userId &&
+                        a.Completed)
+                    .Select(a =>
+                        a.UserChallenge.ChallengeId)
+                    .Distinct()
+                    .ToListAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (UserId {UserId}).",
+                    nameof(GetCompletedChallengeIdsAsync),
+                    nameof(AttemptRepository),
+                    userId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
+        }
+
+
         // Returns all completed attempts for a challenge
         // together with the user who made each attempt.
         public async Task<List<ChallengeAttempt>> GetCompletedAttemptsForChallengeAsync(
@@ -78,6 +111,36 @@ namespace GamificationPlatform.DAL
                     nameof(GetCompletedAttemptsForChallengeAsync),
                     nameof(AttemptRepository),
                     challengeId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
+        }
+
+
+        // Returns all completed attempts
+        // with the related user and challenge.
+        public async Task<List<ChallengeAttempt>> GetAllCompletedAttemptsAsync()
+        {
+            try
+            {
+                return await _challengeDbContext
+                    .ChallengeAttempts
+                    .Include(a => a.UserChallenge)
+                        .ThenInclude(uc => uc.User)
+                    .Include(a => a.UserChallenge)
+                        .ThenInclude(uc => uc.Challenge)
+                            .ThenInclude(c => c.Questions)
+                    .Where(a => a.Completed)
+                    .ToListAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository}.",
+                    nameof(GetAllCompletedAttemptsAsync),
+                    nameof(AttemptRepository));
 
                 // Preserve the failure and its original stack trace.
                 throw;

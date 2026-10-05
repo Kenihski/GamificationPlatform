@@ -12,10 +12,19 @@ namespace GamificationPlatform.DAL
             int userId,
             int challengeId);
 
+        // Returns the IDs of all challenges
+        // completed by a specific user.
+        Task<List<int>> GetCompletedChallengeIdsAsync(
+            int userId);
+
         // Returns all completed attempts for a challenge
         // together with the user who made each attempt.
         Task<List<ChallengeAttempt>> GetCompletedAttemptsForChallengeAsync(
             int challengeId);
+
+        // Returns all completed attempts
+        // used for the total leaderboard.
+        Task<List<ChallengeAttempt>> GetAllCompletedAttemptsAsync();
 
         // Returns a completed attempt with all data
         // needed to display the attempt details.

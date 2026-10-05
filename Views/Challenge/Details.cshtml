@@ -47,6 +47,23 @@
         </p>
 
         <p>
+            <strong>Type:</strong>
+
+            @if (Model.Challenge.IsCore)
+            {
+                <span class="badge bg-primary">
+                    Core
+                </span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">
+                    Community
+                </span>
+            }
+        </p>
+
+        <p>
             <strong>Time Limit:</strong>
 
             @if (Model.Challenge.TimeLimitMinutes.HasValue)
@@ -66,12 +83,33 @@
 
         @if (User.Identity?.IsAuthenticated == true)
         {
-            <a asp-controller="Quiz"
-               asp-action="Take"
-               asp-route-id="@Model.Challenge.ChallengeId"
-               class="btn btn-primary my-3">
-                Start Challenge
-            </a>
+            @if (Model.Attempts.Any())
+            {
+                <div class="my-3">
+
+                    <a asp-controller="Quiz"
+                       asp-action="Take"
+                       asp-route-id="@Model.Challenge.ChallengeId"
+                       class="btn btn-primary">
+                        Take Challenge Again
+                    </a>
+
+                    <div class="text-muted small mt-2">
+                        Only your first completed attempt counts
+                        toward the leaderboard.
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <a asp-controller="Quiz"
+                   asp-action="Take"
+                   asp-route-id="@Model.Challenge.ChallengeId"
+                   class="btn btn-primary my-3">
+                    Start Challenge
+                </a>
+            }
         }
         else
         {
@@ -82,7 +120,7 @@
                     "Challenge",
                     new { id = Model.Challenge.ChallengeId })"
                class="btn btn-primary my-3">
-                Start Challenge
+                Log in to Start Challenge
             </a>
         }
 
@@ -124,59 +162,120 @@
                 align-items-center mb-4">
 
         <div>
-            <strong>Status:</strong>
 
-            @if (Model.Challenge.IsPublished)
-            {
-                <span class="badge bg-success">
-                    Published
-                </span>
-            }
-            else
-            {
-                <span class="badge bg-secondary">
-                    Draft
-                </span>
-            }
+            <div class="mb-2">
+                <strong>Status:</strong>
+
+                @if (Model.Challenge.IsPublished)
+                {
+                    <span class="badge bg-success">
+                        Published
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">
+                        Draft
+                    </span>
+                }
+            </div>
+
+            <div>
+                <strong>Type:</strong>
+
+                @if (Model.Challenge.IsCore)
+                {
+                    <span class="badge bg-primary">
+                        Core
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">
+                        Community
+                    </span>
+                }
+            </div>
+
         </div>
 
 
-        @if (Model.Challenge.IsPublished)
-        {
-            <form asp-controller="Challenge"
-                  asp-action="Unpublish"
-                  asp-route-id="@Model.Challenge.ChallengeId"
-                  method="post">
+        <div class="d-flex gap-2">
 
-                <input type="hidden"
-                       name="returnUrl"
-                       value="@Context.Request.Path" />
+            @* Only admins can change whether
+               a challenge is Core or Community. *@
 
-                <button type="submit"
-                        class="btn btn-dark">
-                    Unpublish
-                </button>
+            @if (User.IsInRole("Admin"))
+            {
+                @if (Model.Challenge.IsCore)
+                {
+                    <form asp-controller="Challenge"
+                          asp-action="MakeCommunity"
+                          asp-route-id="@Model.Challenge.ChallengeId"
+                          method="post">
 
-            </form>
-        }
-        else
-        {
-            <form asp-controller="Challenge"
-                  asp-action="Publish"
-                  asp-route-id="@Model.Challenge.ChallengeId"
-                  method="post">
+                        <button type="submit"
+                                class="btn btn-outline-secondary">
+                            Make Community
+                        </button>
 
-                <input type="hidden"
-                       name="returnUrl"
-                       value="@Context.Request.Path" />
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Challenge"
+                          asp-action="MakeCore"
+                          asp-route-id="@Model.Challenge.ChallengeId"
+                          method="post">
 
-                <button type="submit"
-                        class="btn btn-success">
-                    Publish
-                </button>
+                        <button type="submit"
+                                class="btn btn-outline-primary">
+                            Make Core
+                        </button>
 
-            </form>
-        }
+                    </form>
+                }
+            }
+
+
+            @if (Model.Challenge.IsPublished)
+            {
+                <form asp-controller="Challenge"
+                      asp-action="Unpublish"
+                      asp-route-id="@Model.Challenge.ChallengeId"
+                      method="post">
+
+                    <input type="hidden"
+                           name="returnUrl"
+                           value="@Context.Request.Path" />
+
+                    <button type="submit"
+                            class="btn btn-dark">
+                        Unpublish
+                    </button>
+
+                </form>
+            }
+            else
+            {
+                <form asp-controller="Challenge"
+                      asp-action="Publish"
+                      asp-route-id="@Model.Challenge.ChallengeId"
+                      method="post">
+
+                    <input type="hidden"
+                           name="returnUrl"
+                           value="@Context.Request.Path" />
+
+                    <button type="submit"
+                            class="btn btn-success">
+                        Publish
+                    </button>
+
+                </form>
+            }
+
+        </div>
 
     </div>
 

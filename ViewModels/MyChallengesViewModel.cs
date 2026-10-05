@@ -6,7 +6,6 @@ namespace GamificationPlatform.ViewModels
             = new List<MyChallengeViewModel>();
     }
 
-
     public class MyChallengeViewModel
     {
         public int ChallengeId { get; set; }
@@ -19,5 +18,8 @@ namespace GamificationPlatform.ViewModels
         public int MaxPoints { get; set; }
 
         public bool IsPublished { get; set; }
+
+        // False = Community, True = Core.
+        public bool IsCore { get; set; }
     }
 }
