@@ -4,6 +4,7 @@ using System.Security.Claims;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
+using GamificationPlatform.Services;
 
 namespace GamificationPlatform.Controllers
 {
@@ -13,19 +14,23 @@ namespace GamificationPlatform.Controllers
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
 
+        // Service handles achievement rules and unlocking.
+        private readonly IAchievementService _achievementService;
+
         // Logger records important challenge operations and problems.
         private readonly ILogger<ChallengeController> _logger;
 
         public ChallengeController(
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
+            IAchievementService achievementService,
             ILogger<ChallengeController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _achievementService = achievementService;
             _logger = logger;
         }
-
 
         // Shows published challenges in a table.
         public async Task<IActionResult> Table(
@@ -95,7 +100,6 @@ namespace GamificationPlatform.Controllers
             return View(challengesViewModel);
         }
 
-
         // Shows published challenges in a grid.
         public async Task<IActionResult> Grid(
             string filter = "All")
@@ -164,7 +168,6 @@ namespace GamificationPlatform.Controllers
             return View(challengesViewModel);
         }
 
-
         // Shows challenges created by the logged-in user.
         [Authorize]
         public async Task<IActionResult> MyChallenges()
@@ -218,7 +221,6 @@ namespace GamificationPlatform.Controllers
 
             return View(viewModel);
         }
-
 
         // Publishes a challenge.
         [Authorize]
@@ -311,7 +313,6 @@ namespace GamificationPlatform.Controllers
                 nameof(MyChallenges));
         }
 
-
         // Unpublishes a challenge.
         [Authorize]
         [HttpPost]
@@ -379,7 +380,6 @@ namespace GamificationPlatform.Controllers
                 nameof(MyChallenges));
         }
 
-
         // Marks a challenge as Core.
         // Only admins can change the challenge type.
         [Authorize(Roles = "Admin")]
@@ -421,7 +421,6 @@ namespace GamificationPlatform.Controllers
                 new { id });
         }
 
-
         // Marks a challenge as Community.
         // Only admins can change the challenge type.
         [Authorize(Roles = "Admin")]
@@ -462,7 +461,6 @@ namespace GamificationPlatform.Controllers
                 nameof(Details),
                 new { id });
         }
-
 
         // Shows information about a challenge
         // and the user's attempt history.
@@ -615,7 +613,6 @@ namespace GamificationPlatform.Controllers
             return View(viewModel);
         }
 
-
         // Shows the Create Challenge form.
         [Authorize]
         [HttpGet]
@@ -623,7 +620,6 @@ namespace GamificationPlatform.Controllers
         {
             return View();
         }
-
 
         // Creates a new challenge.
         [Authorize]
@@ -676,6 +672,11 @@ namespace GamificationPlatform.Controllers
                 await _challengeRepository
                     .CreateChallengeAsync(challenge);
 
+                // Check whether creating the challenge unlocked
+                // any creator achievements.
+                await _achievementService
+                    .CheckAchievementsAsync(userId);
+
                 _logger.LogInformation(
                     "Challenge {ChallengeId} was created by user {UserId}.",
                     challenge.ChallengeId,
@@ -695,7 +696,6 @@ namespace GamificationPlatform.Controllers
 
             return View(challenge);
         }
-
 
         // Shows the Update Challenge form.
         [Authorize]
@@ -740,7 +740,6 @@ namespace GamificationPlatform.Controllers
 
             return View(challenge);
         }
-
 
         // Updates an existing challenge.
         [Authorize]
@@ -833,7 +832,6 @@ namespace GamificationPlatform.Controllers
             return View(challenge);
         }
 
-
         // Shows the Delete Challenge confirmation page.
         [Authorize]
         [HttpGet]
@@ -877,7 +875,6 @@ namespace GamificationPlatform.Controllers
 
             return View(challenge);
         }
-
 
         // Deletes a challenge.
         [Authorize]

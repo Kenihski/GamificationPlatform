@@ -1,0 +1,183 @@
+@model GamificationPlatform.ViewModels.AchievementsViewModel
+
+@{
+    ViewData["Title"] = $"{Model.Username}'s Achievements";
+}
+
+<link rel="stylesheet" href="~/css/achievements.css" asp-append-version="true" />
+
+<div class="container py-4">
+
+    <div class="achievement-header mb-4">
+
+        <div class="achievement-header-top">
+            <div>
+                <h1 class="mb-1">
+                    @Model.MilestoneIcon @Model.MilestoneName
+                </h1>
+
+                <h5 class="text-muted mb-3">
+                    @Model.Username's Achievements
+                </h5>
+
+                <p class="milestone-message mb-0">
+                    @Model.MilestoneMessage
+                </p>
+            </div>
+
+            <div class="total-ap-box">
+                <span class="total-ap-number">
+                    @Model.TotalPoints
+                </span>
+
+                <span class="total-ap-label">
+                    AP
+                </span>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="achievement-summary">
+
+            <div>
+                <strong>
+                    @Model.UnlockedCount / @Model.TotalAchievements
+                </strong>
+                Achievements Unlocked
+            </div>
+
+            <div>
+                <strong>
+                    @Model.TotalPoints / @Model.MaxPoints AP
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="mt-3">
+
+            @if (Model.MilestoneName == "Legend")
+            {
+                <div class="progress-label">
+                    <span>Maximum milestone reached</span>
+                    <span>100%</span>
+                </div>
+            }
+            else
+            {
+                <div class="progress-label">
+                    <span>
+                        Progress to next milestone
+                    </span>
+
+                    <span>
+                        @Model.TotalPoints /
+                        @Model.NextMilestonePoints AP
+                    </span>
+                </div>
+            }
+
+            <div class="progress achievement-progress">
+                <div class="progress-bar"
+                     role="progressbar"
+                     style="width: @Model.ProgressPercent%;"
+                     aria-valuenow="@Model.ProgressPercent"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="mb-3">
+        <h2>Achievements</h2>
+
+        <p class="text-muted">
+            Achievements are unlocked by completing challenges,
+            improving scores and contributing to the community.
+        </p>
+    </div>
+
+
+    <div class="achievement-list">
+
+        @foreach (var achievement in Model.Achievements)
+        {
+            var rowClass = achievement.IsUnlocked
+                ? achievement.IsGoal
+                    ? "achievement-goal"
+                    : "achievement-unlocked"
+                : "achievement-locked";
+
+            <div class="achievement-row @rowClass">
+
+                <div class="achievement-icon">
+
+                    @if (achievement.IsUnlocked && achievement.IsGoal)
+                    {
+                        <span>⭐</span>
+                    }
+                    else if (achievement.IsUnlocked)
+                    {
+                        <span>🏆</span>
+                    }
+                    else
+                    {
+                        <span>🔒</span>
+                    }
+
+                </div>
+
+
+                <div class="achievement-content">
+
+                    <div class="achievement-name">
+                        @achievement.Name
+                    </div>
+
+                    <div class="achievement-description">
+                        @achievement.Description
+                    </div>
+
+                    @if (achievement.IsUnlocked &&
+                         achievement.UnlockedAt.HasValue)
+                    {
+                        <div class="achievement-date">
+                            Unlocked
+                            @achievement.UnlockedAt.Value.ToString("dd.MM.yyyy")
+                        </div>
+                    }
+
+                </div>
+
+
+                <div class="achievement-points">
+
+                    @if (achievement.IsGoal)
+                    {
+                        <span class="achievement-goal-label">
+                            GOAL
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="achievement-points-number">
+                            @achievement.Points
+                        </span>
+
+                        <span class="achievement-points-label">
+                            AP
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>
