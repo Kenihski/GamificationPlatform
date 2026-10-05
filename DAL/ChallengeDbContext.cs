@@ -25,6 +25,10 @@ namespace GamificationPlatform.DAL
 
         public DbSet<AttemptAnswer> AttemptAnswers { get; set; }
 
+        public DbSet<Achievement> Achievements { get; set; }
+
+        public DbSet<UserAchievement> UserAchievements { get; set; }
+
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder)
         {
@@ -50,6 +54,23 @@ namespace GamificationPlatform.DAL
                 .WithMany(u => u.CreatedChallenges)
                 .HasForeignKey(c => c.CreatedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // A user can only unlock each achievement once.
+            modelBuilder.Entity<UserAchievement>()
+                .HasIndex(ua => new
+                {
+                    ua.UserId,
+                    ua.AchievementId
+                })
+                .IsUnique();
+
+            // Delete achievement unlock records when
+            // the related achievement is deleted.
+            modelBuilder.Entity<UserAchievement>()
+                .HasOne(ua => ua.Achievement)
+                .WithMany(a => a.UserAchievements)
+                .HasForeignKey(ua => ua.AchievementId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

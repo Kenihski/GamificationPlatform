@@ -5,6 +5,7 @@ using System.Security.Claims;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
+using GamificationPlatform.Services;
 
 namespace GamificationPlatform.Controllers
 {
@@ -12,19 +13,23 @@ namespace GamificationPlatform.Controllers
     {
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IAchievementService _achievementService;
         private readonly ILogger<QuizController> _logger;
-
 
         public QuizController(
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
+            IUserRepository userRepository,
+            IAchievementService achievementService,
             ILogger<QuizController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _userRepository = userRepository;
+            _achievementService = achievementService;
             _logger = logger;
         }
-
 
         // Shows the answers from a completed attempt.
         [Authorize]
@@ -61,13 +66,16 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 attempt.UserChallenge.UserId != userId)
             {
-                _logger.LogWarning("User {UserId} attempted to view another user's attempt {AttemptId}.", userId, id);
+                _logger.LogWarning(
+                    "User {UserId} attempted to view another user's attempt {AttemptId}.",
+                    userId,
+                    id);
+
                 return Forbid();
             }
 
             var challenge =
                 attempt.UserChallenge.Challenge;
-
 
             // Prepares the attempt information
             // needed by the view.
@@ -92,7 +100,6 @@ namespace GamificationPlatform.Controllers
                             .ToString("dd.MM.yyyy HH:mm")
                 };
 
-
             // Calculates how long the attempt took.
             if (attempt.CompletedAt.HasValue)
             {
@@ -111,7 +118,6 @@ namespace GamificationPlatform.Controllers
                         $"{Math.Round(timeUsed.TotalSeconds)} sec";
                 }
             }
-
 
             // Prepares the answers for the view.
             foreach (var answer in attempt.Answers)
@@ -178,7 +184,6 @@ namespace GamificationPlatform.Controllers
             return View(viewModel);
         }
 
-
         // Shows the challenge and its questions.
         [Authorize]
         [HttpGet]
@@ -192,7 +197,6 @@ namespace GamificationPlatform.Controllers
             {
                 return NotFound();
             }
-
 
             // Draft challenges cannot be taken.
             // Sends the user back to the challenge
@@ -211,7 +215,6 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
-
             var userIdString =
                 User.FindFirstValue(
                     ClaimTypes.NameIdentifier);
@@ -223,7 +226,6 @@ namespace GamificationPlatform.Controllers
 
             int userId =
                 int.Parse(userIdString);
-
 
             var userChallenge =
                 await _attemptRepository
@@ -245,14 +247,12 @@ namespace GamificationPlatform.Controllers
                         userChallenge);
             }
 
-
             // Gets an unfinished attempt
             // if one already exists.
             var challengeAttempt =
                 await _attemptRepository
                     .GetUnfinishedAttemptAsync(
                         userChallenge.UserChallengeId);
-
 
             // Creates a new attempt if there
             // is no unfinished attempt.
@@ -280,7 +280,6 @@ namespace GamificationPlatform.Controllers
                     id);
             }
 
-
             var viewModel =
                 new TakeChallengeViewModel
                 {
@@ -296,7 +295,6 @@ namespace GamificationPlatform.Controllers
             return View(viewModel);
         }
 
-
         // Submits and completes the challenge attempt.
         [Authorize]
         [HttpPost]
@@ -304,11 +302,16 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Submit(
             int challengeId,
             int challengeAttemptId,
-            [FromForm(Name = "answers")] Dictionary<int, int>? answers)
+            [FromForm(Name = "answers")]
+            Dictionary<int, int>? answers)
         {
-            if (!ModelState.IsValid || challengeId <= 0 || challengeAttemptId <= 0)
+            if (!ModelState.IsValid ||
+                challengeId <= 0 ||
+                challengeAttemptId <= 0)
             {
-                _logger.LogWarning("Quiz submission rejected because the submitted fields were invalid.");
+                _logger.LogWarning(
+                    "Quiz submission rejected because the submitted fields were invalid.");
+
                 return BadRequest();
             }
 
@@ -320,14 +323,15 @@ namespace GamificationPlatform.Controllers
 
             if (result == null)
             {
-                return ModelState.IsValid ? NotFound() : BadRequest();
+                return ModelState.IsValid
+                    ? NotFound()
+                    : BadRequest();
             }
 
             return View(
                 "Result",
                 result);
         }
-
 
         // Ends the challenge early and returns
         // the user to the challenge details page.
@@ -337,11 +341,16 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Exit(
             int challengeId,
             int challengeAttemptId,
-            [FromForm(Name = "answers")] Dictionary<int, int>? answers)
+            [FromForm(Name = "answers")]
+            Dictionary<int, int>? answers)
         {
-            if (!ModelState.IsValid || challengeId <= 0 || challengeAttemptId <= 0)
+            if (!ModelState.IsValid ||
+                challengeId <= 0 ||
+                challengeAttemptId <= 0)
             {
-                _logger.LogWarning("Quiz submission rejected because the submitted fields were invalid.");
+                _logger.LogWarning(
+                    "Quiz submission rejected because the submitted fields were invalid.");
+
                 return BadRequest();
             }
 
@@ -353,10 +362,15 @@ namespace GamificationPlatform.Controllers
 
             if (result == null)
             {
-                return ModelState.IsValid ? NotFound() : BadRequest();
+                return ModelState.IsValid
+                    ? NotFound()
+                    : BadRequest();
             }
 
-            _logger.LogInformation("Attempt {AttemptId} for challenge {ChallengeId} was ended through Exit Challenge.", challengeAttemptId, challengeId);
+            _logger.LogInformation(
+                "Attempt {AttemptId} for challenge {ChallengeId} was ended through Exit Challenge.",
+                challengeAttemptId,
+                challengeId);
 
             TempData["SuccessMessage"] =
                 $"Challenge ended. Your attempt was submitted with {result.Score} / {result.MaxScore} points.";
@@ -370,7 +384,6 @@ namespace GamificationPlatform.Controllers
                 });
         }
 
-
         // Checks the answers, calculates the score
         // and completes the current attempt.
         private async Task<ChallengeResultViewModel?>
@@ -382,7 +395,6 @@ namespace GamificationPlatform.Controllers
             answers ??=
                 new Dictionary<int, int>();
 
-
             var challenge =
                 await _challengeRepository
                     .GetChallengeWithQuestionsAndOptionsAsync(
@@ -392,7 +404,6 @@ namespace GamificationPlatform.Controllers
             {
                 return null;
             }
-
 
             var result =
                 new ChallengeResultViewModel
@@ -408,7 +419,6 @@ namespace GamificationPlatform.Controllers
                             .Sum(q => q.Points)
                 };
 
-
             var userIdString =
                 User.FindFirstValue(
                     ClaimTypes.NameIdentifier);
@@ -420,7 +430,6 @@ namespace GamificationPlatform.Controllers
 
             int userId =
                 int.Parse(userIdString);
-
 
             var challengeAttempt =
                 await _attemptRepository
@@ -440,14 +449,28 @@ namespace GamificationPlatform.Controllers
                 return null;
             }
 
-
             foreach (var answer in answers)
             {
-                var question = challenge.Questions.FirstOrDefault(q => q.QuestionId == answer.Key);
-                if (question == null || !question.Options.Any(o => o.QuestionOptionId == answer.Value))
+                var question =
+                    challenge.Questions
+                        .FirstOrDefault(q =>
+                            q.QuestionId == answer.Key);
+
+                if (question == null ||
+                    !question.Options.Any(o =>
+                        o.QuestionOptionId == answer.Value))
                 {
-                    _logger.LogWarning("User {UserId} submitted invalid option {OptionId} for question {QuestionId} in attempt {AttemptId}.", userId, answer.Value, answer.Key, challengeAttemptId);
-                    ModelState.AddModelError("answers", "An answer does not belong to this challenge question.");
+                    _logger.LogWarning(
+                        "User {UserId} submitted invalid option {OptionId} for question {QuestionId} in attempt {AttemptId}.",
+                        userId,
+                        answer.Value,
+                        answer.Key,
+                        challengeAttemptId);
+
+                    ModelState.AddModelError(
+                        "answers",
+                        "An answer does not belong to this challenge question.");
+
                     return null;
                 }
             }
@@ -465,11 +488,13 @@ namespace GamificationPlatform.Controllers
                 if (DateTime.Now >
                     timeLimit.AddSeconds(5))
                 {
-                    _logger.LogWarning("Attempt {AttemptId} was submitted after the time limit; answers were ignored.", challengeAttemptId);
+                    _logger.LogWarning(
+                        "Attempt {AttemptId} was submitted after the time limit; answers were ignored.",
+                        challengeAttemptId);
+
                     answers.Clear();
                 }
             }
-
 
             foreach (var question in challenge.Questions)
             {
@@ -495,13 +520,11 @@ namespace GamificationPlatform.Controllers
                     }
                 }
 
-
                 if (isCorrect)
                 {
                     result.Score +=
                         question.Points;
                 }
-
 
                 result.QuestionResults.Add(
                     new QuestionResultViewModel
@@ -513,7 +536,6 @@ namespace GamificationPlatform.Controllers
 
                         IsCorrect = isCorrect
                     });
-
 
                 // An unanswered question is also saved,
                 // but without a selected option.
@@ -536,7 +558,6 @@ namespace GamificationPlatform.Controllers
                         attemptAnswer);
             }
 
-
             // Saves the completed attempt.
             challengeAttempt.Score =
                 result.Score;
@@ -547,19 +568,31 @@ namespace GamificationPlatform.Controllers
             challengeAttempt.CompletedAt =
                 DateTime.Now;
 
-
             // Calculates how long the user
             // spent on the challenge.
             result.TimeUsed =
                 challengeAttempt.CompletedAt.Value -
                 challengeAttempt.StartedAt;
 
-
             // Saves all answers and the completed
             // attempt together.
             await _attemptRepository
                 .SaveChangesAsync();
 
+            // A completed attempt can change leaderboard
+            // positions, so achievements are checked
+            // for all normal users.
+            var users =
+                await _userRepository
+                    .GetAllUsersAsync();
+
+            foreach (var user in
+                users.Where(u => !u.IsAdmin))
+            {
+                await _achievementService
+                    .CheckAchievementsAsync(
+                        user.UserId);
+            }
 
             _logger.LogInformation(
                 "User {UserId} completed attempt {AttemptId} for challenge {ChallengeId} with score {Score}/{MaxScore}.",
@@ -568,7 +601,6 @@ namespace GamificationPlatform.Controllers
                 challengeId,
                 result.Score,
                 result.MaxScore);
-
 
             return result;
         }

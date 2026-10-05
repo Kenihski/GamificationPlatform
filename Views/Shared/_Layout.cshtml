@@ -81,6 +81,14 @@
                                     Create Challenge
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Achievement"
+                                   asp-action="Index">
+                                    Achievements
+                                </a>
+                            </li>
                         }
 
                         <!-- Admin only -->
@@ -104,7 +112,16 @@
                             </li>
                         }
 
-                        <!-- Core (Total) leaderboard -->
+                        <!-- Public Hall of Fame -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"
+                               asp-controller="HallOfFame"
+                               asp-action="Index">
+                                Hall of Fame
+                            </a>
+                        </li>
+
+                        <!-- Public Core leaderboard -->
                         <li class="nav-item">
                             <a class="nav-link text-dark"
                                asp-controller="Leaderboard"

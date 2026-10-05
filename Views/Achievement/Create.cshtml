@@ -1,0 +1,169 @@
+@model GamificationPlatform.ViewModels.AchievementAdminViewModel
+
+@{
+    ViewData["Title"] = "Create Achievement";
+}
+
+<div class="container mt-4 mb-5">
+
+    <div class="mb-4">
+        <h1>Create Achievement</h1>
+
+        <p class="text-muted">
+            Create a new achievement that users can unlock.
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <form asp-controller="Achievement"
+                  asp-action="Create"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Name"
+                           class="form-label">
+                        Name
+                    </label>
+
+                    <input asp-for="Name"
+                           class="form-control" />
+
+                    <span asp-validation-for="Name"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description"
+                           class="form-label">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              rows="3"></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Type"
+                           class="form-label">
+                        Requirement Type
+                    </label>
+
+                    <select asp-for="Type"
+                            class="form-select">
+                        <option value="">
+                            Select requirement type
+                        </option>
+
+                        <option value="ChallengesCompleted">
+                            Challenges Completed
+                        </option>
+
+                        <option value="ScorePercentage">
+                            Score Percentage
+                        </option>
+
+                        <option value="SecondAttemptImprovement">
+                            Second Attempt Improvement
+                        </option>
+
+                        <option value="SameChallengeAttempts">
+                            Same Challenge Attempts
+                        </option>
+
+                        <option value="ChallengesCreated">
+                            Challenges Created
+                        </option>
+
+                        <option value="CreatorUniqueParticipants">
+                            Creator Unique Participants
+                        </option>
+
+                        <option value="ChallengeLeaderboardPosition">
+                            Challenge Leaderboard Position
+                        </option>
+
+                        <option value="CoreLeaderboardPosition">
+                            Core Leaderboard Position
+                        </option>
+                    </select>
+
+                    <span asp-validation-for="Type"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="RequirementValue"
+                           class="form-label">
+                        Requirement
+                    </label>
+
+                    <input asp-for="RequirementValue"
+                           class="form-control"
+                           type="number"
+                           min="1" />
+
+                    <span asp-validation-for="RequirementValue"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Points"
+                           class="form-label">
+                        Achievement Points
+                    </label>
+
+                    <select asp-for="Points"
+                            class="form-select">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                    </select>
+
+                    <span asp-validation-for="Points"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="IsActive"
+                           class="form-check-input" />
+
+                    <label asp-for="IsActive"
+                           class="form-check-label">
+                        Publish immediately
+                    </label>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    Create Achievement
+                </button>
+
+                <a asp-controller="Achievement"
+                   asp-action="Index"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+</div>

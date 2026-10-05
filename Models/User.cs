@@ -20,5 +20,9 @@ namespace GamificationPlatform.Models
         // Navigation: One user can create many challenges.
         public virtual List<Challenge> CreatedChallenges { get; set; }
             = new List<Challenge>();
+
+        // Navigation: One user can unlock many achievements.
+        public virtual List<UserAchievement> UserAchievements { get; set; }
+            = new List<UserAchievement>();
     }
 }

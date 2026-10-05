@@ -1,0 +1,260 @@
+.achievement-header {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.achievement-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.milestone-message {
+    font-style: italic;
+}
+
+.total-ap-box {
+    min-width: 110px;
+    padding: 15px 20px;
+    border: 2px solid #d39e00;
+    border-radius: 10px;
+    background-color: #fff3cd;
+    text-align: center;
+}
+
+.total-ap-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.total-ap-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.achievement-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.achievement-progress {
+    height: 18px;
+}
+
+.achievement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.achievement-row {
+    display: flex;
+    align-items: center;
+    min-height: 100px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid;
+    transition: transform 0.15s ease;
+}
+
+.achievement-row:hover {
+    transform: translateY(-1px);
+}
+
+/* Regular unlocked achievement */
+.achievement-unlocked {
+    background-color: #fff8dc;
+    border-color: #d39e00;
+}
+
+/* Unlocked milestone goal */
+.achievement-goal {
+    background-color: #ead8b8;
+    border-color: #9a6b22;
+}
+
+/* Locked achievement or goal */
+.achievement-locked {
+    background-color: #eeeeee;
+    border-color: #ced4da;
+    opacity: 0.7;
+}
+
+.achievement-icon {
+    width: 70px;
+    min-width: 70px;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.achievement-content {
+    flex-grow: 1;
+    padding: 0 15px;
+}
+
+.achievement-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.achievement-description {
+    margin-top: 4px;
+}
+
+.achievement-date {
+    margin-top: 7px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Same size for both AP and GOAL boxes */
+.achievement-points {
+    width: 75px;
+    min-width: 75px;
+    height: 70px;
+    padding: 10px;
+    border: 1px solid #d39e00;
+    border-radius: 8px;
+    background-color: #fff3cd;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.achievement-goal .achievement-points {
+    border-color: #7a5319;
+    background-color: #9a6b22;
+}
+
+.achievement-locked .achievement-points {
+    border-color: #adb5bd;
+    background-color: #dee2e6;
+}
+
+.achievement-points-number {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.achievement-points-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.achievement-goal-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 0.05rem;
+}
+
+.achievement-locked .achievement-goal-label {
+    color: #495057;
+}
+
+/* Admin actions shown on the right side of each achievement. */
+.achievement-admin-actions {
+    width: 100px;
+    min-width: 100px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.achievement-admin-actions .btn {
+    width: 100%;
+}
+
+.achievement-admin-actions form {
+    width: 100%;
+}
+
+.achievement-admin-actions form .btn {
+    width: 100%;
+}
+
+/* Shows that system goals cannot be changed by admins. */
+.achievement-system-locked {
+    width: 75px;
+    min-width: 75px;
+    height: 70px;
+    border: 1px solid #5c636a;
+    border-radius: 8px;
+    background-color: #6c757d;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 1.15;
+}
+
+@media (max-width: 768px) {
+
+    .achievement-header-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .achievement-summary {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .achievement-row {
+        min-height: 90px;
+    }
+
+    .achievement-icon {
+        width: 45px;
+        min-width: 45px;
+        font-size: 1.5rem;
+    }
+
+    .achievement-content {
+        padding: 0 10px;
+    }
+
+    .achievement-points {
+        width: 60px;
+        min-width: 60px;
+        height: 60px;
+    }
+
+    .achievement-admin-actions {
+        width: 85px;
+        min-width: 85px;
+        margin-right: 10px;
+    }
+
+    .achievement-system-locked {
+        width: 60px;
+        min-width: 60px;
+        height: 60px;
+        font-size: 0.6rem;
+    }
+}
