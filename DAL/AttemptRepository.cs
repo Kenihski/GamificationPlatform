@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.DAL
@@ -9,11 +10,14 @@ namespace GamificationPlatform.DAL
     public class AttemptRepository : IAttemptRepository
     {
         private readonly ChallengeDbContext _challengeDbContext;
+        private readonly ILogger<AttemptRepository> _logger;
 
         public AttemptRepository(
-            ChallengeDbContext challengeDbContext)
+            ChallengeDbContext challengeDbContext,
+            ILogger<AttemptRepository> logger)
         {
             _challengeDbContext = challengeDbContext;
+            _logger = logger;
         }
 
 
@@ -23,14 +27,30 @@ namespace GamificationPlatform.DAL
             int userId,
             int challengeId)
         {
-            return await _challengeDbContext
-                .ChallengeAttempts
-                .Where(a =>
-                    a.UserChallenge.UserId == userId &&
-                    a.UserChallenge.ChallengeId == challengeId &&
-                    a.Completed)
-                .OrderByDescending(a => a.CompletedAt)
-                .ToListAsync();
+            try
+            {
+                return await _challengeDbContext
+                    .ChallengeAttempts
+                    .Where(a =>
+                        a.UserChallenge.UserId == userId &&
+                        a.UserChallenge.ChallengeId == challengeId &&
+                        a.Completed)
+                    .OrderByDescending(a => a.CompletedAt)
+                    .ToListAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (UserId {UserId}, ChallengeId {ChallengeId}).",
+                    nameof(GetCompletedAttemptsAsync),
+                    nameof(AttemptRepository),
+                    userId,
+                    challengeId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
 
 
@@ -39,14 +59,29 @@ namespace GamificationPlatform.DAL
         public async Task<List<ChallengeAttempt>> GetCompletedAttemptsForChallengeAsync(
             int challengeId)
         {
-            return await _challengeDbContext
-                .ChallengeAttempts
-                .Include(a => a.UserChallenge)
-                    .ThenInclude(uc => uc.User)
-                .Where(a =>
-                    a.UserChallenge.ChallengeId == challengeId &&
-                    a.Completed)
-                .ToListAsync();
+            try
+            {
+                return await _challengeDbContext
+                    .ChallengeAttempts
+                    .Include(a => a.UserChallenge)
+                        .ThenInclude(uc => uc.User)
+                    .Where(a =>
+                        a.UserChallenge.ChallengeId == challengeId &&
+                        a.Completed)
+                    .ToListAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (ChallengeId {ChallengeId}).",
+                    nameof(GetCompletedAttemptsForChallengeAsync),
+                    nameof(AttemptRepository),
+                    challengeId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
 
 
@@ -55,19 +90,34 @@ namespace GamificationPlatform.DAL
         public async Task<ChallengeAttempt?> GetAttemptDetailsAsync(
             int attemptId)
         {
-            return await _challengeDbContext
-                .ChallengeAttempts
-                .Include(a => a.UserChallenge)
-                    .ThenInclude(uc => uc.User)
-                .Include(a => a.UserChallenge)
-                    .ThenInclude(uc => uc.Challenge)
-                        .ThenInclude(c => c.Questions)
-                .Include(a => a.Answers)
-                    .ThenInclude(answer => answer.Question)
-                        .ThenInclude(question => question.Options)
-                .FirstOrDefaultAsync(a =>
-                    a.ChallengeAttemptId == attemptId &&
-                    a.Completed);
+            try
+            {
+                return await _challengeDbContext
+                    .ChallengeAttempts
+                    .Include(a => a.UserChallenge)
+                        .ThenInclude(uc => uc.User)
+                    .Include(a => a.UserChallenge)
+                        .ThenInclude(uc => uc.Challenge)
+                            .ThenInclude(c => c.Questions)
+                    .Include(a => a.Answers)
+                        .ThenInclude(answer => answer.Question)
+                            .ThenInclude(question => question.Options)
+                    .FirstOrDefaultAsync(a =>
+                        a.ChallengeAttemptId == attemptId &&
+                        a.Completed);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (AttemptId {AttemptId}).",
+                    nameof(GetAttemptDetailsAsync),
+                    nameof(AttemptRepository),
+                    attemptId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
 
 
@@ -77,11 +127,27 @@ namespace GamificationPlatform.DAL
             int userId,
             int challengeId)
         {
-            return await _challengeDbContext
-                .UserChallenges
-                .FirstOrDefaultAsync(uc =>
-                    uc.UserId == userId &&
-                    uc.ChallengeId == challengeId);
+            try
+            {
+                return await _challengeDbContext
+                    .UserChallenges
+                    .FirstOrDefaultAsync(uc =>
+                        uc.UserId == userId &&
+                        uc.ChallengeId == challengeId);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (UserId {UserId}, ChallengeId {ChallengeId}).",
+                    nameof(GetUserChallengeAsync),
+                    nameof(AttemptRepository),
+                    userId,
+                    challengeId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
 
 
@@ -103,14 +169,29 @@ namespace GamificationPlatform.DAL
         public async Task<ChallengeAttempt?> GetUnfinishedAttemptAsync(
             int userChallengeId)
         {
-            return await _challengeDbContext
-                .ChallengeAttempts
-                .Where(a =>
-                    a.UserChallengeId == userChallengeId &&
-                    !a.Completed)
-                .OrderByDescending(a =>
-                    a.StartedAt)
-                .FirstOrDefaultAsync();
+            try
+            {
+                return await _challengeDbContext
+                    .ChallengeAttempts
+                    .Where(a =>
+                        a.UserChallengeId == userChallengeId &&
+                        !a.Completed)
+                    .OrderByDescending(a =>
+                        a.StartedAt)
+                    .FirstOrDefaultAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (UserChallengeId {UserChallengeId}).",
+                    nameof(GetUnfinishedAttemptAsync),
+                    nameof(AttemptRepository),
+                    userChallengeId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
 
 
@@ -133,14 +214,31 @@ namespace GamificationPlatform.DAL
             int userId,
             int challengeId)
         {
-            return await _challengeDbContext
-                .ChallengeAttempts
-                .Include(a => a.UserChallenge)
-                .FirstOrDefaultAsync(a =>
-                    a.ChallengeAttemptId == attemptId &&
-                    a.UserChallenge.UserId == userId &&
-                    a.UserChallenge.ChallengeId == challengeId &&
-                    !a.Completed);
+            try
+            {
+                return await _challengeDbContext
+                    .ChallengeAttempts
+                    .Include(a => a.UserChallenge)
+                    .FirstOrDefaultAsync(a =>
+                        a.ChallengeAttemptId == attemptId &&
+                        a.UserChallenge.UserId == userId &&
+                        a.UserChallenge.ChallengeId == challengeId &&
+                        !a.Completed);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (AttemptId {AttemptId}, UserId {UserId}, ChallengeId {ChallengeId}).",
+                    nameof(GetValidUnfinishedAttemptAsync),
+                    nameof(AttemptRepository),
+                    attemptId,
+                    userId,
+                    challengeId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
 
 
@@ -161,36 +259,65 @@ namespace GamificationPlatform.DAL
         public async Task DeleteChallengeHistoryAsync(
             int challengeId)
         {
-            var attempts =
-                await _challengeDbContext
-                    .ChallengeAttempts
-                    .Include(a => a.Answers)
-                    .Where(a =>
-                        a.UserChallenge.ChallengeId ==
-                            challengeId)
-                    .ToListAsync();
-
-            // Delete answers first because they
-            // reference attempts and answer options.
-            foreach (var attempt in attempts)
+            try
             {
-                _challengeDbContext
-                    .AttemptAnswers
-                    .RemoveRange(attempt.Answers);
-            }
+                var attempts =
+                    await _challengeDbContext
+                        .ChallengeAttempts
+                        .Include(a => a.Answers)
+                        .Where(a =>
+                            a.UserChallenge.ChallengeId ==
+                                challengeId)
+                        .ToListAsync();
 
-            // Delete the attempts after their answers.
-            _challengeDbContext
-                .ChallengeAttempts
-                .RemoveRange(attempts);
+                // Delete answers first because they
+                // reference attempts and answer options.
+                foreach (var attempt in attempts)
+                {
+                    _challengeDbContext
+                        .AttemptAnswers
+                        .RemoveRange(attempt.Answers);
+                }
+
+                // Delete the attempts after their answers.
+                _challengeDbContext
+                    .ChallengeAttempts
+                    .RemoveRange(attempts);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository} (ChallengeId {ChallengeId}).",
+                    nameof(DeleteChallengeHistoryAsync),
+                    nameof(AttemptRepository),
+                    challengeId);
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
 
 
         // Saves pending database changes.
         public async Task<bool> SaveChangesAsync()
         {
-            return await _challengeDbContext
-                .SaveChangesAsync() > 0;
+            try
+            {
+                return await _challengeDbContext
+                    .SaveChangesAsync() > 0;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository}.",
+                    nameof(SaveChangesAsync),
+                    nameof(AttemptRepository));
+
+                // Preserve the failure and its original stack trace.
+                throw;
+            }
         }
     }
 }

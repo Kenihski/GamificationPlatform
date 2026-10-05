@@ -216,22 +216,19 @@ This is intentional for the current MVP version and ensures that the same test d
 
 ## Validation, Error Handling and Logging
 
-The application uses server-side validation for submitted forms.
+The application validates forms and quiz submissions on the server before saving data. Validation covers required fields, lengths, question points, allowed images/time limits, answer options, correct-answer selection, and duplicate usernames. Authentication cookies are checked against the current user database so a cookie for a deleted account is rejected before a protected database operation.
 
-The application also handles common errors and access restrictions, including:
+Expected errors receive form messages or friendly HTTP 400/401/403/404 pages. Unexpected failures outside Development receive a generic HTTP 500 page with a request reference. DAL exceptions are logged and rethrown for upstream handling.
 
-- Invalid form input
-- Resources that cannot be found
-- Unauthorized access
-- Forbidden access to resources owned by other users
+Serilog records controller events, database failures, initialization events, and HTTP requests in the console and per-run files under `Logs/`. Logs include request references and do not deliberately record submitted credentials or entire models.
 
-Server-side logging is implemented using Serilog to log relevant application events and errors.
+See [Task 5 implementation summary](docs/Task5.md) for the complete rules, the DAL logging added in this chat, database setup, and manual verification guidance. GitHub Actions checks that the application builds in Release configuration.
 
 ---
 
 ## Code Structure
 
-The project is structured according to the MVC pattern and separates different responsibilities into models, views, controllers, and view models.
+The project is structured according to the MVC pattern and separates responsibilities into models, views, controllers, view models, validation attributes, and DAL repositories.
 
 Quiz functionality and leaderboard functionality are separated into their own controllers to keep the challenge management code more modular and easier to maintain.
 
@@ -261,7 +258,7 @@ The current application demonstrates the main concept and core functionality, in
 
 The application is intended to be further developed for the final Exam Group Project.
 
-A Data Access Layer (DAL) and the Repository Pattern have not yet been implemented in this MVP version. These will be introduced during further development to improve the separation between the controllers and the data access logic.
+A Data Access Layer (DAL) and the Repository Pattern are implemented. Controllers use injected repository interfaces for database access, and the repositories use Entity Framework Core for asynchronous queries and persistence.
 
 Additional functionality and improvements to the existing features are also planned for the Exam Group Project. The current authentication and user management solution may also be further developed, including evaluating the use of ASP.NET Core Identity.
 

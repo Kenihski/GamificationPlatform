@@ -13,15 +13,18 @@ namespace GamificationPlatform.Controllers
         private readonly IQuestionRepository _questionRepository;
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly ILogger<QuestionController> _logger;
 
         public QuestionController(
             IQuestionRepository questionRepository,
             IChallengeRepository challengeRepository,
-            IAttemptRepository attemptRepository)
+            IAttemptRepository attemptRepository,
+            ILogger<QuestionController> logger)
         {
             _questionRepository = questionRepository;
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _logger = logger;
         }
 
 
@@ -92,6 +95,7 @@ namespace GamificationPlatform.Controllers
 
                 if (challenge == null)
                 {
+                    _logger.LogWarning("User {UserId} was denied question management access.", userId);
                     return Forbid();
                 }
 
@@ -125,6 +129,12 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
+            if (model.Question == null)
+            {
+                _logger.LogWarning("Question creation rejected because the question data was missing.");
+                return BadRequest();
+            }
+
             var challenge =
                 await _challengeRepository
                     .GetChallengeByIdAsync(
@@ -145,33 +155,11 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied question management access.", userId);
                 return Forbid();
             }
 
-            // At least two answer options
-            // must be filled in.
-            int filledOptions =
-                model.Options.Count(option =>
-                    !string.IsNullOrWhiteSpace(option));
-
-            if (filledOptions < 2)
-            {
-                ModelState.AddModelError(
-                    "",
-                    "You must enter at least two answer options.");
-            }
-
-            // The correct answer must be one
-            // of the filled answer options.
-            if (model.CorrectOption < 0 ||
-                model.CorrectOption >= model.Options.Count ||
-                string.IsNullOrWhiteSpace(
-                    model.Options[model.CorrectOption]))
-            {
-                ModelState.AddModelError(
-                    "",
-                    "You must select a filled answer as the correct answer.");
-            }
+            ValidateAnswerOptions(model);
 
             if (ModelState.IsValid)
             {
@@ -181,8 +169,15 @@ namespace GamificationPlatform.Controllers
                     .DeleteChallengeHistoryAsync(
                         model.Question.ChallengeId);
 
-                var question =
-                    model.Question;
+                // Copy only editable fields; ignore any submitted entity graph.
+                var question = new Question
+                {
+                    Title = model.Question.Title,
+                    Description = model.Question.Description,
+                    Points = model.Question.Points,
+                    ImageUrl = model.Question.ImageUrl,
+                    ChallengeId = challenge.ChallengeId
+                };
 
                 // Add the filled answer options.
                 for (int i = 0;
@@ -200,7 +195,7 @@ namespace GamificationPlatform.Controllers
                         new QuestionOption
                         {
                             Text =
-                                model.Options[i],
+                                model.Options[i].Trim(),
 
                             IsCorrect =
                                 i == model.CorrectOption,
@@ -214,6 +209,8 @@ namespace GamificationPlatform.Controllers
 
                 await _questionRepository
                     .CreateQuestionAsync(question);
+
+                _logger.LogInformation("User {UserId} created question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.", userId, question.QuestionId, question.ChallengeId);
 
                 TempData["SuccessMessage"] =
                     "Question created. Previous attempts and scores were reset.";
@@ -229,6 +226,9 @@ namespace GamificationPlatform.Controllers
                         showQuestions = true
                     });
             }
+
+            _logger.LogWarning("Question creation rejected because validation failed for user {UserId} on challenge {ChallengeId}.", userId, model.Question.ChallengeId);
+            PrepareOptionFields(model);
 
             // Reload challenges if validation fails.
             if (isAdmin)
@@ -282,6 +282,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied question management access.", userId);
                 return Forbid();
             }
 
@@ -354,6 +355,12 @@ namespace GamificationPlatform.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
+            if (model.Question == null)
+            {
+                _logger.LogWarning("Question update rejected because the question data was missing.");
+                return BadRequest();
+            }
+
             var question =
                 await _questionRepository
                     .GetQuestionWithOptionsAndChallengeAsync(
@@ -369,6 +376,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied question management access.", userId);
                 return Forbid();
             }
 
@@ -377,30 +385,7 @@ namespace GamificationPlatform.Controllers
             ModelState.Remove(
                 "Question.Challenge");
 
-            // At least two answer options
-            // must be filled in.
-            int filledOptions =
-                model.Options.Count(option =>
-                    !string.IsNullOrWhiteSpace(option));
-
-            if (filledOptions < 2)
-            {
-                ModelState.AddModelError(
-                    "",
-                    "You must enter at least two answer options.");
-            }
-
-            // The selected correct answer
-            // cannot be an empty option.
-            if (model.CorrectOption < 0 ||
-                model.CorrectOption >= model.Options.Count ||
-                string.IsNullOrWhiteSpace(
-                    model.Options[model.CorrectOption]))
-            {
-                ModelState.AddModelError(
-                    "",
-                    "You must select a filled answer as the correct answer.");
-            }
+            ValidateAnswerOptions(model);
 
             if (ModelState.IsValid)
             {
@@ -444,7 +429,7 @@ namespace GamificationPlatform.Controllers
                         new QuestionOption
                         {
                             Text =
-                                model.Options[i],
+                                model.Options[i].Trim(),
 
                             IsCorrect =
                                 i == model.CorrectOption,
@@ -458,6 +443,8 @@ namespace GamificationPlatform.Controllers
 
                 await _questionRepository
                     .UpdateQuestionAsync(question);
+
+                _logger.LogInformation("User {UserId} updated question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.", userId, question.QuestionId, question.ChallengeId);
 
                 TempData["SuccessMessage"] =
                     "Question updated. Previous attempts and scores were reset.";
@@ -473,6 +460,9 @@ namespace GamificationPlatform.Controllers
                         showQuestions = true
                     });
             }
+
+            _logger.LogWarning("Question update rejected because validation failed for user {UserId} on question {QuestionId}.", userId, question.QuestionId);
+            PrepareOptionFields(model);
 
             // Reload the challenge
             // if validation fails.
@@ -529,6 +519,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied question management access.", userId);
                 return Forbid();
             }
 
@@ -572,6 +563,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
+                _logger.LogWarning("User {UserId} was denied question management access.", userId);
                 return Forbid();
             }
 
@@ -594,16 +586,17 @@ namespace GamificationPlatform.Controllers
             {
                 question.Challenge.IsPublished = false;
 
-                await _challengeRepository
-                    .UpdateChallengeAsync(
-                        question.Challenge);
+                // The tracked challenge is saved with the question deletion below.
             }
 
-            await _questionRepository
-                .DeleteQuestionAsync(question);
+            // Save unpublishing, history deletion, and question deletion together.
+            await _questionRepository.DeleteQuestionAsync(question);
+
+            _logger.LogInformation("User {UserId} deleted question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.", userId, id, challengeId);
 
             if (shouldUnpublish)
             {
+                _logger.LogInformation("Challenge {ChallengeId} was automatically unpublished after its last question was deleted.", challengeId);
                 TempData["SuccessMessage"] =
                     "Question deleted. The challenge was automatically unpublished because it has no questions left. Previous attempts and scores were reset.";
             }
@@ -623,6 +616,52 @@ namespace GamificationPlatform.Controllers
                     id = challengeId,
                     showQuestions = true
                 });
+        }
+        // Enforce the same answer rules for creation and editing.
+        private void ValidateAnswerOptions(QuestionFormViewModel model)
+        {
+            if (model.Options == null)
+            {
+                ModelState.AddModelError("Options", "Enter between 2 and 4 answer options.");
+                return;
+            }
+
+            var filledOptions = model.Options
+                .Where(option => !string.IsNullOrWhiteSpace(option))
+                .Select(option => option.Trim())
+                .ToList();
+
+            if (model.Options.Count > 4 || filledOptions.Count < 2)
+            {
+                ModelState.AddModelError("Options", "Enter between 2 and 4 answer options.");
+            }
+
+            if (filledOptions.Any(option => option.Length > 200))
+            {
+                ModelState.AddModelError("Options", "Each answer option must be at most 200 characters.");
+            }
+
+            if (filledOptions.Distinct(StringComparer.OrdinalIgnoreCase).Count() != filledOptions.Count)
+            {
+                ModelState.AddModelError("Options", "Answer options must be different.");
+            }
+
+            if (model.CorrectOption is not int correctOption || correctOption < 0 ||
+                correctOption >= model.Options.Count || correctOption > 3 ||
+                string.IsNullOrWhiteSpace(model.Options[correctOption]))
+            {
+                ModelState.AddModelError("CorrectOption", "Select a filled answer as the correct answer.");
+            }
+        }
+
+        // Razor renders four fields even after a malformed collection is rejected.
+        private static void PrepareOptionFields(QuestionFormViewModel model)
+        {
+            model.Options = (model.Options ?? new List<string>()).Take(4).ToList();
+            while (model.Options.Count < 4)
+            {
+                model.Options.Add("");
+            }
         }
     }
 }

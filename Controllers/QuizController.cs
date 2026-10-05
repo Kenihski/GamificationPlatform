@@ -61,6 +61,7 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 attempt.UserChallenge.UserId != userId)
             {
+                _logger.LogWarning("User {UserId} attempted to view another user's attempt {AttemptId}.", userId, id);
                 return Forbid();
             }
 
@@ -303,8 +304,14 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Submit(
             int challengeId,
             int challengeAttemptId,
-            Dictionary<int, int>? answers)
+            [FromForm(Name = "answers")] Dictionary<int, int>? answers)
         {
+            if (!ModelState.IsValid || challengeId <= 0 || challengeAttemptId <= 0)
+            {
+                _logger.LogWarning("Quiz submission rejected because the submitted fields were invalid.");
+                return BadRequest();
+            }
+
             var result =
                 await CompleteAttemptAsync(
                     challengeId,
@@ -313,7 +320,7 @@ namespace GamificationPlatform.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return ModelState.IsValid ? NotFound() : BadRequest();
             }
 
             return View(
@@ -330,8 +337,14 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Exit(
             int challengeId,
             int challengeAttemptId,
-            Dictionary<int, int>? answers)
+            [FromForm(Name = "answers")] Dictionary<int, int>? answers)
         {
+            if (!ModelState.IsValid || challengeId <= 0 || challengeAttemptId <= 0)
+            {
+                _logger.LogWarning("Quiz submission rejected because the submitted fields were invalid.");
+                return BadRequest();
+            }
+
             var result =
                 await CompleteAttemptAsync(
                     challengeId,
@@ -340,8 +353,10 @@ namespace GamificationPlatform.Controllers
 
             if (result == null)
             {
-                return NotFound();
+                return ModelState.IsValid ? NotFound() : BadRequest();
             }
+
+            _logger.LogInformation("Attempt {AttemptId} for challenge {ChallengeId} was ended through Exit Challenge.", challengeAttemptId, challengeId);
 
             TempData["SuccessMessage"] =
                 $"Challenge ended. Your attempt was submitted with {result.Score} / {result.MaxScore} points.";
@@ -426,6 +441,17 @@ namespace GamificationPlatform.Controllers
             }
 
 
+            foreach (var answer in answers)
+            {
+                var question = challenge.Questions.FirstOrDefault(q => q.QuestionId == answer.Key);
+                if (question == null || !question.Options.Any(o => o.QuestionOptionId == answer.Value))
+                {
+                    _logger.LogWarning("User {UserId} submitted invalid option {OptionId} for question {QuestionId} in attempt {AttemptId}.", userId, answer.Value, answer.Key, challengeAttemptId);
+                    ModelState.AddModelError("answers", "An answer does not belong to this challenge question.");
+                    return null;
+                }
+            }
+
             // Checks the time limit on the server.
             if (challenge.TimeLimitMinutes.HasValue)
             {
@@ -439,6 +465,7 @@ namespace GamificationPlatform.Controllers
                 if (DateTime.Now >
                     timeLimit.AddSeconds(5))
                 {
+                    _logger.LogWarning("Attempt {AttemptId} was submitted after the time limit; answers were ignored.", challengeAttemptId);
                     answers.Clear();
                 }
             }

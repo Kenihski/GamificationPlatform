@@ -13,6 +13,7 @@
 
     <div class="form-group mb-3">
         <label asp-for="Title"></label>
+        <span class="text-danger">*</span>
 
         <input asp-for="Title"
                class="form-control" />
@@ -25,6 +26,7 @@
 
     <div class="form-group mb-3">
         <label asp-for="Description"></label>
+        <span class="text-danger">*</span>
 
         <input asp-for="Description"
                class="form-control" />
@@ -83,6 +85,7 @@
         <label asp-for="ImageUrl">
             Image
         </label>
+        <span class="text-danger">*</span>
 
         <select asp-for="ImageUrl"
                 class="form-control"

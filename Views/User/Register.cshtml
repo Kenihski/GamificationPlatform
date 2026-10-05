@@ -6,6 +6,8 @@
       asp-action="Register"
       method="post">
 
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
     <input type="hidden"
            name="returnUrl"
            value="@ViewBag.ReturnUrl" />

@@ -38,9 +38,16 @@ namespace GamificationPlatform.ViewModels
         public IEnumerable<ValidationResult> Validate(
             ValidationContext validationContext)
         {
+            if (!string.IsNullOrWhiteSpace(Username) && Username.Trim().Length < 3)
+            {
+                yield return new ValidationResult(
+                    "Username must be between 3 and 50 characters.",
+                    new[] { nameof(Username) });
+            }
+
             if (!string.IsNullOrWhiteSpace(Username) &&
                 !string.IsNullOrWhiteSpace(Password) &&
-                Username.Equals(
+                Username.Trim().Equals(
                     Password,
                     StringComparison.OrdinalIgnoreCase))
             {

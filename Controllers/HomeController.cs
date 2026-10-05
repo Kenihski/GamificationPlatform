@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
+using System.Security.Claims;
 
 using GamificationPlatform.DAL;
 using GamificationPlatform.ViewModels;
@@ -9,13 +12,16 @@ namespace GamificationPlatform.Controllers
     {
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly ILogger<HomeController> _logger;
 
         public HomeController(
             IChallengeRepository challengeRepository,
-            IAttemptRepository attemptRepository)
+            IAttemptRepository attemptRepository,
+            ILogger<HomeController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _logger = logger;
         }
 
 
@@ -138,6 +144,46 @@ namespace GamificationPlatform.Controllers
 
 
             return View(viewModel);
+        }
+        [AllowAnonymous]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            Response.StatusCode = 500;
+            // Exception middleware and DAL already log the technical failure.
+            return View(new ErrorViewModel
+            {
+                StatusCode = 500,
+                Title = "Something went wrong",
+                Message = "We could not complete your request. Please try again later.",
+                RequestId = HttpContext.TraceIdentifier
+            });
+        }
+
+        [AllowAnonymous]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ErrorStatus(int code)
+        {
+            if (code < 400 || code > 599) code = 404;
+            Response.StatusCode = code;
+            var originalPath = HttpContext.Features.Get<IStatusCodeReExecuteFeature>()?.OriginalPath;
+            _logger.LogWarning("Request {RequestId} to {RequestPath} returned HTTP {StatusCode} for user {UserId}.",
+                HttpContext.TraceIdentifier, originalPath ?? Request.Path.Value, code,
+                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous");
+
+            var (title, message) = code switch
+            {
+                400 => ("Invalid request", "Your request could not be processed. Check the form and try again."),
+                401 => ("Login required", "Please log in to continue."),
+                403 => ("Access denied", "You do not have permission to perform this action."),
+                404 => ("Page not found", "The requested page or resource could not be found."),
+                _ => ("Request failed", "We could not complete your request. Please try again later.")
+            };
+            return View("Error", new ErrorViewModel
+            {
+                StatusCode = code, Title = title, Message = message,
+                RequestId = HttpContext.TraceIdentifier
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GamificationPlatform.Validation;
 
 namespace GamificationPlatform.Models 
 { 
@@ -21,10 +22,12 @@ namespace GamificationPlatform.Models
         public int MaxPoints { get; set; } 
 
         [Required(ErrorMessage = "Please select an image.")]
+        [AllowedImage(ErrorMessage = "Please select one of the available images.")]
         public string ImageUrl { get; set; } = string.Empty;
 
         // Time limit in minutes.
         // Null means unlimited time.
+        [AllowedTimeLimit(ErrorMessage = "Choose unlimited or a time limit of 10, 20, 30, 60, 90, or 120 minutes.")]
         public int? TimeLimitMinutes { get; set; }
 
         // False = Draft, True = Published. 

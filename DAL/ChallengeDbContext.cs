@@ -34,6 +34,16 @@ namespace GamificationPlatform.DAL
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
         {
+            // SQLite NOCASE makes username lookup and uniqueness consistent
+            // for ASCII case variants such as Alice and alice.
+            modelBuilder.Entity<User>()
+                .Property(u => u.Username)
+                .UseCollation("NOCASE");
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
             // One user can create many challenges.
             modelBuilder.Entity<Challenge>()
                 .HasOne(c => c.CreatedByUser)
