@@ -14,5 +14,9 @@ namespace GamificationPlatform.Models
 
         // Stores when the achievement was unlocked.
         public DateTime UnlockedAt { get; set; }
+
+        // Tracks whether the user has seen the
+        // achievement unlock notification.
+        public bool NotificationSeen { get; set; } = false;
     }
 }

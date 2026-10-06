@@ -13,6 +13,9 @@ namespace GamificationPlatform.DAL
         Task<IEnumerable<UserAchievement>> GetUserAchievementsAsync(
             int userId);
 
+        Task<IEnumerable<UserAchievement>> GetUnseenUserAchievementsAsync(
+            int userId);
+
         Task<bool> HasAchievementAsync(
             int userId,
             int achievementId);
@@ -25,6 +28,10 @@ namespace GamificationPlatform.DAL
 
         Task AddUserAchievementAsync(
             UserAchievement userAchievement);
+
+        Task<bool> MarkNotificationSeenAsync(
+            int userAchievementId,
+            int userId);
 
         Task SaveChangesAsync();
     }

@@ -48,6 +48,18 @@ namespace GamificationPlatform.DAL
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<UserAchievement>>
+            GetUnseenUserAchievementsAsync(int userId)
+        {
+            return await _context.UserAchievements
+                .Include(ua => ua.Achievement)
+                .Where(ua =>
+                    ua.UserId == userId &&
+                    !ua.NotificationSeen)
+                .OrderBy(ua => ua.UnlockedAt)
+                .ToListAsync();
+        }
+
         public async Task<bool> HasAchievementAsync(
             int userId,
             int achievementId)
@@ -95,6 +107,33 @@ namespace GamificationPlatform.DAL
                 "Achievement {AchievementId} unlocked by user {UserId}.",
                 userAchievement.AchievementId,
                 userAchievement.UserId);
+        }
+
+        // Marks a notification as seen for the correct user.
+        public async Task<bool> MarkNotificationSeenAsync(
+            int userAchievementId,
+            int userId)
+        {
+            var userAchievement = await _context.UserAchievements
+                .FirstOrDefaultAsync(ua =>
+                    ua.UserAchievementId == userAchievementId &&
+                    ua.UserId == userId);
+
+            if (userAchievement == null)
+            {
+                return false;
+            }
+
+            userAchievement.NotificationSeen = true;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Achievement notification {UserAchievementId} marked as seen by user {UserId}.",
+                userAchievementId,
+                userId);
+
+            return true;
         }
 
         public async Task SaveChangesAsync()

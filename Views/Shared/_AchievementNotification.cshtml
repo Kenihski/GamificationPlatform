@@ -1,0 +1,59 @@
+@model List<GamificationPlatform.ViewModels.AchievementNotificationViewModel>
+
+@if (Model.Any())
+{
+    <div id="achievement-notification-container"
+         class="achievement-notification-container"
+         data-mark-seen-url="@Url.Action("MarkSeen", "AchievementNotification")">
+
+        <!-- Token used when marking notifications as seen. -->
+        <form id="achievement-notification-antiforgery"
+              class="d-none">
+            @Html.AntiForgeryToken()
+        </form>
+
+        @foreach (var achievement in Model)
+        {
+            <div class="achievement-notification @(achievement.IsGoal ? "goal-notification" : "")"
+                 data-user-achievement-id="@achievement.UserAchievementId">
+
+                <button type="button"
+                        class="achievement-notification-close"
+                        aria-label="Close">
+                    &times;
+                </button>
+
+                <div class="achievement-notification-content">
+
+                    <div class="achievement-notification-heading">
+                        @(achievement.IsGoal
+                            ? "GOAL UNLOCKED!"
+                            : "ACHIEVEMENT UNLOCKED!")
+                    </div>
+
+                    <div class="achievement-notification-name">
+                        @achievement.Name
+                    </div>
+
+                    <div class="achievement-notification-description">
+                        @achievement.Description
+                    </div>
+
+                </div>
+
+                <div class="achievement-notification-points">
+                    @if (achievement.IsGoal)
+                    {
+                        <span>GOAL</span>
+                    }
+                    else
+                    {
+                        <span>@achievement.Points AP</span>
+                    }
+                </div>
+
+            </div>
+        }
+
+    </div>
+}
