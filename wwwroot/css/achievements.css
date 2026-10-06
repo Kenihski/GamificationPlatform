@@ -213,6 +213,169 @@
     line-height: 1.15;
 }
 
+/* Achievement unlock notification container. */
+.achievement-notification-container {
+    position: fixed;
+    top: 90px;
+    right: 25px;
+    z-index: 1050;
+    width: 420px;
+    max-width: calc(100vw - 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Individual achievement unlock notification. */
+.achievement-notification {
+    position: relative;
+    display: none;
+    align-items: center;
+    min-height: 110px;
+    padding: 16px;
+    border: 2px solid #d39e00;
+    border-radius: 10px;
+    background-color: #fff8dc;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    animation: achievementFadeIn 0.3s ease;
+}
+
+/* Uses the darker achievement goal design for goal notifications. */
+.achievement-notification.goal-notification {
+    background-color: #ead8b8;
+    border-color: #9a6b22;
+}
+
+/* Contains the achievement name and description. */
+.achievement-notification-content {
+    flex-grow: 1;
+    padding-right: 15px;
+}
+
+/* Shows whether an achievement or goal was unlocked. */
+.achievement-notification-heading {
+    margin-bottom: 5px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+}
+
+/* Achievement name inside the notification. */
+.achievement-notification-name {
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
+/* Achievement description inside the notification. */
+.achievement-notification-description {
+    margin-top: 4px;
+    font-size: 0.9rem;
+}
+
+/* AP or GOAL box shown on the right side. */
+.achievement-notification-points {
+    width: 75px;
+    min-width: 75px;
+    height: 70px;
+    padding: 10px;
+    border: 1px solid #d39e00;
+    border-radius: 8px;
+    background-color: #fff3cd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* Uses the darker box for milestone goal notifications. */
+.goal-notification .achievement-notification-points {
+    border-color: #7a5319;
+    background-color: #9a6b22;
+    color: white;
+}
+
+/* Close button in the top-right corner of the notification. */
+.achievement-notification-close {
+    position: absolute;
+    top: 4px;
+    right: 7px;
+    border: none;
+    background: transparent;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.achievement-notification-close:hover {
+    opacity: 1;
+}
+
+/* Changes the notification to a neutral colour after the unlock highlight. */
+.achievement-notification.expiring {
+    background-color: #f5f5f5;
+    border-color: #ced4da;
+    transition:
+        background-color 1s ease,
+        border-color 1s ease;
+}
+
+/* Changes the AP box to the same neutral style. */
+.achievement-notification.expiring .achievement-notification-points {
+    background-color: #eeeeee;
+    border-color: #ced4da;
+    transition:
+        background-color 1s ease,
+        border-color 1s ease;
+}
+
+/* Goal notifications also change to the neutral colour. */
+.achievement-notification.goal-notification.expiring {
+    background-color: #f5f5f5;
+    border-color: #ced4da;
+}
+
+/* Changes the GOAL box to the neutral style. */
+.achievement-notification.goal-notification.expiring
+.achievement-notification-points {
+    background-color: #eeeeee;
+    border-color: #ced4da;
+    color: #212529;
+}
+
+/* Plays when a notification is being removed. */
+.achievement-notification.closing {
+    animation: achievementFadeOut 0.3s ease forwards;
+}
+
+/* Animation used when a notification appears. */
+@keyframes achievementFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animation used when a notification disappears. */
+@keyframes achievementFadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+
 @media (max-width: 768px) {
 
     .achievement-header-top {
@@ -256,5 +419,25 @@
         min-width: 60px;
         height: 60px;
         font-size: 0.6rem;
+    }
+
+    /* Makes achievement notifications fit smaller screens. */
+    .achievement-notification-container {
+        top: 75px;
+        right: 15px;
+        left: 15px;
+        width: auto;
+        max-width: none;
+    }
+
+    .achievement-notification {
+        min-height: 95px;
+        padding: 12px;
+    }
+
+    .achievement-notification-points {
+        width: 60px;
+        min-width: 60px;
+        height: 60px;
     }
 }

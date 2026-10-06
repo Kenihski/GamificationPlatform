@@ -11,10 +11,10 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js" defer></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="~/js/achievement-notifications.js" asp-append-version="true" defer></script>
 
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/achievements.css" asp-append-version="true" />
 </head>
 
 <body>
@@ -189,6 +189,9 @@
         </main>
 
     </div>
+
+    <!-- Achievement unlock notifications -->
+    @await Component.InvokeAsync("AchievementNotifications")
 
     @await RenderSectionAsync("Scripts", required: false)
 
