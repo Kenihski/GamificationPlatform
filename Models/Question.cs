@@ -16,7 +16,12 @@ namespace GamificationPlatform.Models
         [StringLength(
             500,
             ErrorMessage = "Question description cannot be longer than 500 characters.")]
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
+
+        [StringLength(
+            1000,
+            ErrorMessage = "Question explanation cannot be longer than 1000 characters.")]
+        public string? Explanation { get; set; }
 
         [Range(
             1,

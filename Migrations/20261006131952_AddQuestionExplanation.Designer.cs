@@ -3,6 +3,7 @@ using System;
 using GamificationPlatform.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamificationPlatform.Migrations
 {
     [DbContext(typeof(ChallengeDbContext))]
-    partial class ChallengeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261006131952_AddQuestionExplanation")]
+    partial class AddQuestionExplanation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,10 +185,12 @@ namespace GamificationPlatform.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Explanation")
+                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 

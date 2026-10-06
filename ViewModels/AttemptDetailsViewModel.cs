@@ -27,6 +27,9 @@ namespace GamificationPlatform.ViewModels
         public string QuestionDescription { get; set; }
             = string.Empty;
 
+        public string QuestionExplanation { get; set; }
+            = string.Empty;
+
         public string QuestionType { get; set; }
             = "SingleChoice";
 

@@ -141,6 +141,14 @@
                 }
             }
 
+            @if (!string.IsNullOrWhiteSpace(result.Question.Explanation))
+            {
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>Explanation:</strong>
+                    @result.Question.Explanation
+                </div>
+            }
+
         </div>
     </div>
 }

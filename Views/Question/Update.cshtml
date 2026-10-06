@@ -136,6 +136,26 @@
     </div>
 
     <div class="form-group mb-3">
+        <label asp-for="Question.Explanation">
+            Explanation (optional)
+        </label>
+
+        <textarea asp-for="Question.Explanation"
+                  class="form-control"
+                  rows="3"
+                  maxlength="1000"
+                  placeholder="Explain why the answer is correct"></textarea>
+
+        <span asp-validation-for="Question.Explanation"
+              class="text-danger">
+        </span>
+
+        <small class="form-text text-muted">
+            This explanation is shown after the challenge has been submitted.
+        </small>
+    </div>
+
+    <div class="form-group mb-3">
         <label asp-for="Question.Points">
             Points
         </label>

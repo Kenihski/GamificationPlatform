@@ -182,7 +182,10 @@ namespace GamificationPlatform.Controllers
                             answer.Question.Title,
 
                         QuestionDescription =
-                            answer.Question.Description,
+                            answer.Question.Description ?? string.Empty,
+
+                        QuestionExplanation =
+                            answer.Question.Explanation ?? string.Empty,
 
                         QuestionType =
                             answer.Question.QuestionType,

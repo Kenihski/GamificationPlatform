@@ -152,6 +152,14 @@
                 </p>
             }
 
+            @if (!string.IsNullOrWhiteSpace(answer.QuestionExplanation))
+            {
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>Explanation:</strong>
+                    @answer.QuestionExplanation
+                </div>
+            }
+
         </div>
     </div>
 }

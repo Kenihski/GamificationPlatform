@@ -181,6 +181,7 @@ namespace GamificationPlatform.Controllers
                     {
                         Title = model.Question.Title,
                         Description = model.Question.Description,
+                        Explanation = model.Question.Explanation,
                         Points = model.Question.Points,
                         ImageUrl = model.Question.ImageUrl,
                         QuestionType = model.Question.QuestionType,
@@ -405,6 +406,9 @@ namespace GamificationPlatform.Controllers
 
                 question.Description =
                     model.Question.Description;
+
+                question.Explanation =
+                    model.Question.Explanation;
 
                 question.Points =
                     model.Question.Points;
