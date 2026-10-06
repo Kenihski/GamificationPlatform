@@ -70,7 +70,12 @@
 
         <span class="text-danger">*</span>
 
-        <input asp-for="Question.Points"
+        <input type="number"
+               name="Question.Points"
+               id="Question_Points"
+               value="@(Model.Question.Points == 0 ? "" : Model.Question.Points)"
+               placeholder="0"
+               min="1"
                class="form-control" />
 
         <span asp-validation-for="Question.Points"
@@ -189,8 +194,14 @@
 
 
     <h4>Answer Options</h4>
-    <span asp-validation-for="Options" class="text-danger"></span>
-    <span asp-validation-for="CorrectOption" class="text-danger"></span>
+
+    <span asp-validation-for="Options"
+          class="text-danger">
+    </span>
+
+    <span asp-validation-for="CorrectOption"
+          class="text-danger">
+    </span>
 
     <p class="text-muted">
         Enter between 2 and 4 answer options.
@@ -205,7 +216,8 @@
                 Option @(i + 1)
             </label>
 
-            <input maxlength="200" asp-for="Options[i]"
+            <input maxlength="200"
+                   asp-for="Options[i]"
                    class="form-control" />
 
 
