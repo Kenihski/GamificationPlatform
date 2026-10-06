@@ -46,14 +46,56 @@
 
     <div class="form-group mb-3">
 
-        <label asp-for="Question.Description">
+        <label for="descriptionSelect">
             Description
         </label>
 
-        <span class="text-danger">*</span>
+        <select id="descriptionSelect"
+                class="form-control">
 
-        <input asp-for="Question.Description"
-               class="form-control" />
+            <option value="">
+                -- No description --
+            </option>
+
+            <option value="Choose one correct answer.">
+                Choose one correct answer.
+            </option>
+
+            <option value="Multiple answers may be correct.">
+                Multiple answers may be correct.
+            </option>
+
+            <option value="Choose the best answer.">
+                Choose the best answer.
+            </option>
+
+            <option value="Select all correct answers.">
+                Select all correct answers.
+            </option>
+
+            <option value="custom">
+                Custom description...
+            </option>
+
+        </select>
+
+
+        <div id="customDescriptionContainer"
+             class="mt-2"
+             style="display: none;">
+
+            <input type="text"
+                   id="customDescription"
+                   maxlength="500"
+                   class="form-control"
+                   placeholder="Enter description" />
+
+        </div>
+
+
+        <input type="hidden"
+               asp-for="Question.Description"
+               id="questionDescription" />
 
         <span asp-validation-for="Question.Description"
               class="text-danger">
@@ -260,6 +302,10 @@
 @section Scripts
 {
     <script src="~/js/image-preview.js"
+            asp-append-version="true"
+            defer></script>
+
+    <script src="~/js/question-description.js"
             asp-append-version="true"
             defer></script>
 }
