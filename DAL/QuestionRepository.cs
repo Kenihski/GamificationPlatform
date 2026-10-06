@@ -66,7 +66,7 @@ namespace GamificationPlatform.DAL
             }
         }
 
-        // Returns a question together with its answer options.
+        // Returns a question together with its possible answers.
         public async Task<Question?> GetQuestionWithOptionsAsync(
             int id)
         {
@@ -74,6 +74,7 @@ namespace GamificationPlatform.DAL
             {
                 return await _challengeDbContext.Questions
                     .Include(q => q.Options)
+                    .Include(q => q.AcceptedAnswers)
                     .FirstOrDefaultAsync(q =>
                         q.QuestionId == id);
             }
@@ -91,7 +92,7 @@ namespace GamificationPlatform.DAL
             }
         }
 
-        // Returns a question together with its answer options and challenge.
+        // Returns a question together with its possible answers and challenge.
         public async Task<Question?> GetQuestionWithOptionsAndChallengeAsync(
             int id)
         {
@@ -99,6 +100,7 @@ namespace GamificationPlatform.DAL
             {
                 return await _challengeDbContext.Questions
                     .Include(q => q.Options)
+                    .Include(q => q.AcceptedAnswers)
                     .Include(q => q.Challenge)
                     .FirstOrDefaultAsync(q =>
                         q.QuestionId == id);

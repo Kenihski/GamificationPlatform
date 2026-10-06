@@ -2162,248 +2162,533 @@ namespace GamificationPlatform.DAL
             var attemptAnswers =
                 new List<AttemptAnswer>
                 {
-                    // --------------------------------
                     // Alice - HTML Attempt 1
                     // Score: 10 / 30
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 1,
-                        QuestionId = 1,
-                        SelectedOptionId = 1
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 1,
-                        QuestionId = 2,
-                        SelectedOptionId = 5
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 1,
-                        QuestionId = 3,
-                        SelectedOptionId = 8
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(1, 1, 1),
+                    CreateAttemptAnswer(1, 2, 5),
+                    CreateAttemptAnswer(1, 3, 8),
+
                     // Alice - HTML Attempt 2
                     // Score: 20 / 30
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 2,
-                        QuestionId = 1,
-                        SelectedOptionId = 1
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 2,
-                        QuestionId = 2,
-                        SelectedOptionId = 4
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 2,
-                        QuestionId = 3,
-                        SelectedOptionId = 8
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(2, 1, 1),
+                    CreateAttemptAnswer(2, 2, 4),
+                    CreateAttemptAnswer(2, 3, 8),
+
                     // Alice - HTML Attempt 3
                     // Score: 30 / 30
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 3,
-                        QuestionId = 1,
-                        SelectedOptionId = 1
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 3,
-                        QuestionId = 2,
-                        SelectedOptionId = 4
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 3,
-                        QuestionId = 3,
-                        SelectedOptionId = 7
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(3, 1, 1),
+                    CreateAttemptAnswer(3, 2, 4),
+                    CreateAttemptAnswer(3, 3, 7),
+
                     // Bob - HTML
                     // Score: 30 / 30
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 4,
-                        QuestionId = 1,
-                        SelectedOptionId = 1
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 4,
-                        QuestionId = 2,
-                        SelectedOptionId = 4
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 4,
-                        QuestionId = 3,
-                        SelectedOptionId = 7
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(4, 1, 1),
+                    CreateAttemptAnswer(4, 2, 4),
+                    CreateAttemptAnswer(4, 3, 7),
+
                     // Charlie - HTML
                     // Score: 20 / 30
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 5,
-                        QuestionId = 1,
-                        SelectedOptionId = 1
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 5,
-                        QuestionId = 2,
-                        SelectedOptionId = 4
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 5,
-                        QuestionId = 3,
-                        SelectedOptionId = 8
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(5, 1, 1),
+                    CreateAttemptAnswer(5, 2, 4),
+                    CreateAttemptAnswer(5, 3, 8),
+
                     // Emma - HTML
                     // Score: 10 / 30
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 6,
-                        QuestionId = 1,
-                        SelectedOptionId = 1
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 6,
-                        QuestionId = 2,
-                        SelectedOptionId = 5
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 6,
-                        QuestionId = 3,
-                        SelectedOptionId = 8
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(6, 1, 1),
+                    CreateAttemptAnswer(6, 2, 5),
+                    CreateAttemptAnswer(6, 3, 8),
+
                     // David - HTML
                     // Score: 30 / 30
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 7,
-                        QuestionId = 1,
-                        SelectedOptionId = 1
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 7,
-                        QuestionId = 2,
-                        SelectedOptionId = 4
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 7,
-                        QuestionId = 3,
-                        SelectedOptionId = 7
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(7, 1, 1),
+                    CreateAttemptAnswer(7, 2, 4),
+                    CreateAttemptAnswer(7, 3, 7),
+
                     // Alice - C# first attempt
                     // Score: 30 / 40
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 14,
-                        QuestionId = 10,
-                        SelectedOptionId = 28
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 14,
-                        QuestionId = 11,
-                        SelectedOptionId = 31
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 14,
-                        QuestionId = 12,
-                        SelectedOptionId = 34
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 14,
-                        QuestionId = 13,
-                        SelectedOptionId = 38
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(14, 10, 28),
+                    CreateAttemptAnswer(14, 11, 31),
+                    CreateAttemptAnswer(14, 12, 34),
+                    CreateAttemptAnswer(14, 13, 38),
+
                     // Alice - C# second attempt
                     // Score: 40 / 40
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 15,
-                        QuestionId = 10,
-                        SelectedOptionId = 28
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 15,
-                        QuestionId = 11,
-                        SelectedOptionId = 31
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 15,
-                        QuestionId = 12,
-                        SelectedOptionId = 34
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 15,
-                        QuestionId = 13,
-                        SelectedOptionId = 37
-                    },
-                    // --------------------------------
+                    CreateAttemptAnswer(15, 10, 28),
+                    CreateAttemptAnswer(15, 11, 31),
+                    CreateAttemptAnswer(15, 12, 34),
+                    CreateAttemptAnswer(15, 13, 37),
+
                     // Bob - C#
                     // Score: 40 / 40
-                    // --------------------------------
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 16,
-                        QuestionId = 10,
-                        SelectedOptionId = 28
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 16,
-                        QuestionId = 11,
-                        SelectedOptionId = 31
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 16,
-                        QuestionId = 12,
-                        SelectedOptionId = 34
-                    },
-                    new AttemptAnswer
-                    {
-                        ChallengeAttemptId = 16,
-                        QuestionId = 13,
-                        SelectedOptionId = 37
-                    }
+                    CreateAttemptAnswer(16, 10, 28),
+                    CreateAttemptAnswer(16, 11, 31),
+                    CreateAttemptAnswer(16, 12, 34),
+                    CreateAttemptAnswer(16, 13, 37)
                 };
+
             context.AttemptAnswers.AddRange(
                 attemptAnswers);
+
             context.SaveChanges();
+
+            // Adds realistic activity for achievement testing.
+            // Achievements themselves are still unlocked only
+            // by AchievementService.
+            SeedRealisticAchievementData(context);
+        }
+
+        private static void SeedRealisticAchievementData(
+            ChallengeDbContext context)
+        {
+            // Six extra students make it possible for a creator
+            // to have ten different participants.
+            var extraUsers = new List<User>
+            {
+                new User { Username = "Freya", Email = "freya@example.com", IsAdmin = false },
+                new User { Username = "George", Email = "george@example.com", IsAdmin = false },
+                new User { Username = "Hannah", Email = "hannah@example.com", IsAdmin = false },
+                new User { Username = "Isaac", Email = "isaac@example.com", IsAdmin = false },
+                new User { Username = "Julia", Email = "julia@example.com", IsAdmin = false },
+                new User { Username = "Kevin", Email = "kevin@example.com", IsAdmin = false }
+            };
+
+            var passwordHasher = new PasswordHasher<User>();
+            foreach (var user in extraUsers)
+            {
+                user.PasswordHash = passwordHasher.HashPassword(
+                    user,
+                    "Password123!");
+            }
+
+            context.Users.AddRange(extraUsers);
+            context.SaveChanges();
+
+            // Eight extra challenges give the platform twenty
+            // challenges in total. Alice creates three of them,
+            // giving her five community challenges altogether.
+            // Bob creates three of the remaining challenges so
+            // his creator progress is also earned naturally.
+            var extraChallenges = new List<Challenge>
+            {
+                new Challenge
+                {
+                    Title = "Accessibility Basics",
+                    Description = "Test basic web accessibility knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_2.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = false,
+                    CreatedByUserId = 2
+                },
+                new Challenge
+                {
+                    Title = "Linux Basics",
+                    Description = "Test basic Linux knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_3.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = false,
+                    CreatedByUserId = 2
+                },
+                new Challenge
+                {
+                    Title = "Network Basics",
+                    Description = "Test basic networking knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_4.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = false,
+                    CreatedByUserId = 2
+                },
+                new Challenge
+                {
+                    Title = "Cloud Basics",
+                    Description = "Test basic cloud knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_5.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = true,
+                    CreatedByUserId = 3
+                },
+                new Challenge
+                {
+                    Title = "API Basics",
+                    Description = "Test basic API knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_6.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = true,
+                    CreatedByUserId = 3
+                },
+                new Challenge
+                {
+                    Title = "Testing Basics",
+                    Description = "Test basic software testing knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_7.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = true,
+                    CreatedByUserId = 3
+                },
+                new Challenge
+                {
+                    Title = "Security Basics",
+                    Description = "Test basic application security knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_1.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = true,
+                    CreatedByUserId = 1
+                },
+                new Challenge
+                {
+                    Title = "Software Architecture",
+                    Description = "Test basic software architecture knowledge.",
+                    MaxPoints = 10,
+                    ImageUrl = "/images/Question_11.png",
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = true,
+                    CreatedByUserId = 1
+                }
+            };
+
+            context.Challenges.AddRange(extraChallenges);
+            context.SaveChanges();
+
+            // One simple question per extra challenge is enough
+            // to make each challenge fully playable.
+            var extraQuestions = new List<Question>();
+            for (int challengeId = 13; challengeId <= 20; challengeId++)
+            {
+                extraQuestions.Add(
+                    new Question
+                    {
+                        Title = $"Demo question for challenge {challengeId}",
+                        Description = "Choose the correct answer.",
+                        Points = 10,
+                        QuestionType = "SingleChoice",
+                        ChallengeId = challengeId
+                    });
+            }
+
+            context.Questions.AddRange(extraQuestions);
+            context.SaveChanges();
+
+            foreach (var question in extraQuestions)
+            {
+                context.QuestionOptions.AddRange(
+                    new QuestionOption
+                    {
+                        Text = "Correct answer",
+                        IsCorrect = true,
+                        QuestionId = question.QuestionId
+                    },
+                    new QuestionOption
+                    {
+                        Text = "Wrong answer",
+                        IsCorrect = false,
+                        QuestionId = question.QuestionId
+                    });
+            }
+
+            context.SaveChanges();
+
+            var now = DateTime.Now;
+
+            // Alice completes every challenge. Together with the
+            // five existing completions this gives her twenty.
+            var aliceExistingChallengeIds = new HashSet<int> { 1, 2, 3, 4, 5 };
+            var aliceNewUserChallenges = new List<UserChallenge>();
+
+            for (int challengeId = 6; challengeId <= 20; challengeId++)
+            {
+                if (aliceExistingChallengeIds.Contains(challengeId))
+                {
+                    continue;
+                }
+
+                aliceNewUserChallenges.Add(
+                    new UserChallenge
+                    {
+                        UserId = 2,
+                        ChallengeId = challengeId
+                    });
+            }
+
+            context.UserChallenges.AddRange(aliceNewUserChallenges);
+            context.SaveChanges();
+
+            int dayOffset = 30;
+            foreach (var userChallenge in aliceNewUserChallenges)
+            {
+                int maxPoints = context.Questions
+                    .Where(q => q.ChallengeId == userChallenge.ChallengeId)
+                    .Sum(q => q.Points);
+
+                context.ChallengeAttempts.Add(
+                    new ChallengeAttempt
+                    {
+                        UserChallengeId = userChallenge.UserChallengeId,
+                        Score = maxPoints,
+                        Completed = true,
+                        StartedAt = now.AddDays(-dayOffset).AddMinutes(-5),
+                        CompletedAt = now.AddDays(-dayOffset)
+                    });
+
+                dayOffset--;
+            }
+
+            // Alice has five attempts on HTML. Her second attempt
+            // improves on the first and her later attempts show
+            // realistic practice before reaching a perfect score.
+            context.ChallengeAttempts.AddRange(
+                new ChallengeAttempt
+                {
+                    UserChallengeId = 1,
+                    Score = 20,
+                    Completed = true,
+                    StartedAt = now.AddHours(-8).AddMinutes(-5),
+                    CompletedAt = now.AddHours(-8)
+                },
+                new ChallengeAttempt
+                {
+                    UserChallengeId = 1,
+                    Score = 30,
+                    Completed = true,
+                    StartedAt = now.AddHours(-4).AddMinutes(-4),
+                    CompletedAt = now.AddHours(-4)
+                });
+
+            context.SaveChanges();
+
+            // Ten different students complete Alice's Accessibility
+            // challenge. This satisfies the creator participant
+            // achievements through actual completed attempts.
+            var participantIds = new List<int>
+            {
+                3, 4, 5, 6,
+                extraUsers[0].UserId,
+                extraUsers[1].UserId,
+                extraUsers[2].UserId,
+                extraUsers[3].UserId,
+                extraUsers[4].UserId,
+                extraUsers[5].UserId
+            };
+
+            int participantNumber = 0;
+            foreach (int userId in participantIds)
+            {
+                var userChallenge = new UserChallenge
+                {
+                    UserId = userId,
+                    ChallengeId = 13
+                };
+
+                context.UserChallenges.Add(userChallenge);
+                context.SaveChanges();
+
+                // Different scores and times make the leaderboard
+                // look like real activity rather than duplicate rows.
+                int score = participantNumber < 3 ? 10 : 0;
+                context.ChallengeAttempts.Add(
+                    new ChallengeAttempt
+                    {
+                        UserChallengeId = userChallenge.UserChallengeId,
+                        Score = score,
+                        Completed = true,
+                        StartedAt = now.AddDays(-2)
+                            .AddMinutes(-(8 + participantNumber)),
+                        CompletedAt = now.AddDays(-2)
+                    });
+
+                participantNumber++;
+            }
+
+            context.SaveChanges();
+
+            // Bob has broader activity than the newer students.
+            // He completes ten different challenges and practices
+            // Web Development five times, improving on attempt two.
+            foreach (int challengeId in new[] { 2, 5, 8, 19, 20 })
+            {
+                var userChallenge = new UserChallenge
+                {
+                    UserId = 3,
+                    ChallengeId = challengeId
+                };
+
+                context.UserChallenges.Add(userChallenge);
+                context.SaveChanges();
+
+                int maxPoints = context.Questions
+                    .Where(q => q.ChallengeId == challengeId)
+                    .Sum(q => q.Points);
+
+                context.ChallengeAttempts.Add(
+                    new ChallengeAttempt
+                    {
+                        UserChallengeId = userChallenge.UserChallengeId,
+                        Score = maxPoints,
+                        Completed = true,
+                        StartedAt = now.AddDays(-12 - challengeId).AddMinutes(-7),
+                        CompletedAt = now.AddDays(-12 - challengeId)
+                    });
+            }
+
+            // Bob already has one Web Development attempt.
+            // Four more bring him to five attempts on the same
+            // challenge and the second attempt is an improvement.
+            var bobWeb = context.UserChallenges
+                .First(uc => uc.UserId == 3 && uc.ChallengeId == 3);
+
+            for (int i = 0; i < 4; i++)
+            {
+                context.ChallengeAttempts.Add(
+                    new ChallengeAttempt
+                    {
+                        UserChallengeId = bobWeb.UserChallengeId,
+                        Score = 30,
+                        Completed = true,
+                        StartedAt = now.AddDays(-1).AddHours(-(i + 1)).AddMinutes(-5),
+                        CompletedAt = now.AddDays(-1).AddHours(-(i + 1))
+                    });
+            }
+
+            // David completes ten different challenges in total.
+            // This gives him stronger progress than Charlie without
+            // giving him Alice's practice or creator milestones.
+            foreach (int challengeId in new[] { 8, 9, 10, 14, 15 })
+            {
+                var userChallenge = new UserChallenge
+                {
+                    UserId = 6,
+                    ChallengeId = challengeId
+                };
+
+                context.UserChallenges.Add(userChallenge);
+                context.SaveChanges();
+
+                int maxPoints = context.Questions
+                    .Where(q => q.ChallengeId == challengeId)
+                    .Sum(q => q.Points);
+
+                context.ChallengeAttempts.Add(
+                    new ChallengeAttempt
+                    {
+                        UserChallengeId = userChallenge.UserChallengeId,
+                        Score = maxPoints,
+                        Completed = true,
+                        StartedAt = now.AddDays(-18 - challengeId).AddMinutes(-8),
+                        CompletedAt = now.AddDays(-18 - challengeId)
+                    });
+            }
+
+            // David also completes CSS with a perfect first attempt.
+            // This keeps Emma's strong CSS result believable while
+            // placing her below first place on that leaderboard.
+            var davidCss = new UserChallenge
+            {
+                UserId = 6,
+                ChallengeId = 6
+            };
+
+            context.UserChallenges.Add(davidCss);
+            context.SaveChanges();
+            context.ChallengeAttempts.Add(
+                new ChallengeAttempt
+                {
+                    UserChallengeId = davidCss.UserChallengeId,
+                    Score = 30,
+                    Completed = true,
+                    StartedAt = now.AddDays(-7).AddMinutes(-2),
+                    CompletedAt = now.AddDays(-7)
+                });
+
+            context.SaveChanges();
+
+            // Charlie reaches five completed challenges and earns
+            // a perfect score through normal activity.
+            var charlieAccessibility = new UserChallenge
+            {
+                UserId = 4,
+                ChallengeId = 14
+            };
+
+            context.UserChallenges.Add(charlieAccessibility);
+            context.SaveChanges();
+            context.ChallengeAttempts.Add(
+                new ChallengeAttempt
+                {
+                    UserChallengeId = charlieAccessibility.UserChallengeId,
+                    Score = 10,
+                    Completed = true,
+                    StartedAt = now.AddDays(-6).AddMinutes(-6),
+                    CompletedAt = now.AddDays(-6)
+                });
+
+            context.SaveChanges();
+
+            // Give the extra students a little additional activity
+            // so the demo database does not look artificial.
+            for (int i = 0; i < extraUsers.Count; i++)
+            {
+                int challengeId = 14 + (i % 3);
+                var userChallenge = new UserChallenge
+                {
+                    UserId = extraUsers[i].UserId,
+                    ChallengeId = challengeId
+                };
+
+                context.UserChallenges.Add(userChallenge);
+                context.SaveChanges();
+
+                context.ChallengeAttempts.Add(
+                    new ChallengeAttempt
+                    {
+                        UserChallengeId = userChallenge.UserChallengeId,
+                        Score = i % 2 == 0 ? 10 : 0,
+                        Completed = true,
+                        StartedAt = now.AddDays(-(3 + i)).AddMinutes(-6),
+                        CompletedAt = now.AddDays(-(3 + i))
+                    });
+            }
+
+            context.SaveChanges();
+        }
+
+        private static AttemptAnswer CreateAttemptAnswer(
+            int challengeAttemptId,
+            int questionId,
+            params int[] selectedOptionIds)
+        {
+            var attemptAnswer =
+                new AttemptAnswer
+                {
+                    ChallengeAttemptId =
+                        challengeAttemptId,
+                    QuestionId =
+                        questionId
+                };
+
+            foreach (int optionId in selectedOptionIds)
+            {
+                attemptAnswer.SelectedOptions.Add(
+                    new AttemptAnswerOption
+                    {
+                        QuestionOptionId =
+                            optionId
+                    });
+            }
+
+            return attemptAnswer;
         }
     }
 }

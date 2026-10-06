@@ -1,14 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     const form = document.getElementById("challengeForm");
 
     if (!form) {
         return;
     }
 
-
     // --------------------------------
-    // Saves selected answers
+    // Saves selected and written answers
     // --------------------------------
 
     const challengeAttemptId =
@@ -20,39 +18,85 @@ document.addEventListener("DOMContentLoaded", function () {
     const storageKey =
         "challengeAnswers_" + challengeAttemptId;
 
-
-    // Loads previously selected answers.
+    // Loads previously saved answers.
     const savedAnswers =
         JSON.parse(
             sessionStorage.getItem(storageKey) || "{}"
         );
 
-
-    const radioButtons =
+    const choiceInputs =
         form.querySelectorAll(
-            'input[type="radio"]'
+            'input[type="radio"], input[type="checkbox"]'
         );
 
+    const shortAnswerInputs =
+        form.querySelectorAll(
+            ".short-answer"
+        );
 
-    // Restores answers after refresh.
-    radioButtons.forEach(function (radioButton) {
-
+    // Restores choice answers after refresh.
+    choiceInputs.forEach(function (answerInput) {
         const questionName =
-            radioButton.name;
+            answerInput.name;
 
-        if (savedAnswers[questionName] ===
-            radioButton.value) {
+        if (answerInput.type === "radio") {
+            if (savedAnswers[questionName] ===
+                answerInput.value) {
+                answerInput.checked = true;
+            }
+        }
+        else {
+            const selectedValues =
+                savedAnswers[questionName] || [];
 
-            radioButton.checked = true;
+            answerInput.checked =
+                selectedValues.includes(
+                    answerInput.value
+                );
         }
 
-
         // Saves an answer when the user
-        // selects an option.
-        radioButton.addEventListener(
+        // selects or deselects an option.
+        answerInput.addEventListener(
             "change",
             function () {
+                if (this.type === "radio") {
+                    savedAnswers[this.name] =
+                        this.value;
+                }
+                else {
+                    const checkedOptions =
+                        form.querySelectorAll(
+                            'input[type="checkbox"]' +
+                            '[name="' + this.name + '"]:checked'
+                        );
 
+                    savedAnswers[this.name] =
+                        Array.from(checkedOptions)
+                            .map(function (option) {
+                                return option.value;
+                            });
+                }
+
+                sessionStorage.setItem(
+                    storageKey,
+                    JSON.stringify(savedAnswers)
+                );
+            }
+        );
+    });
+
+    // Restores Short Answer text after refresh.
+    shortAnswerInputs.forEach(function (answerInput) {
+        if (savedAnswers[answerInput.name] !== undefined) {
+            answerInput.value =
+                savedAnswers[answerInput.name];
+        }
+
+        // Saves the text while the user types.
+        answerInput.addEventListener(
+            "input",
+            function () {
                 savedAnswers[this.name] =
                     this.value;
 
@@ -62,9 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
             }
         );
-
     });
-
 
     // --------------------------------
     // Challenge timer
@@ -81,7 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let timeExpired = false;
 
-
     if (timeRemaining &&
         startedAt &&
         timeLimit) {
@@ -95,19 +136,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const endTime =
             startTime + timeLimitMilliseconds;
 
-
         function updateTimer() {
-
             const now =
                 new Date().getTime();
 
             const remaining =
                 endTime - now;
 
-
             // Time has expired.
             if (remaining <= 0) {
-
                 timeRemaining.textContent =
                     "00:00";
 
@@ -120,10 +157,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 form.submit();
-
                 return;
             }
-
 
             const totalSeconds =
                 Math.floor(remaining / 1000);
@@ -134,13 +169,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const seconds =
                 totalSeconds % 60;
 
-
             timeRemaining.textContent =
                 String(minutes).padStart(2, "0") +
                 ":" +
                 String(seconds).padStart(2, "0");
         }
-
 
         // Shows the timer immediately.
         updateTimer();
@@ -149,7 +182,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setInterval(updateTimer, 1000);
     }
 
-
     // --------------------------------
     // Exit confirmation
     // --------------------------------
@@ -157,41 +189,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const exitButton =
         document.getElementById("exitChallengeButton");
 
-
     if (exitButton) {
-
         exitButton.addEventListener(
             "click",
             function (event) {
-
                 const confirmed = confirm(
                     "Are you sure you want to exit the challenge?\n\n" +
                     "Your attempt will be submitted and unanswered " +
                     "questions will receive 0 points."
                 );
 
-
                 if (!confirmed) {
                     event.preventDefault();
                 }
-
             }
         );
     }
-
 
     // --------------------------------
     // Submit confirmation
     // --------------------------------
 
     form.addEventListener("submit", function (event) {
-
         // Do not show confirmation when
         // the timer submits automatically.
         if (timeExpired) {
             return;
         }
-
 
         // Exit has its own confirmation.
         if (event.submitter &&
@@ -207,29 +231,40 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-
         const questions =
             form.querySelectorAll(".question-card");
 
         let unanswered = 0;
 
-
         questions.forEach(function (question) {
-
-            const selectedAnswer =
+            const selectedChoice =
                 question.querySelector(
-                    'input[type="radio"]:checked'
+                    'input[type="radio"]:checked, ' +
+                    'input[type="checkbox"]:checked'
                 );
 
-            if (!selectedAnswer) {
-                unanswered++;
+            const shortAnswer =
+                question.querySelector(
+                    ".short-answer"
+                );
+
+            let isAnswered = false;
+
+            if (selectedChoice) {
+                isAnswered = true;
             }
 
+            if (shortAnswer &&
+                shortAnswer.value.trim() !== "") {
+                isAnswered = true;
+            }
+
+            if (!isAnswered) {
+                unanswered++;
+            }
         });
 
-
         if (unanswered > 0) {
-
             const confirmed = confirm(
                 "You have " + unanswered +
                 " unanswered question(s).\n\n" +
@@ -237,20 +272,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Do you still want to submit?"
             );
 
-
             if (!confirmed) {
                 event.preventDefault();
                 return;
             }
         }
 
-
         // The attempt is being submitted,
         // so the temporary answers are removed.
         sessionStorage.removeItem(
             storageKey
         );
-
     });
-
 });

@@ -49,7 +49,10 @@ else
 
                     <h4>@question.Title</h4>
 
-                    <p>@question.Description</p>
+                    @if (!string.IsNullOrWhiteSpace(question.Description))
+                    {
+                        <p>@question.Description</p>
+                    }
 
                     @if (!string.IsNullOrEmpty(question.ImageUrl))
                     {
@@ -63,22 +66,57 @@ else
                         <strong>@question.Points points</strong>
                     </p>
 
-                    @foreach (var option in question.Options)
+                    @if (question.QuestionType == "ShortAnswer")
                     {
-                        <div class="form-check mb-2">
-
-                            <input class="form-check-input"
-                                   type="radio"
-                                   name="answers[@question.QuestionId]"
-                                   value="@option.QuestionOptionId"
-                                   id="option_@option.QuestionOptionId" />
-
-                            <label class="form-check-label"
-                                   for="option_@option.QuestionOptionId">
-                                @option.Text
+                        <div class="mb-3">
+                            <label for="textAnswer_@question.QuestionId"
+                                   class="form-label">
+                                Your Answer
                             </label>
 
+                            <input type="text"
+                                   name="textAnswers[@question.QuestionId]"
+                                   id="textAnswer_@question.QuestionId"
+                                   maxlength="200"
+                                   class="form-control short-answer"
+                                   autocomplete="off" />
                         </div>
+                    }
+                    else if (question.QuestionType == "MultipleChoice")
+                    {
+                        @foreach (var option in question.Options)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="answers[@question.QuestionId]"
+                                       value="@option.QuestionOptionId"
+                                       id="option_@option.QuestionOptionId" />
+
+                                <label class="form-check-label"
+                                       for="option_@option.QuestionOptionId">
+                                    @option.Text
+                                </label>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var option in question.Options)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="answers[@question.QuestionId]"
+                                       value="@option.QuestionOptionId"
+                                       id="option_@option.QuestionOptionId" />
+
+                                <label class="form-check-label"
+                                       for="option_@option.QuestionOptionId">
+                                    @option.Text
+                                </label>
+                            </div>
+                        }
                     }
 
                 </div>

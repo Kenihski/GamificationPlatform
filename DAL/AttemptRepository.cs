@@ -21,7 +21,6 @@ namespace GamificationPlatform.DAL
             _logger = logger;
         }
 
-
         // Returns all completed attempts for a user
         // in a specific challenge.
         public async Task<List<ChallengeAttempt>> GetCompletedAttemptsAsync(
@@ -39,7 +38,8 @@ namespace GamificationPlatform.DAL
                     .OrderByDescending(a => a.CompletedAt)
                     .ToListAsync();
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -53,7 +53,6 @@ namespace GamificationPlatform.DAL
                 throw;
             }
         }
-
 
         // Returns the IDs of all challenges
         // completed by a specific user.
@@ -72,7 +71,8 @@ namespace GamificationPlatform.DAL
                     .Distinct()
                     .ToListAsync();
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -85,7 +85,6 @@ namespace GamificationPlatform.DAL
                 throw;
             }
         }
-
 
         // Returns all completed attempts for a challenge
         // together with the user who made each attempt.
@@ -103,7 +102,8 @@ namespace GamificationPlatform.DAL
                         a.Completed)
                     .ToListAsync();
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -116,7 +116,6 @@ namespace GamificationPlatform.DAL
                 throw;
             }
         }
-
 
         // Returns all completed attempts
         // with the related user and challenge.
@@ -134,7 +133,8 @@ namespace GamificationPlatform.DAL
                     .Where(a => a.Completed)
                     .ToListAsync();
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -146,7 +146,6 @@ namespace GamificationPlatform.DAL
                 throw;
             }
         }
-
 
         // Returns a completed attempt with all related
         // data needed for the attempt details page.
@@ -165,11 +164,19 @@ namespace GamificationPlatform.DAL
                     .Include(a => a.Answers)
                         .ThenInclude(answer => answer.Question)
                             .ThenInclude(question => question.Options)
+                    .Include(a => a.Answers)
+                        .ThenInclude(answer => answer.Question)
+                            .ThenInclude(question => question.AcceptedAnswers)
+                    .Include(a => a.Answers)
+                        .ThenInclude(answer => answer.SelectedOptions)
+                            .ThenInclude(selected =>
+                                selected.QuestionOption)
                     .FirstOrDefaultAsync(a =>
                         a.ChallengeAttemptId == attemptId &&
                         a.Completed);
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -182,7 +189,6 @@ namespace GamificationPlatform.DAL
                 throw;
             }
         }
-
 
         // Returns the relationship between
         // a user and a challenge.
@@ -198,7 +204,8 @@ namespace GamificationPlatform.DAL
                         uc.UserId == userId &&
                         uc.ChallengeId == challengeId);
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -213,7 +220,6 @@ namespace GamificationPlatform.DAL
             }
         }
 
-
         // Creates a relationship between
         // a user and a challenge.
         public async Task<bool> CreateUserChallengeAsync(
@@ -225,7 +231,6 @@ namespace GamificationPlatform.DAL
 
             return await SaveChangesAsync();
         }
-
 
         // Returns the newest unfinished attempt
         // for a user challenge.
@@ -243,7 +248,8 @@ namespace GamificationPlatform.DAL
                         a.StartedAt)
                     .FirstOrDefaultAsync();
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -257,7 +263,6 @@ namespace GamificationPlatform.DAL
             }
         }
 
-
         // Creates a new challenge attempt.
         public async Task<bool> CreateAttemptAsync(
             ChallengeAttempt attempt)
@@ -268,7 +273,6 @@ namespace GamificationPlatform.DAL
 
             return await SaveChangesAsync();
         }
-
 
         // Returns an unfinished attempt only when
         // it belongs to the correct user and challenge.
@@ -288,7 +292,8 @@ namespace GamificationPlatform.DAL
                         a.UserChallenge.ChallengeId == challengeId &&
                         !a.Completed);
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -304,7 +309,6 @@ namespace GamificationPlatform.DAL
             }
         }
 
-
         // Adds an answer to the current attempt.
         // Changes are saved together after all answers
         // and the completed attempt have been updated.
@@ -315,7 +319,6 @@ namespace GamificationPlatform.DAL
                 .AttemptAnswers
                 .Add(attemptAnswer);
         }
-
 
         // Removes previous attempts and answers when
         // the content of a challenge changes.
@@ -347,7 +350,8 @@ namespace GamificationPlatform.DAL
                     .ChallengeAttempts
                     .RemoveRange(attempts);
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,
@@ -361,7 +365,6 @@ namespace GamificationPlatform.DAL
             }
         }
 
-
         // Saves pending database changes.
         public async Task<bool> SaveChangesAsync()
         {
@@ -370,7 +373,8 @@ namespace GamificationPlatform.DAL
                 return await _challengeDbContext
                     .SaveChangesAsync() > 0;
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
+                when (ex is not OperationCanceledException)
             {
                 _logger.LogError(
                     ex,

@@ -27,7 +27,6 @@ namespace GamificationPlatform.Controllers
             _logger = logger;
         }
 
-
         // Shows all questions - admin only.
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Table()
@@ -38,7 +37,6 @@ namespace GamificationPlatform.Controllers
 
             return View(questions);
         }
-
 
         // Shows the Create Question form.
         [Authorize]
@@ -95,7 +93,10 @@ namespace GamificationPlatform.Controllers
 
                 if (challenge == null)
                 {
-                    _logger.LogWarning("User {UserId} was denied question management access.", userId);
+                    _logger.LogWarning(
+                        "User {UserId} was denied question management access.",
+                        userId);
+
                     return Forbid();
                 }
 
@@ -106,8 +107,7 @@ namespace GamificationPlatform.Controllers
             return View(model);
         }
 
-
-        // Creates a new question with answer options.
+        // Creates a new question.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -131,7 +131,9 @@ namespace GamificationPlatform.Controllers
 
             if (model.Question == null)
             {
-                _logger.LogWarning("Question creation rejected because the question data was missing.");
+                _logger.LogWarning(
+                    "Question creation rejected because the question data was missing.");
+
                 return BadRequest();
             }
 
@@ -155,11 +157,14 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied question management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied question management access.",
+                    userId);
+
                 return Forbid();
             }
 
-            ValidateAnswerOptions(model);
+            ValidateAnswers(model);
 
             if (ModelState.IsValid)
             {
@@ -169,48 +174,42 @@ namespace GamificationPlatform.Controllers
                     .DeleteChallengeHistoryAsync(
                         model.Question.ChallengeId);
 
-                // Copy only editable fields; ignore any submitted entity graph.
-                var question = new Question
-                {
-                    Title = model.Question.Title,
-                    Description = model.Question.Description,
-                    Points = model.Question.Points,
-                    ImageUrl = model.Question.ImageUrl,
-                    ChallengeId = challenge.ChallengeId
-                };
-
-                // Add the filled answer options.
-                for (int i = 0;
-                     i < model.Options.Count;
-                     i++)
-                {
-                    // Empty options are not saved.
-                    if (string.IsNullOrWhiteSpace(
-                        model.Options[i]))
+                // Copy only editable fields; ignore
+                // any submitted entity graph.
+                var question =
+                    new Question
                     {
-                        continue;
-                    }
+                        Title = model.Question.Title,
+                        Description = model.Question.Description,
+                        Explanation = model.Question.Explanation,
+                        Points = model.Question.Points,
+                        ImageUrl = model.Question.ImageUrl,
+                        QuestionType = model.Question.QuestionType,
+                        ChallengeId = challenge.ChallengeId
+                    };
 
-                    var option =
-                        new QuestionOption
-                        {
-                            Text =
-                                model.Options[i].Trim(),
-
-                            IsCorrect =
-                                i == model.CorrectOption,
-
-                            Question =
-                                question
-                        };
-
-                    question.Options.Add(option);
+                if (question.QuestionType == "ShortAnswer")
+                {
+                    AddAcceptedAnswers(
+                        question,
+                        model.AcceptedAnswers);
+                }
+                else
+                {
+                    AddAnswerOptions(
+                        question,
+                        model.Options,
+                        model.CorrectOptions);
                 }
 
                 await _questionRepository
                     .CreateQuestionAsync(question);
 
-                _logger.LogInformation("User {UserId} created question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.", userId, question.QuestionId, question.ChallengeId);
+                _logger.LogInformation(
+                    "User {UserId} created question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.",
+                    userId,
+                    question.QuestionId,
+                    question.ChallengeId);
 
                 TempData["SuccessMessage"] =
                     "Question created. Previous attempts and scores were reset.";
@@ -227,8 +226,12 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
-            _logger.LogWarning("Question creation rejected because validation failed for user {UserId} on challenge {ChallengeId}.", userId, model.Question.ChallengeId);
-            PrepareOptionFields(model);
+            _logger.LogWarning(
+                "Question creation rejected because validation failed for user {UserId} on challenge {ChallengeId}.",
+                userId,
+                model.Question.ChallengeId);
+
+            PrepareAnswerFields(model);
 
             // Reload challenges if validation fails.
             if (isAdmin)
@@ -246,7 +249,6 @@ namespace GamificationPlatform.Controllers
 
             return View(model);
         }
-
 
         // Shows the Update Question form.
         [Authorize]
@@ -282,7 +284,10 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied question management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied question management access.",
+                    userId);
+
                 return Forbid();
             }
 
@@ -304,9 +309,8 @@ namespace GamificationPlatform.Controllers
                     .Select(option => option.Text)
                     .ToList();
 
-            // Find which option is correct
-            // before adding empty option fields.
-            var correctOption =
+            // Get all existing correct answer indexes.
+            model.CorrectOptions =
                 question.Options
                     .Select((option, index) =>
                         new
@@ -314,24 +318,20 @@ namespace GamificationPlatform.Controllers
                             option,
                             index
                         })
-                    .FirstOrDefault(x =>
-                        x.option.IsCorrect);
+                    .Where(x => x.option.IsCorrect)
+                    .Select(x => x.index)
+                    .ToList();
 
-            if (correctOption != null)
-            {
-                model.CorrectOption =
-                    correctOption.index;
-            }
+            // Get existing accepted short answers.
+            model.AcceptedAnswers =
+                question.AcceptedAnswers
+                    .Select(answer => answer.Text)
+                    .ToList();
 
-            // Always show four option fields.
-            while (model.Options.Count < 4)
-            {
-                model.Options.Add("");
-            }
+            PrepareAnswerFields(model);
 
             return View(model);
         }
-
 
         // Updates an existing question.
         [Authorize]
@@ -357,7 +357,9 @@ namespace GamificationPlatform.Controllers
 
             if (model.Question == null)
             {
-                _logger.LogWarning("Question update rejected because the question data was missing.");
+                _logger.LogWarning(
+                    "Question update rejected because the question data was missing.");
+
                 return BadRequest();
             }
 
@@ -376,7 +378,10 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied question management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied question management access.",
+                    userId);
+
                 return Forbid();
             }
 
@@ -385,7 +390,7 @@ namespace GamificationPlatform.Controllers
             ModelState.Remove(
                 "Question.Challenge");
 
-            ValidateAnswerOptions(model);
+            ValidateAnswers(model);
 
             if (ModelState.IsValid)
             {
@@ -402,49 +407,48 @@ namespace GamificationPlatform.Controllers
                 question.Description =
                     model.Question.Description;
 
+                question.Explanation =
+                    model.Question.Explanation;
+
                 question.Points =
                     model.Question.Points;
 
                 question.ImageUrl =
                     model.Question.ImageUrl;
 
+                question.QuestionType =
+                    model.Question.QuestionType;
+
                 // ChallengeId is deliberately
                 // not changed here.
 
-                // Replace the old answer options.
+                // Remove answers from the previous
+                // question type before adding new ones.
                 question.Options.Clear();
+                question.AcceptedAnswers.Clear();
 
-                for (int i = 0;
-                     i < model.Options.Count;
-                     i++)
+                if (question.QuestionType == "ShortAnswer")
                 {
-                    // Empty options are not saved.
-                    if (string.IsNullOrWhiteSpace(
-                        model.Options[i]))
-                    {
-                        continue;
-                    }
-
-                    var option =
-                        new QuestionOption
-                        {
-                            Text =
-                                model.Options[i].Trim(),
-
-                            IsCorrect =
-                                i == model.CorrectOption,
-
-                            Question =
-                                question
-                        };
-
-                    question.Options.Add(option);
+                    AddAcceptedAnswers(
+                        question,
+                        model.AcceptedAnswers);
+                }
+                else
+                {
+                    AddAnswerOptions(
+                        question,
+                        model.Options,
+                        model.CorrectOptions);
                 }
 
                 await _questionRepository
                     .UpdateQuestionAsync(question);
 
-                _logger.LogInformation("User {UserId} updated question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.", userId, question.QuestionId, question.ChallengeId);
+                _logger.LogInformation(
+                    "User {UserId} updated question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.",
+                    userId,
+                    question.QuestionId,
+                    question.ChallengeId);
 
                 TempData["SuccessMessage"] =
                     "Question updated. Previous attempts and scores were reset.";
@@ -461,8 +465,12 @@ namespace GamificationPlatform.Controllers
                     });
             }
 
-            _logger.LogWarning("Question update rejected because validation failed for user {UserId} on question {QuestionId}.", userId, question.QuestionId);
-            PrepareOptionFields(model);
+            _logger.LogWarning(
+                "Question update rejected because validation failed for user {UserId} on question {QuestionId}.",
+                userId,
+                question.QuestionId);
+
+            PrepareAnswerFields(model);
 
             // Reload the challenge
             // if validation fails.
@@ -475,15 +483,8 @@ namespace GamificationPlatform.Controllers
                     question.Challenge
                 };
 
-            // Always show four option fields.
-            while (model.Options.Count < 4)
-            {
-                model.Options.Add("");
-            }
-
             return View(model);
         }
-
 
         // Shows the Delete Question confirmation page.
         [Authorize]
@@ -519,13 +520,15 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied question management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied question management access.",
+                    userId);
+
                 return Forbid();
             }
 
             return View(question);
         }
-
 
         // Deletes the question.
         [Authorize]
@@ -563,7 +566,10 @@ namespace GamificationPlatform.Controllers
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
-                _logger.LogWarning("User {UserId} was denied question management access.", userId);
+                _logger.LogWarning(
+                    "User {UserId} was denied question management access.",
+                    userId);
+
                 return Forbid();
             }
 
@@ -586,17 +592,27 @@ namespace GamificationPlatform.Controllers
             {
                 question.Challenge.IsPublished = false;
 
-                // The tracked challenge is saved with the question deletion below.
+                // The tracked challenge is saved
+                // with the question deletion below.
             }
 
-            // Save unpublishing, history deletion, and question deletion together.
-            await _questionRepository.DeleteQuestionAsync(question);
+            // Save unpublishing, history deletion,
+            // and question deletion together.
+            await _questionRepository
+                .DeleteQuestionAsync(question);
 
-            _logger.LogInformation("User {UserId} deleted question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.", userId, id, challengeId);
+            _logger.LogInformation(
+                "User {UserId} deleted question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.",
+                userId,
+                id,
+                challengeId);
 
             if (shouldUnpublish)
             {
-                _logger.LogInformation("Challenge {ChallengeId} was automatically unpublished after its last question was deleted.", challengeId);
+                _logger.LogInformation(
+                    "Challenge {ChallengeId} was automatically unpublished after its last question was deleted.",
+                    challengeId);
+
                 TempData["SuccessMessage"] =
                     "Question deleted. The challenge was automatically unpublished because it has no questions left. Previous attempts and scores were reset.";
             }
@@ -617,50 +633,242 @@ namespace GamificationPlatform.Controllers
                     showQuestions = true
                 });
         }
-        // Enforce the same answer rules for creation and editing.
-        private void ValidateAnswerOptions(QuestionFormViewModel model)
+
+        // Validates answers based on question type.
+        private void ValidateAnswers(
+            QuestionFormViewModel model)
         {
-            if (model.Options == null)
+            if (model.Question.QuestionType != "SingleChoice" &&
+                model.Question.QuestionType != "MultipleChoice" &&
+                model.Question.QuestionType != "ShortAnswer")
             {
-                ModelState.AddModelError("Options", "Enter between 2 and 4 answer options.");
+                ModelState.AddModelError(
+                    "Question.QuestionType",
+                    "Please select a valid question type.");
+
                 return;
             }
 
-            var filledOptions = model.Options
-                .Where(option => !string.IsNullOrWhiteSpace(option))
-                .Select(option => option.Trim())
-                .ToList();
-
-            if (model.Options.Count > 4 || filledOptions.Count < 2)
+            if (model.Question.QuestionType == "ShortAnswer")
             {
-                ModelState.AddModelError("Options", "Enter between 2 and 4 answer options.");
+                ValidateAcceptedAnswers(model);
+                return;
             }
 
-            if (filledOptions.Any(option => option.Length > 200))
+            ValidateAnswerOptions(model);
+        }
+
+        // Validates Single Choice and Multiple Choice answers.
+        private void ValidateAnswerOptions(
+            QuestionFormViewModel model)
+        {
+            if (model.Options == null)
             {
-                ModelState.AddModelError("Options", "Each answer option must be at most 200 characters.");
+                ModelState.AddModelError(
+                    "Options",
+                    "Enter between 2 and 4 answer options.");
+
+                return;
             }
 
-            if (filledOptions.Distinct(StringComparer.OrdinalIgnoreCase).Count() != filledOptions.Count)
+            var filledOptions =
+                model.Options
+                    .Where(option =>
+                        !string.IsNullOrWhiteSpace(option))
+                    .Select(option =>
+                        option.Trim())
+                    .ToList();
+
+            if (model.Options.Count > 4 ||
+                filledOptions.Count < 2)
             {
-                ModelState.AddModelError("Options", "Answer options must be different.");
+                ModelState.AddModelError(
+                    "Options",
+                    "Enter between 2 and 4 answer options.");
             }
 
-            if (model.CorrectOption is not int correctOption || correctOption < 0 ||
-                correctOption >= model.Options.Count || correctOption > 3 ||
-                string.IsNullOrWhiteSpace(model.Options[correctOption]))
+            if (filledOptions.Any(option =>
+                option.Length > 200))
             {
-                ModelState.AddModelError("CorrectOption", "Select a filled answer as the correct answer.");
+                ModelState.AddModelError(
+                    "Options",
+                    "Each answer option must be at most 200 characters.");
+            }
+
+            if (filledOptions
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Count() != filledOptions.Count)
+            {
+                ModelState.AddModelError(
+                    "Options",
+                    "Answer options must be different.");
+            }
+
+            model.CorrectOptions ??=
+                new List<int>();
+
+            var correctOptions =
+                model.CorrectOptions
+                    .Distinct()
+                    .ToList();
+
+            if (correctOptions.Count == 0)
+            {
+                ModelState.AddModelError(
+                    "CorrectOptions",
+                    "Select at least one correct answer.");
+
+                return;
+            }
+
+            bool containsInvalidCorrectOption =
+                correctOptions.Any(index =>
+                    index < 0 ||
+                    index >= model.Options.Count ||
+                    index > 3 ||
+                    string.IsNullOrWhiteSpace(
+                        model.Options[index]));
+
+            if (containsInvalidCorrectOption)
+            {
+                ModelState.AddModelError(
+                    "CorrectOptions",
+                    "Correct answers must use filled answer options.");
+            }
+
+            if (model.Question.QuestionType == "SingleChoice" &&
+                correctOptions.Count != 1)
+            {
+                ModelState.AddModelError(
+                    "CorrectOptions",
+                    "Single choice questions must have exactly one correct answer.");
             }
         }
 
-        // Razor renders four fields even after a malformed collection is rejected.
-        private static void PrepareOptionFields(QuestionFormViewModel model)
+        // Validates accepted answers for Short Answer questions.
+        private void ValidateAcceptedAnswers(
+            QuestionFormViewModel model)
         {
-            model.Options = (model.Options ?? new List<string>()).Take(4).ToList();
+            model.AcceptedAnswers ??=
+                new List<string>();
+
+            var filledAnswers =
+                model.AcceptedAnswers
+                    .Where(answer =>
+                        !string.IsNullOrWhiteSpace(answer))
+                    .Select(answer =>
+                        answer.Trim())
+                    .ToList();
+
+            if (model.AcceptedAnswers.Count > 4 ||
+                filledAnswers.Count == 0)
+            {
+                ModelState.AddModelError(
+                    "AcceptedAnswers",
+                    "Enter between 1 and 4 accepted answers.");
+            }
+
+            if (filledAnswers.Any(answer =>
+                answer.Length > 200))
+            {
+                ModelState.AddModelError(
+                    "AcceptedAnswers",
+                    "Each accepted answer must be at most 200 characters.");
+            }
+
+            if (filledAnswers
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Count() != filledAnswers.Count)
+            {
+                ModelState.AddModelError(
+                    "AcceptedAnswers",
+                    "Accepted answers must be different.");
+            }
+        }
+
+        // Adds answer options for choice questions.
+        private static void AddAnswerOptions(
+            Question question,
+            List<string> options,
+            List<int> correctOptions)
+        {
+            for (int i = 0;
+                 i < options.Count;
+                 i++)
+            {
+                if (string.IsNullOrWhiteSpace(
+                    options[i]))
+                {
+                    continue;
+                }
+
+                var option =
+                    new QuestionOption
+                    {
+                        Text =
+                            options[i].Trim(),
+
+                        IsCorrect =
+                            correctOptions.Contains(i),
+
+                        Question =
+                            question
+                    };
+
+                question.Options.Add(option);
+            }
+        }
+
+        // Adds accepted answers for Short Answer questions.
+        private static void AddAcceptedAnswers(
+            Question question,
+            List<string> acceptedAnswers)
+        {
+            foreach (string answer in acceptedAnswers)
+            {
+                if (string.IsNullOrWhiteSpace(answer))
+                {
+                    continue;
+                }
+
+                var acceptedAnswer =
+                    new QuestionAcceptedAnswer
+                    {
+                        Text = answer.Trim(),
+                        Question = question
+                    };
+
+                question.AcceptedAnswers.Add(
+                    acceptedAnswer);
+            }
+        }
+
+        // Razor renders four fields even after
+        // a malformed collection is rejected.
+        private static void PrepareAnswerFields(
+            QuestionFormViewModel model)
+        {
+            model.Options =
+                (model.Options ?? new List<string>())
+                    .Take(4)
+                    .ToList();
+
             while (model.Options.Count < 4)
             {
                 model.Options.Add("");
+            }
+
+            model.CorrectOptions ??=
+                new List<int>();
+
+            model.AcceptedAnswers =
+                (model.AcceptedAnswers ?? new List<string>())
+                    .Take(4)
+                    .ToList();
+
+            while (model.AcceptedAnswers.Count < 4)
+            {
+                model.AcceptedAnswers.Add("");
             }
         }
     }

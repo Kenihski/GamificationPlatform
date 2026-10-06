@@ -12,6 +12,7 @@ namespace GamificationPlatform.ViewModels
         public Question Question { get; set; }
             = new Question();
 
+        // Used for Single Choice and Multiple Choice.
         public List<string> Options { get; set; }
             = new List<string>
             {
@@ -21,9 +22,20 @@ namespace GamificationPlatform.ViewModels
                 ""
             };
 
-        [Required(ErrorMessage = "Please select the correct answer.")]
-        [Range(0, 3, ErrorMessage = "Please select one of the four answer fields.")]
-        public int? CorrectOption { get; set; }
+        // Stores the indexes of the correct answer options.
+        public List<int> CorrectOptions { get; set; }
+            = new List<int>();
+
+        // Used for Short Answer questions.
+        // The creator can define several accepted answers.
+        public List<string> AcceptedAnswers { get; set; }
+            = new List<string>
+            {
+                "",
+                "",
+                "",
+                ""
+            };
 
         [BindNever]
         public List<Challenge> Challenges { get; set; }

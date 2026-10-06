@@ -22,7 +22,10 @@
 
             <h4>@result.Question.Title</h4>
 
-            <p>@result.Question.Description</p>
+            @if (!string.IsNullOrWhiteSpace(result.Question.Description))
+            {
+                <p>@result.Question.Description</p>
+            }
 
             @if (!string.IsNullOrEmpty(result.Question.ImageUrl))
             {
@@ -36,20 +39,48 @@
                 <strong>@result.Question.Points points</strong>
             </p>
 
-            @foreach (var option in result.Question.Options)
+            @if (result.Question.QuestionType == "ShortAnswer")
             {
-                <div class="form-check mb-2">
+                <p>
+                    <strong>Your answer:</strong>
 
-                    <input class="form-check-input"
-                           type="radio"
-                           disabled
-                           checked="@(option.QuestionOptionId == result.SelectedOptionId)" />
+                    @if (!string.IsNullOrWhiteSpace(result.TextAnswer))
+                    {
+                        <span>@result.TextAnswer</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not answered</span>
+                    }
+                </p>
+            }
+            else
+            {
+                @foreach (var option in result.Question.Options)
+                {
+                    <div class="form-check mb-2">
 
-                    <label class="form-check-label">
-                        @option.Text
-                    </label>
+                        @if (result.Question.QuestionType == "MultipleChoice")
+                        {
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   disabled
+                                   checked="@result.SelectedOptionIds.Contains(option.QuestionOptionId)" />
+                        }
+                        else
+                        {
+                            <input class="form-check-input"
+                                   type="radio"
+                                   disabled
+                                   checked="@result.SelectedOptionIds.Contains(option.QuestionOptionId)" />
+                        }
 
-                </div>
+                        <label class="form-check-label">
+                            @option.Text
+                        </label>
+
+                    </div>
+                }
             }
 
             <hr />
@@ -67,17 +98,55 @@
                 </p>
             }
 
-            @{
-                var correctOption =
-                    result.Question.Options.FirstOrDefault(o => o.IsCorrect);
+            @if (result.Question.QuestionType == "ShortAnswer")
+            {
+                var acceptedAnswers =
+                    result.Question.AcceptedAnswers
+                        .Select(answer => answer.Text)
+                        .ToList();
+
+                @if (acceptedAnswers.Any())
+                {
+                    <p>
+                        <strong>
+                            @(acceptedAnswers.Count == 1
+                                ? "Correct answer:"
+                                : "Correct answers:")
+                        </strong>
+
+                        @string.Join(", ", acceptedAnswers)
+                    </p>
+                }
+            }
+            else
+            {
+                var correctOptions =
+                    result.Question.Options
+                        .Where(option => option.IsCorrect)
+                        .ToList();
+
+                @if (correctOptions.Any())
+                {
+                    <p>
+                        <strong>
+                            @(correctOptions.Count == 1
+                                ? "Correct answer:"
+                                : "Correct answers:")
+                        </strong>
+
+                        @string.Join(
+                            ", ",
+                            correctOptions.Select(option => option.Text))
+                    </p>
+                }
             }
 
-            @if (correctOption != null)
+            @if (!string.IsNullOrWhiteSpace(result.Question.Explanation))
             {
-                <p>
-                    Correct answer:
-                    <strong>@correctOption.Text</strong>
-                </p>
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>Explanation:</strong>
+                    @result.Question.Explanation
+                </div>
             }
 
         </div>

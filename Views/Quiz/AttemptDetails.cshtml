@@ -34,16 +34,18 @@
 @foreach (var answer in Model.Answers)
 {
     <div class="card mb-4">
-
         <div class="card-body">
 
             <h4>
                 @answer.QuestionTitle
             </h4>
 
-            <p>
-                @answer.QuestionDescription
-            </p>
+            @if (!string.IsNullOrWhiteSpace(answer.QuestionDescription))
+            {
+                <p>
+                    @answer.QuestionDescription
+                </p>
+            }
 
             @if (!string.IsNullOrEmpty(answer.ImageUrl))
             {
@@ -61,25 +63,62 @@
                 </strong>
             </p>
 
-            @foreach (var option in answer.Options)
+            @if (answer.QuestionType == "ShortAnswer")
             {
-                <div class="form-check mb-2">
+                <p>
+                    <strong>Your answer:</strong>
 
-                    <input class="form-check-input"
-                           type="radio"
-                           disabled
-                           checked="@option.IsSelected" />
+                    @if (!string.IsNullOrWhiteSpace(answer.TextAnswer))
+                    {
+                        <span>@answer.TextAnswer</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">
+                            Not answered
+                        </span>
+                    }
+                </p>
+            }
+            else
+            {
+                @foreach (var option in answer.Options)
+                {
+                    <div class="form-check mb-2">
 
-                    <label class="form-check-label">
-                        @option.Text
-                    </label>
+                        @if (answer.QuestionType == "MultipleChoice")
+                        {
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   disabled
+                                   checked="@option.IsSelected" />
+                        }
+                        else
+                        {
+                            <input class="form-check-input"
+                                   type="radio"
+                                   disabled
+                                   checked="@option.IsSelected" />
+                        }
 
-                </div>
+                        <label class="form-check-label">
+                            @option.Text
+                        </label>
+
+                    </div>
+                }
             }
 
             <hr />
 
-            @if (answer.SelectedOptionId == null)
+            @{
+                bool isAnswered =
+                    answer.QuestionType == "ShortAnswer"
+                        ? !string.IsNullOrWhiteSpace(answer.TextAnswer)
+                        : answer.SelectedOptionIds.Any();
+            }
+
+            @if (!isAnswered)
             {
                 <p class="text-danger">
                     <strong>Not answered</strong>
@@ -98,18 +137,30 @@
                 </p>
             }
 
-            @if (answer.CorrectAnswer != null)
+            @if (answer.CorrectAnswers.Any())
             {
                 <p>
-                    Correct answer:
                     <strong>
-                        @answer.CorrectAnswer
+                        @(answer.CorrectAnswers.Count == 1
+                            ? "Correct answer:"
+                            : "Correct answers:")
                     </strong>
+
+                    @string.Join(
+                        ", ",
+                        answer.CorrectAnswers)
                 </p>
             }
 
-        </div>
+            @if (!string.IsNullOrWhiteSpace(answer.QuestionExplanation))
+            {
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>Explanation:</strong>
+                    @answer.QuestionExplanation
+                </div>
+            }
 
+        </div>
     </div>
 }
 
