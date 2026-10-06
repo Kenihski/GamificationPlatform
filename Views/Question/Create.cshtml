@@ -9,13 +9,11 @@
 
 <h2>Create New Question</h2>
 
-
 <div class="alert alert-warning">
     <strong>Note:</strong>
     Adding a new question will reset all previous attempts
     and scores for this challenge.
 </div>
-
 
 <form asp-controller="Question"
       asp-action="Create"
@@ -25,9 +23,7 @@
          class="text-danger mb-3">
     </div>
 
-
     <div class="form-group mb-3">
-
         <label asp-for="Question.Title">
             Title
         </label>
@@ -40,12 +36,43 @@
         <span asp-validation-for="Question.Title"
               class="text-danger">
         </span>
-
     </div>
 
+    <div class="form-group mb-3">
+        <label asp-for="Question.QuestionType">
+            Question Type
+        </label>
+
+        <span class="text-danger">*</span>
+
+        <select asp-for="Question.QuestionType"
+                class="form-control"
+                id="questionType">
+
+            <option value="SingleChoice">
+                Single Choice
+            </option>
+
+            <option value="MultipleChoice">
+                Multiple Choice
+            </option>
+
+            <option value="ShortAnswer">
+                Short Answer
+            </option>
+        </select>
+
+        <span asp-validation-for="Question.QuestionType"
+              class="text-danger">
+        </span>
+
+        <small id="questionTypeHelp"
+               class="form-text text-muted">
+            Select one correct answer.
+        </small>
+    </div>
 
     <div class="form-group mb-3">
-
         <label for="descriptionSelect">
             Description
         </label>
@@ -61,8 +88,8 @@
                 Choose one correct answer.
             </option>
 
-            <option value="Multiple answers may be correct.">
-                Multiple answers may be correct.
+            <option value="One or more answers may be correct.">
+                One or more answers may be correct.
             </option>
 
             <option value="Choose the best answer.">
@@ -73,12 +100,14 @@
                 Select all correct answers.
             </option>
 
+            <option value="Write the correct answer. Uppercase and lowercase letters are treated the same.">
+                Write the correct answer. Uppercase and lowercase letters are treated the same.
+            </option>
+
             <option value="custom">
                 Custom description...
             </option>
-
         </select>
-
 
         <div id="customDescriptionContainer"
              class="mt-2"
@@ -89,9 +118,7 @@
                    maxlength="500"
                    class="form-control"
                    placeholder="Enter description" />
-
         </div>
-
 
         <input type="hidden"
                asp-for="Question.Description"
@@ -100,12 +127,9 @@
         <span asp-validation-for="Question.Description"
               class="text-danger">
         </span>
-
     </div>
 
-
     <div class="form-group mb-3">
-
         <label asp-for="Question.Points">
             Points
         </label>
@@ -123,12 +147,9 @@
         <span asp-validation-for="Question.Points"
               class="text-danger">
         </span>
-
     </div>
 
-
     <div class="form-group mb-3">
-
         <label asp-for="Question.ImageUrl">
             Image
         </label>
@@ -192,7 +213,6 @@
             <option value="/images/Question_13.png">
                 Question 13
             </option>
-
         </select>
 
         <span asp-validation-for="Question.ImageUrl"
@@ -208,18 +228,14 @@
                         object-fit: contain;
                         display: none;" />
         </div>
-
     </div>
-
 
     @* ChallengeId is sent to the controller. *@
     <input type="hidden"
            asp-for="Question.ChallengeId" />
 
-
     @* The challenge cannot be changed. *@
     <div class="form-group mb-3">
-
         <label>
             Challenge
         </label>
@@ -228,66 +244,89 @@
                class="form-control"
                value="@challenge?.Title"
                readonly />
-
     </div>
-
 
     <hr />
 
+    @* Used for Single Choice and Multiple Choice. *@
+    <div id="choiceAnswerSection">
+        <h4>Answer Options</h4>
 
-    <h4>Answer Options</h4>
+        <span asp-validation-for="Options"
+              class="text-danger">
+        </span>
 
-    <span asp-validation-for="Options"
-          class="text-danger">
-    </span>
+        <span asp-validation-for="CorrectOptions"
+              class="text-danger">
+        </span>
 
-    <span asp-validation-for="CorrectOption"
-          class="text-danger">
-    </span>
+        <p class="text-muted">
+            Enter between 2 and 4 answer options.
+        </p>
 
-    <p class="text-muted">
-        Enter between 2 and 4 answer options.
-    </p>
-
-
-    @for (int i = 0; i < 4; i++)
-    {
-        <div class="form-group mb-3">
-
-            <label>
-                Option @(i + 1)
-            </label>
-
-            <input maxlength="200"
-                   asp-for="Options[i]"
-                   class="form-control" />
-
-
-            <div class="form-check mt-1">
-
-                <input type="radio"
-                       asp-for="CorrectOption"
-                       value="@i"
-                       class="form-check-input" />
-
-                <label class="form-check-label">
-                    Correct answer
+        @for (int i = 0; i < 4; i++)
+        {
+            <div class="form-group mb-3">
+                <label>
+                    Option @(i + 1)
                 </label>
 
+                <input maxlength="200"
+                       asp-for="Options[i]"
+                       class="form-control" />
+
+                <div class="form-check mt-1">
+                    <input type="checkbox"
+                           name="CorrectOptions"
+                           value="@i"
+                           class="form-check-input correct-option"
+                           id="correctOption@(i)"
+                           checked="@Model.CorrectOptions.Contains(i)" />
+
+                    <label class="form-check-label"
+                           for="correctOption@(i)">
+                        Correct answer
+                    </label>
+                </div>
             </div>
+        }
+    </div>
 
-        </div>
-    }
+    @* Used for Short Answer questions. *@
+    <div id="shortAnswerSection"
+         style="display: none;">
 
+        <h4>Accepted Answers</h4>
+
+        <span asp-validation-for="AcceptedAnswers"
+              class="text-danger">
+        </span>
+
+        <p class="text-muted">
+            Enter between 1 and 4 accepted answers.
+        </p>
+
+        @for (int i = 0; i < 4; i++)
+        {
+            <div class="form-group mb-3">
+                <label>
+                    Accepted Answer @(i + 1)
+                </label>
+
+                <input maxlength="200"
+                       asp-for="AcceptedAnswers[i]"
+                       class="form-control"
+                       placeholder="Enter accepted answer" />
+            </div>
+        }
+    </div>
 
     <br />
-
 
     <button type="submit"
             class="btn btn-primary">
         Create Question
     </button>
-
 
     <a asp-controller="Challenge"
        asp-action="Details"
@@ -295,9 +334,7 @@
        class="btn btn-secondary">
         Back to Challenge
     </a>
-
 </form>
-
 
 @section Scripts
 {
@@ -306,6 +343,10 @@
             defer></script>
 
     <script src="~/js/question-description.js"
+            asp-append-version="true"
+            defer></script>
+
+    <script src="~/js/question-type.js"
             asp-append-version="true"
             defer></script>
 }

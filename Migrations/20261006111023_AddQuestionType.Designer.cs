@@ -3,6 +3,7 @@ using System;
 using GamificationPlatform.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamificationPlatform.Migrations
 {
     [DbContext(typeof(ChallengeDbContext))]
-    partial class ChallengeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261006111023_AddQuestionType")]
+    partial class AddQuestionType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,8 +71,8 @@ namespace GamificationPlatform.Migrations
                     b.Property<int>("QuestionId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("TextAnswer")
-                        .HasColumnType("TEXT");
+                    b.Property<int?>("SelectedOptionId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("AttemptAnswerId");
 
@@ -77,29 +80,9 @@ namespace GamificationPlatform.Migrations
 
                     b.HasIndex("QuestionId");
 
+                    b.HasIndex("SelectedOptionId");
+
                     b.ToTable("AttemptAnswers");
-                });
-
-            modelBuilder.Entity("GamificationPlatform.Models.AttemptAnswerOption", b =>
-                {
-                    b.Property<int>("AttemptAnswerOptionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AttemptAnswerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("QuestionOptionId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("AttemptAnswerOptionId");
-
-                    b.HasIndex("QuestionOptionId");
-
-                    b.HasIndex("AttemptAnswerId", "QuestionOptionId")
-                        .IsUnique();
-
-                    b.ToTable("AttemptAnswerOptions");
                 });
 
             modelBuilder.Entity("GamificationPlatform.Models.Challenge", b =>
@@ -206,26 +189,6 @@ namespace GamificationPlatform.Migrations
                     b.HasIndex("ChallengeId");
 
                     b.ToTable("Questions");
-                });
-
-            modelBuilder.Entity("GamificationPlatform.Models.QuestionAcceptedAnswer", b =>
-                {
-                    b.Property<int>("QuestionAcceptedAnswerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("QuestionAcceptedAnswerId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("QuestionAcceptedAnswers");
                 });
 
             modelBuilder.Entity("GamificationPlatform.Models.QuestionOption", b =>
@@ -350,28 +313,15 @@ namespace GamificationPlatform.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GamificationPlatform.Models.QuestionOption", "SelectedOption")
+                        .WithMany()
+                        .HasForeignKey("SelectedOptionId");
+
                     b.Navigation("ChallengeAttempt");
 
                     b.Navigation("Question");
-                });
 
-            modelBuilder.Entity("GamificationPlatform.Models.AttemptAnswerOption", b =>
-                {
-                    b.HasOne("GamificationPlatform.Models.AttemptAnswer", "AttemptAnswer")
-                        .WithMany("SelectedOptions")
-                        .HasForeignKey("AttemptAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GamificationPlatform.Models.QuestionOption", "QuestionOption")
-                        .WithMany()
-                        .HasForeignKey("QuestionOptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AttemptAnswer");
-
-                    b.Navigation("QuestionOption");
+                    b.Navigation("SelectedOption");
                 });
 
             modelBuilder.Entity("GamificationPlatform.Models.Challenge", b =>
@@ -405,17 +355,6 @@ namespace GamificationPlatform.Migrations
                         .IsRequired();
 
                     b.Navigation("Challenge");
-                });
-
-            modelBuilder.Entity("GamificationPlatform.Models.QuestionAcceptedAnswer", b =>
-                {
-                    b.HasOne("GamificationPlatform.Models.Question", "Question")
-                        .WithMany("AcceptedAnswers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("GamificationPlatform.Models.QuestionOption", b =>
@@ -472,11 +411,6 @@ namespace GamificationPlatform.Migrations
                     b.Navigation("UserAchievements");
                 });
 
-            modelBuilder.Entity("GamificationPlatform.Models.AttemptAnswer", b =>
-                {
-                    b.Navigation("SelectedOptions");
-                });
-
             modelBuilder.Entity("GamificationPlatform.Models.Challenge", b =>
                 {
                     b.Navigation("Questions");
@@ -491,8 +425,6 @@ namespace GamificationPlatform.Migrations
 
             modelBuilder.Entity("GamificationPlatform.Models.Question", b =>
                 {
-                    b.Navigation("AcceptedAnswers");
-
                     b.Navigation("Options");
                 });
 

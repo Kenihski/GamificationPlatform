@@ -122,16 +122,58 @@ namespace GamificationPlatform.Controllers
             // Prepares the answers for the view.
             foreach (var answer in attempt.Answers)
             {
-                var correctOption =
-                    answer.Question.Options
-                        .FirstOrDefault(o =>
-                            o.IsCorrect);
+                var selectedOptionIds =
+                    answer.SelectedOptions
+                        .Select(selected =>
+                            selected.QuestionOptionId)
+                        .ToList();
 
-                var selectedOption =
-                    answer.Question.Options
-                        .FirstOrDefault(o =>
-                            o.QuestionOptionId ==
-                                answer.SelectedOptionId);
+                bool isCorrect;
+
+                List<string> correctAnswers;
+
+                if (answer.Question.QuestionType ==
+                    "ShortAnswer")
+                {
+                    isCorrect =
+                        IsAcceptedShortAnswer(
+                            answer.TextAnswer,
+                            answer.Question.AcceptedAnswers);
+
+                    correctAnswers =
+                        answer.Question.AcceptedAnswers
+                            .Select(accepted =>
+                                accepted.Text)
+                            .ToList();
+                }
+                else
+                {
+                    var correctOptionIds =
+                        answer.Question.Options
+                            .Where(option =>
+                                option.IsCorrect)
+                            .Select(option =>
+                                option.QuestionOptionId)
+                            .ToList();
+
+                    isCorrect =
+                        selectedOptionIds.Count > 0 &&
+                        selectedOptionIds
+                            .OrderBy(optionId =>
+                                optionId)
+                            .SequenceEqual(
+                                correctOptionIds
+                                    .OrderBy(optionId =>
+                                        optionId));
+
+                    correctAnswers =
+                        answer.Question.Options
+                            .Where(option =>
+                                option.IsCorrect)
+                            .Select(option =>
+                                option.Text)
+                            .ToList();
+                }
 
                 var answerViewModel =
                     new AttemptAnswerViewModel
@@ -142,21 +184,26 @@ namespace GamificationPlatform.Controllers
                         QuestionDescription =
                             answer.Question.Description,
 
+                        QuestionType =
+                            answer.Question.QuestionType,
+
                         ImageUrl =
                             answer.Question.ImageUrl,
 
                         Points =
                             answer.Question.Points,
 
-                        SelectedOptionId =
-                            answer.SelectedOptionId,
+                        SelectedOptionIds =
+                            selectedOptionIds,
+
+                        TextAnswer =
+                            answer.TextAnswer,
 
                         IsCorrect =
-                            selectedOption != null &&
-                            selectedOption.IsCorrect,
+                            isCorrect,
 
-                        CorrectAnswer =
-                            correctOption?.Text
+                        CorrectAnswers =
+                            correctAnswers
                     };
 
                 foreach (var option in
@@ -172,8 +219,8 @@ namespace GamificationPlatform.Controllers
                                 option.Text,
 
                             IsSelected =
-                                option.QuestionOptionId ==
-                                answer.SelectedOptionId
+                                selectedOptionIds.Contains(
+                                    option.QuestionOptionId)
                         });
                 }
 
@@ -303,7 +350,9 @@ namespace GamificationPlatform.Controllers
             int challengeId,
             int challengeAttemptId,
             [FromForm(Name = "answers")]
-            Dictionary<int, int>? answers)
+            Dictionary<int, List<int>>? answers,
+            [FromForm(Name = "textAnswers")]
+            Dictionary<int, string>? textAnswers)
         {
             if (!ModelState.IsValid ||
                 challengeId <= 0 ||
@@ -319,7 +368,8 @@ namespace GamificationPlatform.Controllers
                 await CompleteAttemptAsync(
                     challengeId,
                     challengeAttemptId,
-                    answers);
+                    answers,
+                    textAnswers);
 
             if (result == null)
             {
@@ -342,7 +392,9 @@ namespace GamificationPlatform.Controllers
             int challengeId,
             int challengeAttemptId,
             [FromForm(Name = "answers")]
-            Dictionary<int, int>? answers)
+            Dictionary<int, List<int>>? answers,
+            [FromForm(Name = "textAnswers")]
+            Dictionary<int, string>? textAnswers)
         {
             if (!ModelState.IsValid ||
                 challengeId <= 0 ||
@@ -358,7 +410,8 @@ namespace GamificationPlatform.Controllers
                 await CompleteAttemptAsync(
                     challengeId,
                     challengeAttemptId,
-                    answers);
+                    answers,
+                    textAnswers);
 
             if (result == null)
             {
@@ -390,10 +443,14 @@ namespace GamificationPlatform.Controllers
             CompleteAttemptAsync(
                 int challengeId,
                 int challengeAttemptId,
-                Dictionary<int, int>? answers)
+                Dictionary<int, List<int>>? answers,
+                Dictionary<int, string>? textAnswers)
         {
             answers ??=
-                new Dictionary<int, int>();
+                new Dictionary<int, List<int>>();
+
+            textAnswers ??=
+                new Dictionary<int, string>();
 
             var challenge =
                 await _challengeRepository
@@ -449,6 +506,8 @@ namespace GamificationPlatform.Controllers
                 return null;
             }
 
+            // Validate that every submitted choice answer
+            // belongs to the submitted question.
             foreach (var answer in answers)
             {
                 var question =
@@ -457,19 +516,97 @@ namespace GamificationPlatform.Controllers
                             q.QuestionId == answer.Key);
 
                 if (question == null ||
-                    !question.Options.Any(o =>
-                        o.QuestionOptionId == answer.Value))
+                    question.QuestionType == "ShortAnswer")
                 {
                     _logger.LogWarning(
-                        "User {UserId} submitted invalid option {OptionId} for question {QuestionId} in attempt {AttemptId}.",
+                        "User {UserId} submitted an invalid choice answer for question {QuestionId} in attempt {AttemptId}.",
                         userId,
-                        answer.Value,
                         answer.Key,
                         challengeAttemptId);
 
                     ModelState.AddModelError(
                         "answers",
                         "An answer does not belong to this challenge question.");
+
+                    return null;
+                }
+
+                var submittedOptionIds =
+                    answer.Value?
+                        .Distinct()
+                        .ToList()
+                    ?? new List<int>();
+
+                bool containsInvalidOption =
+                    submittedOptionIds.Any(optionId =>
+                        !question.Options.Any(option =>
+                            option.QuestionOptionId ==
+                                optionId));
+
+                if (containsInvalidOption)
+                {
+                    _logger.LogWarning(
+                        "User {UserId} submitted an invalid option for question {QuestionId} in attempt {AttemptId}.",
+                        userId,
+                        answer.Key,
+                        challengeAttemptId);
+
+                    ModelState.AddModelError(
+                        "answers",
+                        "An answer does not belong to this challenge question.");
+
+                    return null;
+                }
+
+                // Single Choice must never contain
+                // more than one selected option.
+                if (question.QuestionType == "SingleChoice" &&
+                    submittedOptionIds.Count > 1)
+                {
+                    _logger.LogWarning(
+                        "User {UserId} submitted multiple options for single choice question {QuestionId}.",
+                        userId,
+                        question.QuestionId);
+
+                    ModelState.AddModelError(
+                        "answers",
+                        "A single choice question can only have one selected answer.");
+
+                    return null;
+                }
+            }
+
+            // Validate that every submitted text answer
+            // belongs to a Short Answer question.
+            foreach (var textAnswer in textAnswers)
+            {
+                var question =
+                    challenge.Questions
+                        .FirstOrDefault(q =>
+                            q.QuestionId == textAnswer.Key);
+
+                if (question == null ||
+                    question.QuestionType != "ShortAnswer")
+                {
+                    _logger.LogWarning(
+                        "User {UserId} submitted an invalid text answer for question {QuestionId} in attempt {AttemptId}.",
+                        userId,
+                        textAnswer.Key,
+                        challengeAttemptId);
+
+                    ModelState.AddModelError(
+                        "textAnswers",
+                        "A text answer does not belong to this challenge question.");
+
+                    return null;
+                }
+
+                if (textAnswer.Value != null &&
+                    textAnswer.Value.Length > 200)
+                {
+                    ModelState.AddModelError(
+                        "textAnswers",
+                        "A short answer cannot be longer than 200 characters.");
 
                     return null;
                 }
@@ -493,31 +630,68 @@ namespace GamificationPlatform.Controllers
                         challengeAttemptId);
 
                     answers.Clear();
+                    textAnswers.Clear();
                 }
             }
 
-            foreach (var question in challenge.Questions)
+            foreach (var question in
+                challenge.Questions)
             {
-                int? selectedOptionId = null;
+                var selectedOptionIds =
+                    new List<int>();
+
+                string? submittedTextAnswer = null;
+
                 bool isCorrect = false;
 
-                if (answers.TryGetValue(
-                    question.QuestionId,
-                    out int optionId))
+                if (question.QuestionType == "ShortAnswer")
                 {
-                    selectedOptionId = optionId;
-
-                    var selectedOption =
-                        question.Options
-                            .FirstOrDefault(o =>
-                                o.QuestionOptionId ==
-                                    optionId);
-
-                    if (selectedOption != null)
+                    if (textAnswers.TryGetValue(
+                        question.QuestionId,
+                        out var textAnswer))
                     {
-                        isCorrect =
-                            selectedOption.IsCorrect;
+                        submittedTextAnswer =
+                            string.IsNullOrWhiteSpace(textAnswer)
+                                ? null
+                                : textAnswer.Trim();
                     }
+
+                    isCorrect =
+                        IsAcceptedShortAnswer(
+                            submittedTextAnswer,
+                            question.AcceptedAnswers);
+                }
+                else
+                {
+                    if (answers.TryGetValue(
+                        question.QuestionId,
+                        out var submittedOptionIds) &&
+                        submittedOptionIds != null)
+                    {
+                        selectedOptionIds =
+                            submittedOptionIds
+                                .Distinct()
+                                .ToList();
+                    }
+
+                    var correctOptionIds =
+                        question.Options
+                            .Where(option =>
+                                option.IsCorrect)
+                            .Select(option =>
+                                option.QuestionOptionId)
+                            .ToList();
+
+                    // The answer is correct only when
+                    // all correct options and no incorrect
+                    // options were selected.
+                    isCorrect =
+                        selectedOptionIds.Count > 0 &&
+                        selectedOptionIds
+                            .OrderBy(id => id)
+                            .SequenceEqual(
+                                correctOptionIds
+                                    .OrderBy(id => id));
                 }
 
                 if (isCorrect)
@@ -531,14 +705,17 @@ namespace GamificationPlatform.Controllers
                     {
                         Question = question,
 
-                        SelectedOptionId =
-                            selectedOptionId,
+                        SelectedOptionIds =
+                            selectedOptionIds,
 
-                        IsCorrect = isCorrect
+                        TextAnswer =
+                            submittedTextAnswer,
+
+                        IsCorrect =
+                            isCorrect
                     });
 
-                // An unanswered question is also saved,
-                // but without a selected option.
+                // An unanswered question is also saved.
                 var attemptAnswer =
                     new AttemptAnswer
                     {
@@ -549,9 +726,20 @@ namespace GamificationPlatform.Controllers
                         QuestionId =
                             question.QuestionId,
 
-                        SelectedOptionId =
-                            selectedOptionId
+                        TextAnswer =
+                            submittedTextAnswer
                     };
+
+                foreach (int selectedOptionId in
+                    selectedOptionIds)
+                {
+                    attemptAnswer.SelectedOptions.Add(
+                        new AttemptAnswerOption
+                        {
+                            QuestionOptionId =
+                                selectedOptionId
+                        });
+                }
 
                 _attemptRepository
                     .AddAttemptAnswer(
@@ -603,6 +791,44 @@ namespace GamificationPlatform.Controllers
                 result.MaxScore);
 
             return result;
+        }
+
+        // Normalizes a short answer before comparison.
+        private static string NormalizeShortAnswer(
+            string answer)
+        {
+            return string.Join(
+                " ",
+                answer
+                    .Trim()
+                    .ToLowerInvariant()
+                    .Split(
+                        ' ',
+                        StringSplitOptions
+                            .RemoveEmptyEntries));
+        }
+
+        // Checks whether the submitted text matches
+        // one of the accepted answers.
+        private static bool IsAcceptedShortAnswer(
+            string? submittedAnswer,
+            IEnumerable<QuestionAcceptedAnswer> acceptedAnswers)
+        {
+            if (string.IsNullOrWhiteSpace(
+                submittedAnswer))
+            {
+                return false;
+            }
+
+            string normalizedSubmittedAnswer =
+                NormalizeShortAnswer(
+                    submittedAnswer);
+
+            return acceptedAnswers.Any(
+                acceptedAnswer =>
+                    NormalizeShortAnswer(
+                        acceptedAnswer.Text) ==
+                    normalizedSubmittedAnswer);
         }
     }
 }

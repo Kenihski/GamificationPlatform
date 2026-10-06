@@ -23,7 +23,12 @@ namespace GamificationPlatform.ViewModels
     {
         public Question Question { get; set; } = default!;
 
-        public int? SelectedOptionId { get; set; }
+        // Stores all selected option IDs for choice questions.
+        public List<int> SelectedOptionIds { get; set; }
+            = new List<int>();
+
+        // Stores the submitted answer for Short Answer questions.
+        public string? TextAnswer { get; set; }
 
         public bool IsCorrect { get; set; }
     }

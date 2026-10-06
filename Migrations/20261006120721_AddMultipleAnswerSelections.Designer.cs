@@ -3,6 +3,7 @@ using System;
 using GamificationPlatform.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamificationPlatform.Migrations
 {
     [DbContext(typeof(ChallengeDbContext))]
-    partial class ChallengeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261006120721_AddMultipleAnswerSelections")]
+    partial class AddMultipleAnswerSelections
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,26 +211,6 @@ namespace GamificationPlatform.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("GamificationPlatform.Models.QuestionAcceptedAnswer", b =>
-                {
-                    b.Property<int>("QuestionAcceptedAnswerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("QuestionAcceptedAnswerId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("QuestionAcceptedAnswers");
-                });
-
             modelBuilder.Entity("GamificationPlatform.Models.QuestionOption", b =>
                 {
                     b.Property<int>("QuestionOptionId")
@@ -407,17 +390,6 @@ namespace GamificationPlatform.Migrations
                     b.Navigation("Challenge");
                 });
 
-            modelBuilder.Entity("GamificationPlatform.Models.QuestionAcceptedAnswer", b =>
-                {
-                    b.HasOne("GamificationPlatform.Models.Question", "Question")
-                        .WithMany("AcceptedAnswers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("GamificationPlatform.Models.QuestionOption", b =>
                 {
                     b.HasOne("GamificationPlatform.Models.Question", "Question")
@@ -491,8 +463,6 @@ namespace GamificationPlatform.Migrations
 
             modelBuilder.Entity("GamificationPlatform.Models.Question", b =>
                 {
-                    b.Navigation("AcceptedAnswers");
-
                     b.Navigation("Options");
                 });
 

@@ -117,7 +117,8 @@ namespace GamificationPlatform.DAL
             }
         }
 
-        // Returns a challenge with questions and answer options.
+        // Returns a challenge with questions,
+        // answer options and accepted text answers.
         public async Task<Challenge?> GetChallengeWithQuestionsAndOptionsAsync(
             int id)
         {
@@ -126,6 +127,8 @@ namespace GamificationPlatform.DAL
                 return await _challengeDbContext.Challenges
                     .Include(c => c.Questions)
                         .ThenInclude(q => q.Options)
+                    .Include(c => c.Questions)
+                        .ThenInclude(q => q.AcceptedAnswers)
                     .FirstOrDefaultAsync(c =>
                         c.ChallengeId == id);
             }

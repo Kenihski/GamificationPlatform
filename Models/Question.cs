@@ -24,8 +24,12 @@ namespace GamificationPlatform.Models
             ErrorMessage = "Points must be between 1 and 100.")]
         public int Points { get; set; }
 
-        [AllowedImage(ErrorMessage = "Please select one of the available images.")]
+        [AllowedImage(
+            ErrorMessage = "Please select one of the available images.")]
         public string? ImageUrl { get; set; }
+
+        [Required]
+        public string QuestionType { get; set; } = "SingleChoice";
 
         public int ChallengeId { get; set; }
 
@@ -33,6 +37,12 @@ namespace GamificationPlatform.Models
         public virtual Challenge Challenge { get; set; } = default!;
 
         // Navigation: A question can have multiple answer options.
-        public virtual List<QuestionOption> Options { get; set; } = new List<QuestionOption>();
+        public virtual List<QuestionOption> Options { get; set; }
+            = new List<QuestionOption>();
+
+        // Navigation: Short-answer questions can have
+        // multiple accepted text answers.
+        public virtual List<QuestionAcceptedAnswer> AcceptedAnswers { get; set; }
+            = new List<QuestionAcceptedAnswer>();
     }
 }

@@ -17,6 +17,8 @@ namespace GamificationPlatform.DAL
 
         public DbSet<QuestionOption> QuestionOptions { get; set; }
 
+        public DbSet<QuestionAcceptedAnswer> QuestionAcceptedAnswers { get; set; }
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<UserChallenge> UserChallenges { get; set; }
@@ -24,6 +26,8 @@ namespace GamificationPlatform.DAL
         public DbSet<ChallengeAttempt> ChallengeAttempts { get; set; }
 
         public DbSet<AttemptAnswer> AttemptAnswers { get; set; }
+
+        public DbSet<AttemptAnswerOption> AttemptAnswerOptions { get; set; }
 
         public DbSet<Achievement> Achievements { get; set; }
 
@@ -54,6 +58,16 @@ namespace GamificationPlatform.DAL
                 .WithMany(u => u.CreatedChallenges)
                 .HasForeignKey(c => c.CreatedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // One selected option can only be stored once
+            // for each attempt answer.
+            modelBuilder.Entity<AttemptAnswerOption>()
+                .HasIndex(ao => new
+                {
+                    ao.AttemptAnswerId,
+                    ao.QuestionOptionId
+                })
+                .IsUnique();
 
             // A user can only unlock each achievement once.
             modelBuilder.Entity<UserAchievement>()

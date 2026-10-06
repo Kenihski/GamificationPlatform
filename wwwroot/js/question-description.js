@@ -18,20 +18,69 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    descriptionSelect.addEventListener("change", function () {
-        if (descriptionSelect.value === "custom") {
-            customDescriptionContainer.style.display = "block";
-            questionDescription.value = customDescription.value;
-            customDescription.focus();
+    function loadExistingDescription() {
+        const existingDescription =
+            questionDescription.value;
+
+        const matchingOption =
+            Array.from(descriptionSelect.options)
+                .find(option =>
+                    option.value === existingDescription);
+
+        if (matchingOption) {
+            descriptionSelect.value =
+                existingDescription;
+
+            customDescriptionContainer.style.display =
+                "none";
+        }
+        else if (existingDescription) {
+            descriptionSelect.value =
+                "custom";
+
+            customDescription.value =
+                existingDescription;
+
+            customDescriptionContainer.style.display =
+                "block";
         }
         else {
-            customDescriptionContainer.style.display = "none";
-            customDescription.value = "";
-            questionDescription.value = descriptionSelect.value;
-        }
-    });
+            descriptionSelect.value = "";
 
-    customDescription.addEventListener("input", function () {
-        questionDescription.value = customDescription.value;
-    });
+            customDescriptionContainer.style.display =
+                "none";
+        }
+    }
+
+    descriptionSelect.addEventListener(
+        "change",
+        function () {
+            if (descriptionSelect.value === "custom") {
+                customDescriptionContainer.style.display =
+                    "block";
+
+                questionDescription.value =
+                    customDescription.value;
+
+                customDescription.focus();
+            }
+            else {
+                customDescriptionContainer.style.display =
+                    "none";
+
+                customDescription.value = "";
+
+                questionDescription.value =
+                    descriptionSelect.value;
+            }
+        });
+
+    customDescription.addEventListener(
+        "input",
+        function () {
+            questionDescription.value =
+                customDescription.value;
+        });
+
+    loadExistingDescription();
 });
