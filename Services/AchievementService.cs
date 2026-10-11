@@ -1,3 +1,4 @@
+
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using Microsoft.EntityFrameworkCore;
@@ -138,7 +139,8 @@ namespace GamificationPlatform.Services
                 await _context.ChallengeAttempts
                     .Where(a =>
                         a.UserChallenge.UserId == userId &&
-                        a.Completed)
+                        a.Completed &&
+                        a.UserChallenge.Challenge.CreatedByUserId != userId)
                     .Select(a => a.UserChallenge.ChallengeId)
                     .Distinct()
                     .CountAsync();
@@ -154,7 +156,8 @@ namespace GamificationPlatform.Services
                 await _context.ChallengeAttempts
                     .Where(a =>
                         a.UserChallenge.UserId == userId &&
-                        a.Completed)
+                        a.Completed &&
+                        a.UserChallenge.Challenge.CreatedByUserId != userId)
                     .Select(a => new
                     {
                         a.Score,
@@ -180,7 +183,8 @@ namespace GamificationPlatform.Services
                 await _context.ChallengeAttempts
                     .Where(a =>
                         a.UserChallenge.UserId == userId &&
-                        a.Completed)
+                        a.Completed &&
+                        a.UserChallenge.Challenge.CreatedByUserId != userId)
                     .OrderBy(a => a.CompletedAt)
                     .ThenBy(a => a.ChallengeAttemptId)
                     .Select(a => new
@@ -217,7 +221,8 @@ namespace GamificationPlatform.Services
                 await _context.ChallengeAttempts
                     .Where(a =>
                         a.UserChallenge.UserId == userId &&
-                        a.Completed)
+                        a.Completed &&
+                        a.UserChallenge.Challenge.CreatedByUserId != userId)
                     .GroupBy(a =>
                         a.UserChallenge.ChallengeId)
                     .Select(group => group.Count())
