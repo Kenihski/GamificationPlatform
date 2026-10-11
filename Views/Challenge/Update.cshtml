@@ -1,8 +1,40 @@
 @model Challenge
 
+@{
+    ViewData["Title"] = "Update Challenge";
+
+    var myImages = ViewBag.MyImages as List<GamificationPlatform.Models.UserImage>
+        ?? new List<GamificationPlatform.Models.UserImage>();
+
+    var defaultImages = ViewData["DefaultImages"] as List<GamificationPlatform.Models.DefaultImage>
+        ?? new List<GamificationPlatform.Models.DefaultImage>();
+
+    var currentImage = Model.ImageUrl ?? "";
+
+    bool isMyImage = myImages.Any(image => image.ImageUrl == currentImage);
+
+    bool isDefaultImage = defaultImages.Any(image => image.ImageUrl == currentImage);
+
+    bool isOtherImage =
+        !string.IsNullOrEmpty(currentImage) &&
+        !isMyImage &&
+        !isDefaultImage;
+
+    string selectedCategory = isMyImage
+        ? "my"
+        : isDefaultImage
+            ? "default"
+            : isOtherImage
+                ? "current"
+                : "none";
+}
+
 <h2>Update Challenge</h2>
 
-<form asp-action="Update">
+<form asp-controller="Challenge"
+      asp-action="Update"
+      method="post"
+      enctype="multipart/form-data">
 
     <div asp-validation-summary="All"
          class="text-danger mb-3">
@@ -23,7 +55,6 @@
         </span>
     </div>
 
-
     <div class="form-group mb-3">
         <label asp-for="Description"></label>
         <span class="text-danger">*</span>
@@ -36,7 +67,6 @@
         </span>
     </div>
 
-
     <div class="form-group mb-3">
         <label asp-for="TimeLimitMinutes">
             Time Limit
@@ -45,33 +75,13 @@
         <select asp-for="TimeLimitMinutes"
                 class="form-control">
 
-            <option value="">
-                Unlimited
-            </option>
-
-            <option value="10">
-                10 minutes
-            </option>
-
-            <option value="20">
-                20 minutes
-            </option>
-
-            <option value="30">
-                30 minutes
-            </option>
-
-            <option value="60">
-                60 minutes
-            </option>
-
-            <option value="90">
-                90 minutes
-            </option>
-
-            <option value="120">
-                120 minutes
-            </option>
+            <option value="">Unlimited</option>
+            <option value="10">10 minutes</option>
+            <option value="20">20 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="90">90 minutes</option>
+            <option value="120">120 minutes</option>
 
         </select>
 
@@ -80,90 +90,175 @@
         </span>
     </div>
 
-
+    <!-- Image selection -->
     <div class="form-group mb-4">
-        <label asp-for="ImageUrl">
+
+        <label for="imageCategory">
             Image
         </label>
-        <span class="text-danger">*</span>
 
-        <select asp-for="ImageUrl"
-                class="form-control"
-                id="imageSelect">
+        <select id="imageCategory"
+                class="form-control">
 
-            <option value="">
-                -- Select Image --
+            @if (selectedCategory == "none")
+            {
+                <option value="none" selected>No image</option>
+            }
+            else
+            {
+                <option value="none">No image</option>
+            }
+
+            @if (isOtherImage)
+            {
+                <option value="current" selected>
+                    Current image
+                </option>
+            }
+
+            <option value="upload">
+                Upload new image...
             </option>
 
-            <option value="/images/Question_1.png">
-                Question 1
-            </option>
+            @if (selectedCategory == "my")
+            {
+                <option value="my" selected>My Images</option>
+            }
+            else
+            {
+                <option value="my">My Images</option>
+            }
 
-            <option value="/images/Question_2.png">
-                Question 2
-            </option>
-
-            <option value="/images/Question_3.png">
-                Question 3
-            </option>
-
-            <option value="/images/Question_4.png">
-                Question 4
-            </option>
-
-            <option value="/images/Question_5.png">
-                Question 5
-            </option>
-
-            <option value="/images/Question_6.png">
-                Question 6
-            </option>
-
-            <option value="/images/Question_7.png">
-                Question 7
-            </option>
-
-            <option value="/images/Question_8.png">
-                Question 8
-            </option>
-
-            <option value="/images/Question_9.png">
-                Question 9
-            </option>
-
-            <option value="/images/Question_10.png">
-                Question 10
-            </option>
-
-            <option value="/images/Question_11.png">
-                Question 11
-            </option>
-
-            <option value="/images/Question_12.png">
-                Question 12
-            </option>
-
-            <option value="/images/Question_13.png">
-                Question 13
-            </option>
+            @if (selectedCategory == "default")
+            {
+                <option value="default" selected>Default Images</option>
+            }
+            else
+            {
+                <option value="default">Default Images</option>
+            }
 
         </select>
+
+        <!-- Upload new image -->
+        <div id="uploadImageSection"
+             class="mt-3 image-selection-hidden">
+
+            <label for="imageUpload">
+                Choose image
+            </label>
+
+            <input type="file"
+                   id="imageUpload"
+                   name="imageUpload"
+                   class="form-control"
+                   accept=".jpg,.jpeg,.png,.webp" />
+
+            <small class="text-muted">
+                JPG, PNG or WebP. Maximum 5 MB.
+            </small>
+
+        </div>
+
+        <!-- My Images -->
+        <div id="myImagesSection"
+             class="mt-3 image-selection-hidden">
+
+            <label for="myImageSelect">
+                My Images
+            </label>
+
+            <select id="myImageSelect"
+                    class="form-control">
+
+                <option value="">
+                    -- Select your image --
+                </option>
+
+                @foreach (var image in myImages)
+                {
+                    if (image.ImageUrl == currentImage)
+                    {
+                        <option value="@image.ImageUrl"
+                                data-image-id="@image.UserImageId"
+                                selected>
+                            @image.FileName
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@image.ImageUrl"
+                                data-image-id="@image.UserImageId">
+                            @image.FileName
+                        </option>
+                    }
+                }
+
+            </select>
+
+            <div class="text-end mt-1">
+                <button type="button"
+                        id="removeImageButton"
+                        class="btn btn-link btn-sm text-secondary text-decoration-none image-selection-hidden">
+                    Remove image
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Default Images -->
+        <div id="defaultImagesSection"
+             class="mt-3 image-selection-hidden">
+
+            <label for="defaultImageSelect">
+                Default Images
+            </label>
+
+            <select id="defaultImageSelect"
+                    class="form-control">
+
+                <option value="">
+                    -- Select default image --
+                </option>
+
+                @foreach (var image in defaultImages)
+                {
+                    if (image.ImageUrl == currentImage)
+                    {
+                        <option value="@image.ImageUrl" selected>
+                            @image.Name
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@image.ImageUrl">
+                            @image.Name
+                        </option>
+                    }
+                }
+
+            </select>
+
+        </div>
+
+        <!-- Selected image URL -->
+        <input asp-for="ImageUrl"
+               type="hidden"
+               id="imageSelect" />
 
         <span asp-validation-for="ImageUrl"
               class="text-danger">
         </span>
 
+        <!-- Image preview -->
         <div class="mt-3">
             <img id="imagePreview"
-                 src=""
+                 src="@currentImage"
                  alt="Selected image preview"
-                 style="width: 300px;
-                        height: 180px;
-                        object-fit: contain;
-                        display: none;" />
+                 class="image-preview" />
         </div>
-    </div>
 
+    </div>
 
     <button type="submit"
             class="btn btn-primary">

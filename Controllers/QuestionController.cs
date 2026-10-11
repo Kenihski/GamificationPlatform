@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
@@ -13,17 +13,26 @@ namespace GamificationPlatform.Controllers
         private readonly IQuestionRepository _questionRepository;
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly IUserImageRepository _userImageRepository;
+        private readonly ChallengeDbContext _context;
+        private readonly IWebHostEnvironment _environment;
         private readonly ILogger<QuestionController> _logger;
 
         public QuestionController(
             IQuestionRepository questionRepository,
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
+            IUserImageRepository userImageRepository,
+            ChallengeDbContext context,
+            IWebHostEnvironment environment,
             ILogger<QuestionController> logger)
         {
             _questionRepository = questionRepository;
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _userImageRepository = userImageRepository;
+            _context = context;
+            _environment = environment;
             _logger = logger;
         }
 
@@ -32,64 +41,208 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Table()
         {
             List<Question> questions =
-                await _questionRepository
-                    .GetAllQuestionsAsync();
+                await _questionRepository.GetAllQuestionsAsync();
 
             return View(questions);
+        }
+
+        // Loads images for the Question Create and Update forms.
+        private async Task LoadImagesAsync(int userId)
+        {
+            ViewBag.MyImages =
+                await _userImageRepository.GetImagesByUserIdAsync(userId);
+
+            var defaultImages = await _context.DefaultImages
+                .ToListAsync();
+
+            ViewData["DefaultImages"] = defaultImages
+                .OrderBy(image =>
+                {
+                    if (image.Name.StartsWith("Question ") &&
+                        int.TryParse(image.Name.Substring(9), out int number))
+                    {
+                        return number;
+                    }
+
+                    return int.MaxValue;
+                })
+                .ThenBy(image => image.Name)
+                .ToList();
+        }
+
+        // Checks that the selected image is available to the user.
+        private async Task<bool> IsAllowedImageAsync(
+            string? imageUrl,
+            int userId)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return true;
+            }
+
+            bool isDefaultImage = await _context.DefaultImages
+                .AnyAsync(image => image.ImageUrl == imageUrl);
+
+            if (isDefaultImage)
+            {
+                return true;
+            }
+
+            var images =
+                await _userImageRepository.GetImagesByUserIdAsync(userId);
+
+            return images.Any(image => image.ImageUrl == imageUrl);
+        }
+
+        // Validates and saves an uploaded image to the user's library.
+        private async Task<string?> SaveImageAsync(
+            IFormFile file,
+            int userId)
+        {
+            const long maxSize = 5 * 1024 * 1024;
+
+            string extension =
+                Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (file.Length == 0 ||
+                file.Length > maxSize ||
+                !new[] { ".jpg", ".jpeg", ".png", ".webp" }
+                    .Contains(extension))
+            {
+                ModelState.AddModelError(
+                    "imageUpload",
+                    "Choose a JPG, PNG or WebP image up to 5 MB.");
+
+                return null;
+            }
+
+            // Check the file signature.
+            byte[] header = new byte[12];
+
+            using (var stream = file.OpenReadStream())
+            {
+                int count = await stream.ReadAsync(header.AsMemory());
+
+                bool jpeg =
+                    count >= 3 &&
+                    header[0] == 0xFF &&
+                    header[1] == 0xD8 &&
+                    header[2] == 0xFF;
+
+                bool png =
+                    count >= 8 &&
+                    header.AsSpan(0, 8).SequenceEqual(
+                        new byte[]
+                        {
+                            137, 80, 78, 71, 13, 10, 26, 10
+                        });
+
+                bool webp =
+                    count >= 12 &&
+                    System.Text.Encoding.ASCII.GetString(
+                        header, 0, 4) == "RIFF" &&
+                    System.Text.Encoding.ASCII.GetString(
+                        header, 8, 4) == "WEBP";
+
+                bool valid = extension switch
+                {
+                    ".jpg" or ".jpeg" => jpeg,
+                    ".png" => png,
+                    ".webp" => webp,
+                    _ => false
+                };
+
+                if (!valid)
+                {
+                    ModelState.AddModelError(
+                        "imageUpload",
+                        "The file does not match a supported image format.");
+
+                    return null;
+                }
+            }
+
+            string fileName = $"{Guid.NewGuid():N}{extension}";
+
+            string folder = Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "images");
+
+            Directory.CreateDirectory(folder);
+
+            string fullPath = Path.Combine(folder, fileName);
+            string url = $"/uploads/images/{fileName}";
+
+            try
+            {
+                await using (var output =
+                    new FileStream(fullPath, FileMode.CreateNew))
+                {
+                    await file.CopyToAsync(output);
+                }
+
+                await _userImageRepository.AddImageAsync(
+                    new UserImage
+                    {
+                        UserId = userId,
+                        FileName = Path.GetFileName(file.FileName),
+                        ImageUrl = url
+                    });
+
+                return url;
+            }
+            catch
+            {
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+
+                throw;
+            }
         }
 
         // Shows the Create Question form.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Create(
-            int? challengeId)
+        public async Task<IActionResult> Create(int? challengeId)
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
-            bool isAdmin =
-                User.IsInRole("Admin");
-
-            // Admin can use all published challenges.
-            // Normal users can only use their own challenges.
             List<Challenge> challenges;
 
             if (isAdmin)
             {
                 challenges =
-                    await _challengeRepository
-                        .GetAllChallengesAsync();
+                    await _challengeRepository.GetAllChallengesAsync();
             }
             else
             {
                 challenges =
-                    await _challengeRepository
-                        .GetChallengesByUserIdAsync(userId);
+                    await _challengeRepository.GetChallengesByUserIdAsync(userId);
             }
 
-            var model =
-                new QuestionFormViewModel
-                {
-                    Challenges = challenges
-                };
+            var model = new QuestionFormViewModel
+            {
+                Challenges = challenges
+            };
 
-            // Automatically selects the challenge
-            // if we came from Challenge Details.
+            // Automatically selects the challenge when coming
+            // from Challenge Details.
             if (challengeId.HasValue)
             {
-                var challenge =
-                    challenges.FirstOrDefault(c =>
-                        c.ChallengeId ==
-                        challengeId.Value);
+                var challenge = challenges.FirstOrDefault(c =>
+                    c.ChallengeId == challengeId.Value);
 
                 if (challenge == null)
                 {
@@ -100,9 +253,10 @@ namespace GamificationPlatform.Controllers
                     return Forbid();
                 }
 
-                model.Question.ChallengeId =
-                    challengeId.Value;
+                model.Question.ChallengeId = challengeId.Value;
             }
+
+            await LoadImagesAsync(userId);
 
             return View(model);
         }
@@ -112,22 +266,19 @@ namespace GamificationPlatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            QuestionFormViewModel model)
+            QuestionFormViewModel model,
+            IFormFile? imageUpload)
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
-
-            bool isAdmin =
-                User.IsInRole("Admin");
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
             if (model.Question == null)
             {
@@ -138,24 +289,23 @@ namespace GamificationPlatform.Controllers
             }
 
             var challenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(
-                        model.Question.ChallengeId);
+                await _challengeRepository.GetChallengeByIdAsync(
+                    model.Question.ChallengeId);
 
             if (challenge == null)
             {
                 return NotFound();
             }
 
-            // Challenge is a navigation property
-            // and is not submitted by the form.
-            ModelState.Remove(
-                "Question.Challenge");
+            // Navigation property is not submitted by the form.
+            ModelState.Remove("Question.Challenge");
 
-            // Normal users can only add questions
-            // to challenges they created.
-            if (!isAdmin &&
-                challenge.CreatedByUserId != userId)
+            // ImageUrl may be empty when uploading a new image
+            // or choosing No image.
+            ModelState.Remove("Question.ImageUrl");
+
+            // Normal users can only add questions to their own challenges.
+            if (!isAdmin && challenge.CreatedByUserId != userId)
             {
                 _logger.LogWarning(
                     "User {UserId} was denied question management access.",
@@ -164,29 +314,54 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
+            // An uploaded image and an existing image
+            // cannot be selected at the same time.
+            if (imageUpload != null &&
+                !string.IsNullOrWhiteSpace(model.Question.ImageUrl))
+            {
+                ModelState.AddModelError(
+                    "Question.ImageUrl",
+                    "Choose either an existing image or an upload.");
+            }
+
+            if (!await IsAllowedImageAsync(
+                model.Question.ImageUrl, userId))
+            {
+                ModelState.AddModelError(
+                    "Question.ImageUrl",
+                    "This image is not available to you.");
+            }
+
             ValidateAnswers(model);
+
+            if (ModelState.IsValid && imageUpload != null)
+            {
+                string? url = await SaveImageAsync(imageUpload, userId);
+
+                if (url != null)
+                {
+                    model.Question.ImageUrl = url;
+                }
+            }
 
             if (ModelState.IsValid)
             {
                 // The challenge content is changing,
                 // so previous attempt history is reset.
-                await _attemptRepository
-                    .DeleteChallengeHistoryAsync(
-                        model.Question.ChallengeId);
+                await _attemptRepository.DeleteChallengeHistoryAsync(
+                    model.Question.ChallengeId);
 
-                // Copy only editable fields; ignore
-                // any submitted entity graph.
-                var question =
-                    new Question
-                    {
-                        Title = model.Question.Title,
-                        Description = model.Question.Description,
-                        Explanation = model.Question.Explanation,
-                        Points = model.Question.Points,
-                        ImageUrl = model.Question.ImageUrl,
-                        QuestionType = model.Question.QuestionType,
-                        ChallengeId = challenge.ChallengeId
-                    };
+                // Copy only editable fields.
+                var question = new Question
+                {
+                    Title = model.Question.Title,
+                    Description = model.Question.Description,
+                    Explanation = model.Question.Explanation,
+                    Points = model.Question.Points,
+                    ImageUrl = model.Question.ImageUrl ?? string.Empty,
+                    QuestionType = model.Question.QuestionType,
+                    ChallengeId = challenge.ChallengeId
+                };
 
                 if (question.QuestionType == "ShortAnswer")
                 {
@@ -202,8 +377,7 @@ namespace GamificationPlatform.Controllers
                         model.CorrectOptions);
                 }
 
-                await _questionRepository
-                    .CreateQuestionAsync(question);
+                await _questionRepository.CreateQuestionAsync(question);
 
                 _logger.LogInformation(
                     "User {UserId} created question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.",
@@ -214,8 +388,6 @@ namespace GamificationPlatform.Controllers
                 TempData["SuccessMessage"] =
                     "Question created. Previous attempts and scores were reset.";
 
-                // Return to the challenge
-                // and show the question section.
                 return RedirectToAction(
                     "Details",
                     "Challenge",
@@ -233,19 +405,19 @@ namespace GamificationPlatform.Controllers
 
             PrepareAnswerFields(model);
 
-            // Reload challenges if validation fails.
+            // Reload challenges and images if validation fails.
             if (isAdmin)
             {
                 model.Challenges =
-                    await _challengeRepository
-                        .GetAllChallengesAsync();
+                    await _challengeRepository.GetAllChallengesAsync();
             }
             else
             {
                 model.Challenges =
-                    await _challengeRepository
-                        .GetChallengesByUserIdAsync(userId);
+                    await _challengeRepository.GetChallengesByUserIdAsync(userId);
             }
+
+            await LoadImagesAsync(userId);
 
             return View(model);
         }
@@ -256,19 +428,15 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Update(int id)
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
-
-            bool isAdmin =
-                User.IsInRole("Admin");
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
             var question =
                 await _questionRepository
@@ -279,8 +447,6 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            // Normal users can only edit questions
-            // belonging to their own challenges.
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
@@ -291,44 +457,40 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            var model =
-                new QuestionFormViewModel
-                {
-                    Question = question,
+            var model = new QuestionFormViewModel
+            {
+                Question = question,
 
-                    Challenges =
-                        new List<Challenge>
-                        {
-                            question.Challenge
-                        }
-                };
+                Challenges = new List<Challenge>
+                {
+                    question.Challenge
+                }
+            };
 
             // Get existing answer options.
-            model.Options =
-                question.Options
-                    .Select(option => option.Text)
-                    .ToList();
+            model.Options = question.Options
+                .Select(option => option.Text)
+                .ToList();
 
             // Get all existing correct answer indexes.
-            model.CorrectOptions =
-                question.Options
-                    .Select((option, index) =>
-                        new
-                        {
-                            option,
-                            index
-                        })
-                    .Where(x => x.option.IsCorrect)
-                    .Select(x => x.index)
-                    .ToList();
+            model.CorrectOptions = question.Options
+                .Select((option, index) => new
+                {
+                    option,
+                    index
+                })
+                .Where(x => x.option.IsCorrect)
+                .Select(x => x.index)
+                .ToList();
 
             // Get existing accepted short answers.
-            model.AcceptedAnswers =
-                question.AcceptedAnswers
-                    .Select(answer => answer.Text)
-                    .ToList();
+            model.AcceptedAnswers = question.AcceptedAnswers
+                .Select(answer => answer.Text)
+                .ToList();
 
             PrepareAnswerFields(model);
+
+            await LoadImagesAsync(userId);
 
             return View(model);
         }
@@ -338,22 +500,19 @@ namespace GamificationPlatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(
-            QuestionFormViewModel model)
+            QuestionFormViewModel model,
+            IFormFile? imageUpload)
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
-
-            bool isAdmin =
-                User.IsInRole("Admin");
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
             if (model.Question == null)
             {
@@ -373,8 +532,6 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            // Normal users can only edit questions
-            // belonging to their own challenges.
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
@@ -385,45 +542,64 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            // Navigation property is not submitted
-            // by the form.
-            ModelState.Remove(
-                "Question.Challenge");
+            // Navigation property is not submitted by the form.
+            ModelState.Remove("Question.Challenge");
+
+            // ImageUrl may be empty.
+            ModelState.Remove("Question.ImageUrl");
+
+            if (imageUpload != null &&
+                !string.IsNullOrWhiteSpace(model.Question.ImageUrl))
+            {
+                ModelState.AddModelError(
+                    "Question.ImageUrl",
+                    "Choose either an existing image or an upload.");
+            }
+
+            // Admins may keep an image belonging to another user,
+            // but cannot select a different image belonging to that user.
+            bool keepingExistingImage =
+                model.Question.ImageUrl == question.ImageUrl;
+
+            if (!keepingExistingImage &&
+                !await IsAllowedImageAsync(
+                    model.Question.ImageUrl, userId))
+            {
+                ModelState.AddModelError(
+                    "Question.ImageUrl",
+                    "This image is not available to you.");
+            }
 
             ValidateAnswers(model);
+
+            if (ModelState.IsValid && imageUpload != null)
+            {
+                string? url = await SaveImageAsync(imageUpload, userId);
+
+                if (url != null)
+                {
+                    model.Question.ImageUrl = url;
+                }
+            }
 
             if (ModelState.IsValid)
             {
                 // The challenge content is changing,
                 // so previous attempt history is reset.
-                await _attemptRepository
-                    .DeleteChallengeHistoryAsync(
-                        question.ChallengeId);
+                await _attemptRepository.DeleteChallengeHistoryAsync(
+                    question.ChallengeId);
 
-                // Update question information.
-                question.Title =
-                    model.Question.Title;
-
-                question.Description =
-                    model.Question.Description;
-
-                question.Explanation =
-                    model.Question.Explanation;
-
-                question.Points =
-                    model.Question.Points;
-
+                question.Title = model.Question.Title;
+                question.Description = model.Question.Description;
+                question.Explanation = model.Question.Explanation;
+                question.Points = model.Question.Points;
                 question.ImageUrl =
-                    model.Question.ImageUrl;
+                    model.Question.ImageUrl ?? string.Empty;
+                question.QuestionType = model.Question.QuestionType;
 
-                question.QuestionType =
-                    model.Question.QuestionType;
+                // ChallengeId is deliberately not changed.
 
-                // ChallengeId is deliberately
-                // not changed here.
-
-                // Remove answers from the previous
-                // question type before adding new ones.
+                // Remove answers from the previous question type.
                 question.Options.Clear();
                 question.AcceptedAnswers.Clear();
 
@@ -441,8 +617,7 @@ namespace GamificationPlatform.Controllers
                         model.CorrectOptions);
                 }
 
-                await _questionRepository
-                    .UpdateQuestionAsync(question);
+                await _questionRepository.UpdateQuestionAsync(question);
 
                 _logger.LogInformation(
                     "User {UserId} updated question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.",
@@ -453,8 +628,6 @@ namespace GamificationPlatform.Controllers
                 TempData["SuccessMessage"] =
                     "Question updated. Previous attempts and scores were reset.";
 
-                // Return to the challenge
-                // and show the question section.
                 return RedirectToAction(
                     "Details",
                     "Challenge",
@@ -472,16 +645,14 @@ namespace GamificationPlatform.Controllers
 
             PrepareAnswerFields(model);
 
-            // Reload the challenge
-            // if validation fails.
-            model.Question.ChallengeId =
-                question.ChallengeId;
+            model.Question.ChallengeId = question.ChallengeId;
 
-            model.Challenges =
-                new List<Challenge>
-                {
-                    question.Challenge
-                };
+            model.Challenges = new List<Challenge>
+            {
+                question.Challenge
+            };
+
+            await LoadImagesAsync(userId);
 
             return View(model);
         }
@@ -492,19 +663,15 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
-
-            bool isAdmin =
-                User.IsInRole("Admin");
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
             var question =
                 await _questionRepository
@@ -515,8 +682,6 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            // Normal users can only delete questions
-            // belonging to their own challenges.
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
@@ -534,23 +699,18 @@ namespace GamificationPlatform.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(
-            int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
-
-            bool isAdmin =
-                User.IsInRole("Admin");
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
             var question =
                 await _questionRepository
@@ -561,8 +721,6 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            // Normal users can only delete questions
-            // belonging to their own challenges.
             if (!isAdmin &&
                 question.Challenge.CreatedByUserId != userId)
             {
@@ -573,33 +731,23 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            int challengeId =
-                question.ChallengeId;
+            int challengeId = question.ChallengeId;
 
-            // A published challenge must always
-            // contain at least one question.
+            // A published challenge must always contain
+            // at least one question.
             bool shouldUnpublish =
                 question.Challenge.IsPublished &&
                 question.Challenge.Questions.Count == 1;
 
-            // The challenge content is changing,
-            // so previous attempt history is reset.
-            await _attemptRepository
-                .DeleteChallengeHistoryAsync(
-                    challengeId);
+            await _attemptRepository.DeleteChallengeHistoryAsync(
+                challengeId);
 
             if (shouldUnpublish)
             {
                 question.Challenge.IsPublished = false;
-
-                // The tracked challenge is saved
-                // with the question deletion below.
             }
 
-            // Save unpublishing, history deletion,
-            // and question deletion together.
-            await _questionRepository
-                .DeleteQuestionAsync(question);
+            await _questionRepository.DeleteQuestionAsync(question);
 
             _logger.LogInformation(
                 "User {UserId} deleted question {QuestionId} in challenge {ChallengeId}; previous attempts and scores were reset.",
@@ -622,8 +770,6 @@ namespace GamificationPlatform.Controllers
                     "Question deleted. Previous attempts and scores were reset.";
             }
 
-            // Return to the challenge
-            // and show the question section.
             return RedirectToAction(
                 "Details",
                 "Challenge",
@@ -635,8 +781,7 @@ namespace GamificationPlatform.Controllers
         }
 
         // Validates answers based on question type.
-        private void ValidateAnswers(
-            QuestionFormViewModel model)
+        private void ValidateAnswers(QuestionFormViewModel model)
         {
             if (model.Question.QuestionType != "SingleChoice" &&
                 model.Question.QuestionType != "MultipleChoice" &&
@@ -659,8 +804,7 @@ namespace GamificationPlatform.Controllers
         }
 
         // Validates Single Choice and Multiple Choice answers.
-        private void ValidateAnswerOptions(
-            QuestionFormViewModel model)
+        private void ValidateAnswerOptions(QuestionFormViewModel model)
         {
             if (model.Options == null)
             {
@@ -671,13 +815,10 @@ namespace GamificationPlatform.Controllers
                 return;
             }
 
-            var filledOptions =
-                model.Options
-                    .Where(option =>
-                        !string.IsNullOrWhiteSpace(option))
-                    .Select(option =>
-                        option.Trim())
-                    .ToList();
+            var filledOptions = model.Options
+                .Where(option => !string.IsNullOrWhiteSpace(option))
+                .Select(option => option.Trim())
+                .ToList();
 
             if (model.Options.Count > 4 ||
                 filledOptions.Count < 2)
@@ -687,8 +828,7 @@ namespace GamificationPlatform.Controllers
                     "Enter between 2 and 4 answer options.");
             }
 
-            if (filledOptions.Any(option =>
-                option.Length > 200))
+            if (filledOptions.Any(option => option.Length > 200))
             {
                 ModelState.AddModelError(
                     "Options",
@@ -704,13 +844,11 @@ namespace GamificationPlatform.Controllers
                     "Answer options must be different.");
             }
 
-            model.CorrectOptions ??=
-                new List<int>();
+            model.CorrectOptions ??= new List<int>();
 
-            var correctOptions =
-                model.CorrectOptions
-                    .Distinct()
-                    .ToList();
+            var correctOptions = model.CorrectOptions
+                .Distinct()
+                .ToList();
 
             if (correctOptions.Count == 0)
             {
@@ -726,8 +864,7 @@ namespace GamificationPlatform.Controllers
                     index < 0 ||
                     index >= model.Options.Count ||
                     index > 3 ||
-                    string.IsNullOrWhiteSpace(
-                        model.Options[index]));
+                    string.IsNullOrWhiteSpace(model.Options[index]));
 
             if (containsInvalidCorrectOption)
             {
@@ -746,19 +883,14 @@ namespace GamificationPlatform.Controllers
         }
 
         // Validates accepted answers for Short Answer questions.
-        private void ValidateAcceptedAnswers(
-            QuestionFormViewModel model)
+        private void ValidateAcceptedAnswers(QuestionFormViewModel model)
         {
-            model.AcceptedAnswers ??=
-                new List<string>();
+            model.AcceptedAnswers ??= new List<string>();
 
-            var filledAnswers =
-                model.AcceptedAnswers
-                    .Where(answer =>
-                        !string.IsNullOrWhiteSpace(answer))
-                    .Select(answer =>
-                        answer.Trim())
-                    .ToList();
+            var filledAnswers = model.AcceptedAnswers
+                .Where(answer => !string.IsNullOrWhiteSpace(answer))
+                .Select(answer => answer.Trim())
+                .ToList();
 
             if (model.AcceptedAnswers.Count > 4 ||
                 filledAnswers.Count == 0)
@@ -768,8 +900,7 @@ namespace GamificationPlatform.Controllers
                     "Enter between 1 and 4 accepted answers.");
             }
 
-            if (filledAnswers.Any(answer =>
-                answer.Length > 200))
+            if (filledAnswers.Any(answer => answer.Length > 200))
             {
                 ModelState.AddModelError(
                     "AcceptedAnswers",
@@ -792,28 +923,19 @@ namespace GamificationPlatform.Controllers
             List<string> options,
             List<int> correctOptions)
         {
-            for (int i = 0;
-                 i < options.Count;
-                 i++)
+            for (int i = 0; i < options.Count; i++)
             {
-                if (string.IsNullOrWhiteSpace(
-                    options[i]))
+                if (string.IsNullOrWhiteSpace(options[i]))
                 {
                     continue;
                 }
 
-                var option =
-                    new QuestionOption
-                    {
-                        Text =
-                            options[i].Trim(),
-
-                        IsCorrect =
-                            correctOptions.Contains(i),
-
-                        Question =
-                            question
-                    };
+                var option = new QuestionOption
+                {
+                    Text = options[i].Trim(),
+                    IsCorrect = correctOptions.Contains(i),
+                    Question = question
+                };
 
                 question.Options.Add(option);
             }
@@ -831,15 +953,13 @@ namespace GamificationPlatform.Controllers
                     continue;
                 }
 
-                var acceptedAnswer =
-                    new QuestionAcceptedAnswer
-                    {
-                        Text = answer.Trim(),
-                        Question = question
-                    };
+                var acceptedAnswer = new QuestionAcceptedAnswer
+                {
+                    Text = answer.Trim(),
+                    Question = question
+                };
 
-                question.AcceptedAnswers.Add(
-                    acceptedAnswer);
+                question.AcceptedAnswers.Add(acceptedAnswer);
             }
         }
 
@@ -858,8 +978,7 @@ namespace GamificationPlatform.Controllers
                 model.Options.Add("");
             }
 
-            model.CorrectOptions ??=
-                new List<int>();
+            model.CorrectOptions ??= new List<int>();
 
             model.AcceptedAnswers =
                 (model.AcceptedAnswers ?? new List<string>())

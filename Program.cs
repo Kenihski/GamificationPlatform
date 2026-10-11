@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using GamificationPlatform.Authentication;
 using GamificationPlatform.DAL;
+using GamificationPlatform.Models;
 using GamificationPlatform.Services;
 using Serilog;
 using Serilog.Context;
@@ -54,6 +55,7 @@ builder.Services.AddScoped<IAttemptRepository, AttemptRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAchievementRepository, AchievementRepository>();
+builder.Services.AddScoped<IUserImageRepository, UserImageRepository>();
 
 // Register services for business logic.
 builder.Services.AddScoped<IAchievementService, AchievementService>();
@@ -84,6 +86,44 @@ else
     app.UseExceptionHandler("/Home/Error");
 }
 
+// Register bundled default images at application startup.
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider
+        .GetRequiredService<ChallengeDbContext>();
+
+    if (!await context.DefaultImages.AnyAsync())
+    {
+        var defaultImages = new List<DefaultImage>();
+
+        for (int number = 1; number <= 13; number++)
+        {
+            string fileName = $"Question_{number}.png";
+
+            string filePath = Path.Combine(
+                app.Environment.WebRootPath,
+                "images",
+                fileName);
+
+            if (File.Exists(filePath))
+            {
+                defaultImages.Add(new DefaultImage
+                {
+                    Name = $"Question {number}",
+                    FileName = fileName,
+                    ImageUrl = "/images/" + fileName
+                });
+            }
+        }
+
+        if (defaultImages.Count > 0)
+        {
+            context.DefaultImages.AddRange(defaultImages);
+            await context.SaveChangesAsync();
+        }
+    }
+}
+
 app.UseSerilogRequestLogging(options =>
 {
     options.MessageTemplate =
@@ -109,6 +149,7 @@ app.UseStatusCodePagesWithReExecute(
     "?code={0}");
 
 app.MapStaticAssets(); // Enable static assets from wwwroot (images, JS, CSS)
+app.UseStaticFiles();
 
 app.UseRouting();
 

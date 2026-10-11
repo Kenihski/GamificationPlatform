@@ -154,3 +154,38 @@ body {
     font-size: 20px;
     font-weight: bold;
 }
+
+/* Challenge image selection */
+
+.image-selection-hidden {
+    display: none;
+}
+
+.image-preview {
+    width: 300px;
+    height: 180px;
+    object-fit: contain;
+    display: none;
+}
+
+/* Challenge image selection */
+
+.image-selection-hidden {
+    display: none;
+}
+
+.image-preview {
+    width: 300px;
+    height: 180px;
+    object-fit: contain;
+    display: none;
+}
+
+/* Image management dropdowns */
+.image-options-dropdown {
+    z-index: 2;
+}
+
+.image-options-menu {
+    min-width: 240px;
+}

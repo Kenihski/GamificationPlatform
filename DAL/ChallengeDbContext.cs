@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using GamificationPlatform.Models;
 
@@ -33,6 +34,10 @@ namespace GamificationPlatform.DAL
 
         public DbSet<UserAchievement> UserAchievements { get; set; }
 
+        public DbSet<UserImage> UserImages { get; set; }
+
+        public DbSet<DefaultImage> DefaultImages { get; set; }
+
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder)
         {
@@ -57,6 +62,13 @@ namespace GamificationPlatform.DAL
                 .HasOne(c => c.CreatedByUser)
                 .WithMany(u => u.CreatedChallenges)
                 .HasForeignKey(c => c.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // One user can upload many images.
+            modelBuilder.Entity<UserImage>()
+                .HasOne(ui => ui.User)
+                .WithMany(u => u.UserImages)
+                .HasForeignKey(ui => ui.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One selected option can only be stored once
@@ -84,7 +96,9 @@ namespace GamificationPlatform.DAL
                 .HasOne(ua => ua.Achievement)
                 .WithMany(a => a.UserAchievements)
                 .HasForeignKey(ua => ua.AchievementId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict == DeleteBehavior.Cascade
+                    ? DeleteBehavior.Restrict
+                    : DeleteBehavior.Cascade);
         }
     }
 }
