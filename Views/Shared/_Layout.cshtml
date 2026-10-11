@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,167 +21,212 @@
 <body>
 
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-light bg-white border-bottom box-shadow mb-3">
 
             <div class="container-fluid">
 
-                <a class="navbar-brand"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Learning Challenge Hub
-                </a>
-
-                <button class="navbar-toggler"
+                <!-- Burger menu button -->
+                <button class="navbar-toggler me-3"
                         type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#sidebarMenu"
+                        aria-controls="sidebarMenu"
+                        aria-label="Open navigation menu">
 
                     <span class="navbar-toggler-icon"></span>
 
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex">
+                <!-- Application name -->
+                <a class="navbar-brand me-auto"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    Learning Challenge Hub
+                </a>
 
-                    <!-- Left side -->
-                    <ul class="navbar-nav flex-grow-1">
+                <!-- Right side -->
+                <ul class="navbar-nav flex-row align-items-center gap-3">
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item">
+                            <span class="nav-link text-dark">
+                                Welcome, @User.Identity.Name
+                            </span>
+                        </li>
 
                         <li class="nav-item">
+                            <form asp-controller="User"
+                                  asp-action="Logout"
+                                  method="post">
+
+                                <button type="submit"
+                                        class="btn btn-link nav-link text-dark">
+                                    Logout
+                                </button>
+
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
+                               asp-controller="User"
+                               asp-action="Login">
+                                Login
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link text-dark"
-                               asp-controller="Challenge"
-                               asp-action="Grid">
-                                Challenges
+                               asp-controller="User"
+                               asp-action="Register">
+                                Register
                             </a>
                         </li>
+                    }
 
-                        <!-- Logged-in users -->
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Challenge"
-                                   asp-action="MyChallenges">
-                                    My Challenges
-                                </a>
-                            </li>
+                </ul>
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Challenge"
-                                   asp-action="Create">
-                                    Create Challenge
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Achievement"
-                                   asp-action="Index">
-                                    Achievements
-                                </a>
-                            </li>
-                        }
-
-                        <!-- Admin only -->
-                        @if (User.Identity?.IsAuthenticated == true &&
-                             User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="User"
-                                   asp-action="Table">
-                                    Users
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Question"
-                                   asp-action="Table">
-                                    Questions
-                                </a>
-                            </li>
-                        }
-
-                        <!-- Public Hall of Fame -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-controller="HallOfFame"
-                               asp-action="Index">
-                                Hall of Fame
-                            </a>
-                        </li>
-
-                        <!-- Public Core leaderboard -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-controller="Leaderboard"
-                               asp-action="TotalLeaderboard">
-                                Core Leaderboard
-                            </a>
-                        </li>
-
-                    </ul>
-
-                    <!-- Right side -->
-                    <ul class="navbar-nav">
-
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link text-dark">
-                                    Welcome, @User.Identity.Name
-                                </span>
-                            </li>
-
-                            <li class="nav-item">
-                                <form asp-controller="User"
-                                      asp-action="Logout"
-                                      method="post">
-
-                                    <button type="submit"
-                                            class="btn btn-link nav-link text-dark">
-                                        Logout
-                                    </button>
-
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="User"
-                                   asp-action="Login">
-                                    Login
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="User"
-                                   asp-action="Register">
-                                    Register
-                                </a>
-                            </li>
-                        }
-
-                    </ul>
-
-                </div>
             </div>
         </nav>
     </header>
+
+    <!-- Sidebar navigation -->
+    <div class="offcanvas offcanvas-start"
+         tabindex="-1"
+         id="sidebarMenu"
+         aria-labelledby="sidebarMenuLabel">
+
+        <div class="offcanvas-header border-bottom">
+
+            <h5 class="offcanvas-title" id="sidebarMenuLabel">
+                Learning Challenge Hub
+            </h5>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close">
+            </button>
+
+        </div>
+
+        <div class="offcanvas-body">
+
+            <!-- Explore section -->
+            <h6 class="text-muted fw-bold px-3 mb-3">
+                Explore
+            </h6>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        Home
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark"
+                       asp-controller="Challenge"
+                       asp-action="Grid">
+                        Challenges
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark"
+                       asp-controller="HallOfFame"
+                       asp-action="Index">
+                        Hall of Fame
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark"
+                       asp-controller="Leaderboard"
+                       asp-action="TotalLeaderboard">
+                        Core Leaderboard
+                    </a>
+                </li>
+
+            </ul>
+
+            <!-- Logged-in user section -->
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <hr class="my-3" />
+
+                <h6 class="text-muted fw-bold px-3 mb-3">
+                    My Learning
+                </h6>
+
+                <ul class="nav flex-column">
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-controller="Challenge"
+                           asp-action="MyChallenges">
+                            My Challenges
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-controller="Challenge"
+                           asp-action="Create">
+                            Create Challenge
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-controller="Achievement"
+                           asp-action="Index">
+                            Achievements
+                        </a>
+                    </li>
+
+                </ul>
+            }
+
+            <!-- Admin section -->
+            @if (User.Identity?.IsAuthenticated == true &&
+                 User.IsInRole("Admin"))
+            {
+                <hr class="my-3" />
+
+                <h6 class="text-muted fw-bold px-3 mb-3">
+                    Administration
+                </h6>
+
+                <ul class="nav flex-column">
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-controller="User"
+                           asp-action="Table">
+                            Users
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-controller="Question"
+                           asp-action="Table">
+                            Questions
+                        </a>
+                    </li>
+
+                </ul>
+            }
+
+        </div>
+    </div>
 
     <div class="container">
 
