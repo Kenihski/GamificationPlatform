@@ -1,96 +1,113 @@
+
 @model GamificationPlatform.ViewModels.TotalLeaderboardViewModel
 
 @{
     ViewData["Title"] = "Core Leaderboard";
 }
 
-<div class="container mt-4">
+<div class="container mt-4 leaderboard-page">
 
-    <h1 class="mb-4">
-        Core Leaderboard
-    </h1>
+    <div class="leaderboard-page-header">
 
-    <p class="text-muted mb-4">
-        Rankings are based on your first completed attempt
-        in each Core Challenge.
-    </p>
+        <p class="leaderboard-page-label">
+            COMPETE & IMPROVE
+        </p>
+
+        <h1>
+            ⭐ Core Leaderboard
+        </h1>
+
+        <p class="leaderboard-page-description">
+            Rankings are based on your first completed attempt
+            in each Core Challenge.
+        </p>
+
+    </div>
 
     @if (Model.Entries.Any())
     {
-        <div class="table-responsive">
+        <div class="leaderboard-table-container">
 
-            <table class="table table-striped table-hover align-middle">
+            <div class="table-responsive">
 
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>User</th>
-                        <th>Total Points</th>
-                        <th>Core Completed</th>
-                        <th>Total Time</th>
-                    </tr>
-                </thead>
+                <table class="table leaderboard-table align-middle">
 
-                <tbody>
-
-                    @foreach (var entry in Model.Entries)
-                    {
+                    <thead>
                         <tr>
-
-                            <td class="fw-bold">
-
-                                @entry.Rank
-
-                                @if (entry.Rank == 1)
-                                {
-                                    <span title="Gold">
-                                        🥇
-                                    </span>
-                                }
-                                else if (entry.Rank == 2)
-                                {
-                                    <span title="Silver">
-                                        🥈
-                                    </span>
-                                }
-                                else if (entry.Rank == 3)
-                                {
-                                    <span title="Bronze">
-                                        🥉
-                                    </span>
-                                }
-
-                            </td>
-
-                            <td>
-                                @entry.Username
-                            </td>
-
-                            <td>
-                                @entry.TotalPoints.ToString("0.#")
-                            </td>
-
-                            <td>
-                                @entry.CoreChallengesCompleted
-                            </td>
-
-                            <td>
-                                @if (entry.TotalTime.TotalHours >= 1)
-                                {
-                                    @($"{(int)entry.TotalTime.TotalHours}h {entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
-                                }
-                                else
-                                {
-                                    @($"{entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
-                                }
-                            </td>
-
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Total Points</th>
+                            <th>Core Completed</th>
+                            <th>Total Time</th>
                         </tr>
-                    }
+                    </thead>
 
-                </tbody>
+                    <tbody>
 
-            </table>
+                        @foreach (var entry in Model.Entries)
+                        {
+                            <tr>
+
+                                <td>
+                                    <div class="leaderboard-rank">
+
+                                        <span class="leaderboard-rank-number">
+                                            @entry.Rank
+                                        </span>
+
+                                        @if (entry.Rank == 1)
+                                        {
+                                            <span class="leaderboard-medal" title="Gold">
+                                                🥇
+                                            </span>
+                                        }
+                                        else if (entry.Rank == 2)
+                                        {
+                                            <span class="leaderboard-medal" title="Silver">
+                                                🥈
+                                            </span>
+                                        }
+                                        else if (entry.Rank == 3)
+                                        {
+                                            <span class="leaderboard-medal" title="Bronze">
+                                                🥉
+                                            </span>
+                                        }
+
+                                    </div>
+                                </td>
+
+                                <td class="leaderboard-username">
+                                    @entry.Username
+                                </td>
+
+                                <td class="leaderboard-points">
+                                    @entry.TotalPoints.ToString("0.#")
+                                </td>
+
+                                <td>
+                                    @entry.CoreChallengesCompleted
+                                </td>
+
+                                <td>
+                                    @if (entry.TotalTime.TotalHours >= 1)
+                                    {
+                                        @($"{(int)entry.TotalTime.TotalHours}h {entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
+                                    }
+                                    else
+                                    {
+                                        @($"{entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
     }
@@ -103,7 +120,7 @@
 
     <a asp-controller="Challenge"
        asp-action="Grid"
-       class="btn btn-secondary mt-3">
+       class="btn btn-outline-primary leaderboard-back-button mt-4">
         Back to Challenges
     </a>
 

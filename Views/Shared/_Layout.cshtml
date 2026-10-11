@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,14 +14,22 @@
     <script src="~/js/achievement-notifications.js" asp-append-version="true" defer></script>
     <script src="~/js/auth-modal.js" asp-append-version="true" defer></script>
 
+    <!-- Matrix background animation -->
+    <script src="~/js/matrix-background.js"
+            asp-append-version="true"
+            defer></script>
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/achievements.css" asp-append-version="true" />
 </head>
 
 <body>
 
+    <!-- Animated Matrix background -->
+    <canvas id="matrixBackground" aria-hidden="true"></canvas>
+
     <header>
-        <nav class="navbar navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-dark site-navbar border-bottom box-shadow mb-3">
 
             <div class="container-fluid">
 
@@ -51,7 +58,7 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <li class="nav-item">
-                            <span class="nav-link text-dark">
+                            <span class="nav-link">
                                 Welcome, @User.Identity.Name
                             </span>
                         </li>
@@ -62,7 +69,7 @@
                                   method="post">
 
                                 <button type="submit"
-                                        class="btn btn-link nav-link text-dark">
+                                        class="btn btn-link nav-link">
                                     Logout
                                 </button>
 
@@ -88,6 +95,7 @@
                                      stroke="currentColor"
                                      stroke-width="2"
                                      aria-hidden="true">
+
                                     <path stroke-linecap="round"
                                           stroke-linejoin="round"
                                           d="M10 17l5-5-5-5M15 12H3m9-9h6a3 3 0 013 3v12a3 3 0 01-3 3h-6" />
@@ -105,7 +113,7 @@
     </header>
 
     <!-- Sidebar navigation -->
-    <div class="offcanvas offcanvas-start"
+    <div class="offcanvas offcanvas-start site-sidebar"
          tabindex="-1"
          id="sidebarMenu"
          aria-labelledby="sidebarMenuLabel">
@@ -117,7 +125,7 @@
             </h5>
 
             <button type="button"
-                    class="btn-close"
+                    class="btn-close btn-close-white"
                     data-bs-dismiss="offcanvas"
                     aria-label="Close">
             </button>
@@ -134,7 +142,7 @@
             <ul class="nav flex-column">
 
                 <li class="nav-item">
-                    <a class="nav-link text-dark"
+                    <a class="nav-link"
                        asp-controller="Home"
                        asp-action="Index">
                         Home
@@ -142,7 +150,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-dark"
+                    <a class="nav-link"
                        asp-controller="Challenge"
                        asp-action="Grid">
                         Challenges
@@ -150,7 +158,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-dark"
+                    <a class="nav-link"
                        asp-controller="HallOfFame"
                        asp-action="Index">
                         Hall of Fame
@@ -158,7 +166,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-dark"
+                    <a class="nav-link"
                        asp-controller="Leaderboard"
                        asp-action="TotalLeaderboard">
                         Core Leaderboard
@@ -179,7 +187,7 @@
                 <ul class="nav flex-column">
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark"
+                        <a class="nav-link"
                            asp-controller="Challenge"
                            asp-action="MyChallenges">
                             My Challenges
@@ -187,7 +195,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark"
+                        <a class="nav-link"
                            asp-controller="Challenge"
                            asp-action="Create">
                             Create Challenge
@@ -197,7 +205,7 @@
                     @if (!User.IsInRole("Admin"))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark"
+                            <a class="nav-link"
                                asp-controller="Achievement"
                                asp-action="Index">
                                 Achievements
@@ -221,7 +229,7 @@
                 <ul class="nav flex-column">
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark"
+                        <a class="nav-link"
                            asp-controller="User"
                            asp-action="Table">
                             Users
@@ -229,7 +237,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark"
+                        <a class="nav-link"
                            asp-controller="Question"
                            asp-action="Table">
                             Questions
@@ -237,7 +245,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark"
+                        <a class="nav-link"
                            asp-controller="Achievement"
                            asp-action="Index">
                             Achievements
@@ -246,7 +254,7 @@
 
                     <!-- Manage uploaded user images -->
                     <li class="nav-item">
-                        <a class="nav-link text-dark"
+                        <a class="nav-link"
                            asp-controller="UserImage"
                            asp-action="Admin">
                             Manage Images
@@ -470,11 +478,9 @@
     }
 
     <div class="container">
-
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-
     </div>
 
     <!-- Achievement unlock notifications -->

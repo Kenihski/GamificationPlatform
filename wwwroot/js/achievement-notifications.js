@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const maxVisible = 3;
     const timeBetweenNotifications = 2500;
-    const displayTime = 6000;
-    const highlightTime = 3000;
+    const displayTime = 8000;
+    const highlightTime = 4000;
 
     let nextIndex = 0;
     let visibleCount = 0;
