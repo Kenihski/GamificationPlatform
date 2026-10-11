@@ -1,3 +1,4 @@
+
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.ViewModels
@@ -10,8 +11,12 @@ namespace GamificationPlatform.ViewModels
         // Maximum points for Challenge of the Day.
         public int MaxPoints { get; set; }
 
-        // Top leaderboard entries for Challenge of the Day.
-        public List<LeaderboardEntryViewModel> LeaderboardEntries { get; set; }
-            = new List<LeaderboardEntryViewModel>();
+        // Top three users from the Core Leaderboard.
+        public List<TotalLeaderboardEntryViewModel> CoreLeaderboardEntries { get; set; }
+            = new List<TotalLeaderboardEntryViewModel>();
+
+        // Top three users from the Hall of Fame.
+        public List<HallOfFameUserViewModel> HallOfFameEntries { get; set; }
+            = new List<HallOfFameUserViewModel>();
     }
 }

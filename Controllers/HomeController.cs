@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
@@ -12,145 +13,269 @@ namespace GamificationPlatform.Controllers
     {
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IAchievementRepository _achievementRepository;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
+            IUserRepository userRepository,
+            IAchievementRepository achievementRepository,
             ILogger<HomeController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _userRepository = userRepository;
+            _achievementRepository = achievementRepository;
             _logger = logger;
         }
 
 
         public async Task<IActionResult> Index()
         {
+            var viewModel = new HomeViewModel();
+
+
             // Gets all published challenges.
             var challenges =
-                await _challengeRepository
-                    .GetPublishedChallengesAsync();
+                (await _challengeRepository
+                    .GetPublishedChallengesAsync())
+                .OrderBy(c => c.ChallengeId)
+                .ToList();
 
 
-            // Keeps the challenge order consistent
-            // for Challenge of the Day.
-            challenges =
-                challenges
-                    .OrderBy(c => c.ChallengeId)
-                    .ToList();
-
-
-            var viewModel =
-                new HomeViewModel();
-
-
-            // If there are no published challenges,
-            // the Home page can still be displayed.
-            if (!challenges.Any())
+            // Selects Challenge of the Day.
+            if (challenges.Any())
             {
-                return View(viewModel);
+                int challengeIndex =
+                    (DateTime.Today.DayOfYear - 1)
+                    % challenges.Count;
+
+                var challengeOfTheDay =
+                    challenges[challengeIndex];
+
+                int maxPoints =
+                    challengeOfTheDay.Questions
+                        .Sum(q => q.Points);
+
+                challengeOfTheDay.MaxPoints = maxPoints;
+
+                viewModel.ChallengeOfTheDay =
+                    challengeOfTheDay;
+
+                viewModel.MaxPoints =
+                    maxPoints;
             }
 
 
-            // Uses the day of the year to rotate
-            // Challenge of the Day automatically.
-            int challengeIndex =
-                (DateTime.Today.DayOfYear - 1)
-                % challenges.Count;
+            // Core Leaderboard
 
-
-            var challengeOfTheDay =
-                challenges[challengeIndex];
-
-
-            // Calculates maximum points from
-            // the questions in the challenge.
-            int maxPoints =
-                challengeOfTheDay.Questions
-                    .Sum(q => q.Points);
-
-
-            challengeOfTheDay.MaxPoints =
-                maxPoints;
-
-
-            viewModel.ChallengeOfTheDay =
-                challengeOfTheDay;
-
-            viewModel.MaxPoints =
-                maxPoints;
-
-
-            // Gets all completed attempts for
-            // Challenge of the Day.
             var attempts =
                 await _attemptRepository
-                    .GetCompletedAttemptsForChallengeAsync(
-                        challengeOfTheDay.ChallengeId);
+                    .GetAllCompletedAttemptsAsync();
 
 
-            // Gets the best attempt from each user.
-            // Highest score wins.
-            // Shortest time is used when scores are equal.
-            var bestAttempts =
+            // Only Core Challenges count.
+            // Challenge creators are excluded.
+            attempts =
                 attempts
-                    .GroupBy(a =>
-                        a.UserChallenge.UserId)
-                    .Select(group =>
-                        group
-                            .OrderByDescending(a =>
-                                a.Score)
-                            .ThenBy(a =>
-                                a.CompletedAt -
-                                a.StartedAt)
-                            .First())
-                    .OrderByDescending(a =>
-                        a.Score)
-                    .ThenBy(a =>
-                        a.CompletedAt -
-                        a.StartedAt)
-                    .Take(3)
+                    .Where(a =>
+                        a.UserChallenge.Challenge.IsCore &&
+                        a.UserChallenge.UserId !=
+                        a.UserChallenge.Challenge.CreatedByUserId)
                     .ToList();
 
 
-            int rank = 1;
-
-
-            foreach (var attempt in bestAttempts)
-            {
-                viewModel.LeaderboardEntries.Add(
-                    new LeaderboardEntryViewModel
+            // Only the first completed attempt
+            // per user and Core Challenge counts.
+            var firstAttempts =
+                attempts
+                    .GroupBy(a => new
                     {
-                        Rank = rank,
-
-                        Username =
-                            attempt.UserChallenge
-                                .User.Username,
-
-                        Score =
-                            attempt.Score,
-
-                        StartedAt =
-                            attempt.StartedAt,
-
-                        CompletedAt =
-                            attempt.CompletedAt
-                    });
+                        a.UserChallenge.UserId,
+                        a.UserChallenge.ChallengeId
+                    })
+                    .Select(group =>
+                        group
+                            .OrderBy(a => a.CompletedAt)
+                            .ThenBy(a => a.ChallengeAttemptId)
+                            .First())
+                    .Where(a => a.Score > 0)
+                    .ToList();
 
 
-                rank++;
+            // Calculates normalized total points.
+            var coreEntries =
+                firstAttempts
+                    .GroupBy(a => a.UserChallenge.UserId)
+                    .Select(group =>
+                    {
+                        double totalPoints =
+                            group.Sum(attempt =>
+                            {
+                                int maxPoints =
+                                    attempt.UserChallenge
+                                        .Challenge
+                                        .Questions
+                                        .Sum(q => q.Points);
+
+                                if (maxPoints <= 0)
+                                {
+                                    return 0;
+                                }
+
+                                return
+                                    (double)attempt.Score /
+                                    maxPoints * 100;
+                            });
+
+
+                        TimeSpan totalTime =
+                            TimeSpan.FromTicks(
+                                group.Sum(attempt =>
+                                    (attempt.CompletedAt!.Value -
+                                     attempt.StartedAt).Ticks));
+
+
+                        return new TotalLeaderboardEntryViewModel
+                        {
+                            Username =
+                                group.First()
+                                    .UserChallenge
+                                    .User.Username,
+
+                            TotalPoints =
+                                Math.Round(totalPoints, 1),
+
+                            CoreChallengesCompleted =
+                                group.Count(),
+
+                            TotalTime =
+                                totalTime
+                        };
+                    })
+                    .OrderByDescending(entry => entry.TotalPoints)
+                    .ThenBy(entry => entry.CoreChallengesCompleted)
+                    .ThenBy(entry => entry.TotalTime)
+                    .ToList();
+
+
+            // Dense ranking: equal results share a rank.
+            int coreRank = 0;
+            double? previousCorePoints = null;
+            int? previousChallenges = null;
+            TimeSpan? previousCoreTime = null;
+
+
+            foreach (var entry in coreEntries)
+            {
+                if (previousCorePoints == null ||
+                    entry.TotalPoints != previousCorePoints ||
+                    entry.CoreChallengesCompleted != previousChallenges ||
+                    entry.TotalTime != previousCoreTime)
+                {
+                    coreRank++;
+                }
+
+                entry.Rank = coreRank;
+
+                previousCorePoints = entry.TotalPoints;
+                previousChallenges = entry.CoreChallengesCompleted;
+                previousCoreTime = entry.TotalTime;
             }
+
+
+            viewModel.CoreLeaderboardEntries =
+                coreEntries.Take(3).ToList();
+
+
+            // Hall of Fame
+
+            var users =
+                (await _userRepository.GetAllUsersAsync())
+                    .Where(u => !u.IsAdmin)
+                    .ToList();
+
+
+            var hallOfFameEntries =
+                new List<HallOfFameUserViewModel>();
+
+
+            foreach (var user in users)
+            {
+                var userAchievements =
+                    await _achievementRepository
+                        .GetUserAchievementsAsync(user.UserId);
+
+
+                // Only active, non-goal achievements
+                // contribute Achievement Points.
+                int achievementPoints =
+                    userAchievements
+                        .Where(ua =>
+                            ua.Achievement.IsActive &&
+                            !ua.Achievement.IsGoal)
+                        .Sum(ua => ua.Achievement.Points);
+
+
+                hallOfFameEntries.Add(
+                    new HallOfFameUserViewModel
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        AchievementPoints = achievementPoints
+                    });
+            }
+
+
+            hallOfFameEntries =
+                hallOfFameEntries
+                    .OrderByDescending(u => u.AchievementPoints)
+                    .ThenBy(u => u.Username)
+                    .ToList();
+
+
+            // Users with equal AP share a rank.
+            int hallRank = 0;
+            int? previousAchievementPoints = null;
+
+
+            foreach (var entry in hallOfFameEntries)
+            {
+                if (previousAchievementPoints == null ||
+                    entry.AchievementPoints !=
+                    previousAchievementPoints)
+                {
+                    hallRank++;
+                }
+
+                entry.Rank = hallRank;
+
+                previousAchievementPoints =
+                    entry.AchievementPoints;
+            }
+
+
+            viewModel.HallOfFameEntries =
+                hallOfFameEntries.Take(3).ToList();
 
 
             return View(viewModel);
         }
+
+
         [AllowAnonymous]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [ResponseCache(
+            Duration = 0,
+            Location = ResponseCacheLocation.None,
+            NoStore = true)]
         public IActionResult Error()
         {
             Response.StatusCode = 500;
-            // Exception middleware and DAL already log the technical failure.
+
+            // Exception middleware and DAL
+            // already log the technical failure.
             return View(new ErrorViewModel
             {
                 StatusCode = 500,
@@ -160,28 +285,64 @@ namespace GamificationPlatform.Controllers
             });
         }
 
+
         [AllowAnonymous]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [ResponseCache(
+            Duration = 0,
+            Location = ResponseCacheLocation.None,
+            NoStore = true)]
         public IActionResult ErrorStatus(int code)
         {
-            if (code < 400 || code > 599) code = 404;
+            if (code < 400 || code > 599)
+            {
+                code = 404;
+            }
+
             Response.StatusCode = code;
-            var originalPath = HttpContext.Features.Get<IStatusCodeReExecuteFeature>()?.OriginalPath;
-            _logger.LogWarning("Request {RequestId} to {RequestPath} returned HTTP {StatusCode} for user {UserId}.",
-                HttpContext.TraceIdentifier, originalPath ?? Request.Path.Value, code,
-                User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous");
+
+            var originalPath =
+                HttpContext.Features
+                    .Get<IStatusCodeReExecuteFeature>()
+                    ?.OriginalPath;
+
+            _logger.LogWarning(
+                "Request {RequestId} to {RequestPath} returned HTTP {StatusCode} for user {UserId}.",
+                HttpContext.TraceIdentifier,
+                originalPath ?? Request.Path.Value,
+                code,
+                User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? "anonymous");
+
 
             var (title, message) = code switch
             {
-                400 => ("Invalid request", "Your request could not be processed. Check the form and try again."),
-                401 => ("Login required", "Please log in to continue."),
-                403 => ("Access denied", "You do not have permission to perform this action."),
-                404 => ("Page not found", "The requested page or resource could not be found."),
-                _ => ("Request failed", "We could not complete your request. Please try again later.")
+                400 => (
+                    "Invalid request",
+                    "Your request could not be processed. Check the form and try again."),
+
+                401 => (
+                    "Login required",
+                    "Please log in to continue."),
+
+                403 => (
+                    "Access denied",
+                    "You do not have permission to perform this action."),
+
+                404 => (
+                    "Page not found",
+                    "The requested page or resource could not be found."),
+
+                _ => (
+                    "Request failed",
+                    "We could not complete your request. Please try again later.")
             };
+
+
             return View("Error", new ErrorViewModel
             {
-                StatusCode = code, Title = title, Message = message,
+                StatusCode = code,
+                Title = title,
+                Message = message,
                 RequestId = HttpContext.TraceIdentifier
             });
         }

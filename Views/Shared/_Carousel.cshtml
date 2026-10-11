@@ -1,51 +1,57 @@
-<div id="carouselImages"
-     class="carousel slide mx-auto home-carousel"
-     data-bs-ride="carousel">
+@{
+    var carouselImages = new[]
+    {
+        new { File = "Programming.png", Alt = "Programming" },
+        new { File = "CSharp.png", Alt = "C Sharp" },
+        new { File = "Databases.png", Alt = "Databases" },
+        new { File = "Python.png", Alt = "Python" },
+        new { File = "HTML.png", Alt = "HTML" },
+        new { File = "AI.png", Alt = "Artificial Intelligence" },
+        new { File = "Cybersecurity.png", Alt = "Cybersecurity" },
+        new { File = "Cloud.png", Alt = "Cloud Computing" }
+    };
+}
 
+<div id="carouselImages"
+     class="carousel slide carousel-fade mx-auto home-carousel"
+     data-bs-ride="carousel"
+     data-bs-interval="5000">
+
+    <!-- Indicators -->
     <div class="carousel-indicators">
 
-        <button type="button"
-                data-bs-target="#carouselImages"
-                data-bs-slide-to="0"
-                class="active"
-                aria-current="true"
-                aria-label="Slide 1">
-        </button>
-
-        <button type="button"
-                data-bs-target="#carouselImages"
-                data-bs-slide-to="1"
-                aria-label="Slide 2">
-        </button>
-
-        <button type="button"
-                data-bs-target="#carouselImages"
-                data-bs-slide-to="2"
-                aria-label="Slide 3">
-        </button>
+        @for (int i = 0; i < carouselImages.Length; i++)
+        {
+            <button type="button"
+                    data-bs-target="#carouselImages"
+                    data-bs-slide-to="@i"
+                    class="@(i == 0 ? "active" : "")"
+                    aria-current="@(i == 0 ? "true" : "false")"
+                    aria-label="Slide @(i + 1)">
+            </button>
+        }
 
     </div>
 
+    <!-- Images -->
     <div class="carousel-inner">
 
-        <div class="carousel-item active">
-            <img src="/images/Programming.png"
-                 class="d-block w-100"
-                 alt="Question mark">
-        </div>
+        @for (int i = 0; i < carouselImages.Length; i++)
+        {
+            <div class="carousel-item @(i == 0 ? "active" : "")">
 
-        <div class="carousel-item">
-            <img src="/images/CSharp.png"
-                 class="d-block w-100"
-                 alt="Challenge">
-        </div>
+                <img src="@Url.Content("~/images/" + carouselImages[i].File)"
+                     class="d-block w-100"
+                     alt="@carouselImages[i].Alt">
 
-        <div class="carousel-item">
-            <img src="/images/Databases.png"
-                 class="d-block w-100"
-                 alt="Question mark">
-        </div>
+            </div>
+        }
 
+    </div>
+
+    <!-- Subtle fade along the edges -->
+    <div class="carousel-edge-fade"
+         aria-hidden="true">
     </div>
 
     <!-- Previous -->
