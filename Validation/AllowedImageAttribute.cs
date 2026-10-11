@@ -1,19 +1,37 @@
+
 using System.ComponentModel.DataAnnotations;
 
 namespace GamificationPlatform.Validation
 {
-    // Forms select bundled images; arbitrary URLs are not accepted.
+    // Only images stored in approved folders are accepted.
     public sealed class AllowedImageAttribute : ValidationAttribute
     {
         public override bool IsValid(object? value)
         {
-            if (value == null || value is string text && string.IsNullOrWhiteSpace(text))
+            // No image is allowed.
+            if (value == null ||
+                value is string text && string.IsNullOrWhiteSpace(text))
             {
-                return true; // Required handles mandatory images separately.
+                return true;
             }
 
-            return value is string image && Enumerable.Range(1, 13)
+            if (value is not string image)
+            {
+                return false;
+            }
+
+            // Existing default images.
+            bool isDefaultImage = Enumerable.Range(1, 13)
                 .Any(number => image == $"/images/Question_{number}.png");
+
+            // Uploaded images use a GUID filename.
+            bool isUploadedImage =
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    image,
+                    @"^/uploads/images/[a-fA-F0-9]{32}\.(jpg|jpeg|png|webp)$",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+            return isDefaultImage || isUploadedImage;
         }
     }
 }

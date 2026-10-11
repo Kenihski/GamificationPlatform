@@ -1,7 +1,9 @@
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using GamificationPlatform.Authentication;
 using GamificationPlatform.DAL;
+using GamificationPlatform.Models;
 using GamificationPlatform.Services;
 using Serilog;
 using Serilog.Context;
@@ -54,6 +56,7 @@ builder.Services.AddScoped<IAttemptRepository, AttemptRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAchievementRepository, AchievementRepository>();
+builder.Services.AddScoped<IUserImageRepository, UserImageRepository>();
 
 // Register services for business logic.
 builder.Services.AddScoped<IAchievementService, AchievementService>();
@@ -84,6 +87,69 @@ else
     app.UseExceptionHandler("/Home/Error");
 }
 
+// Register default images from wwwroot/images at application startup.
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider
+        .GetRequiredService<ChallengeDbContext>();
+
+    string imagesPath = Path.Combine(
+        app.Environment.WebRootPath,
+        "images");
+
+    if (Directory.Exists(imagesPath))
+    {
+        // Get all PNG images in the default images folder.
+        var imageFiles = Directory.GetFiles(
+            imagesPath,
+            "*.png");
+
+        // Get images already registered in the database.
+        var existingFileNames = await context.DefaultImages
+            .Select(image => image.FileName)
+            .ToListAsync();
+
+        var defaultImages = new List<DefaultImage>();
+
+        foreach (string imagePath in imageFiles)
+        {
+            string fileName = Path.GetFileName(imagePath);
+
+            // Skip images already registered.
+            if (existingFileNames.Contains(
+                fileName,
+                StringComparer.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            string imageName =
+                Path.GetFileNameWithoutExtension(fileName);
+
+            // Display bundled question images with readable names.
+            if (imageName.StartsWith(
+                "Question_",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                imageName = imageName.Replace("_", " ");
+            }
+
+            defaultImages.Add(new DefaultImage
+            {
+                Name = imageName,
+                FileName = fileName,
+                ImageUrl = "/images/" + fileName
+            });
+        }
+
+        if (defaultImages.Count > 0)
+        {
+            context.DefaultImages.AddRange(defaultImages);
+            await context.SaveChangesAsync();
+        }
+    }
+}
+
 app.UseSerilogRequestLogging(options =>
 {
     options.MessageTemplate =
@@ -109,6 +175,7 @@ app.UseStatusCodePagesWithReExecute(
     "?code={0}");
 
 app.MapStaticAssets(); // Enable static assets from wwwroot (images, JS, CSS)
+app.UseStaticFiles();
 
 app.UseRouting();
 

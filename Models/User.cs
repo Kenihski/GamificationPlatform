@@ -1,3 +1,4 @@
+
 namespace GamificationPlatform.Models
 {
     public class User
@@ -24,5 +25,9 @@ namespace GamificationPlatform.Models
         // Navigation: One user can unlock many achievements.
         public virtual List<UserAchievement> UserAchievements { get; set; }
             = new List<UserAchievement>();
+
+        // Navigation: One user can upload many images.
+        public virtual List<UserImage> UserImages { get; set; }
+            = new List<UserImage>();
     }
 }

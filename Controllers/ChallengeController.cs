@@ -1,5 +1,7 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
@@ -10,160 +12,138 @@ namespace GamificationPlatform.Controllers
 {
     public class ChallengeController : Controller
     {
-        // Repositories handle database operations for challenges and attempts.
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
-
-        // Service handles achievement rules and unlocking.
+        private readonly IUserImageRepository _userImageRepository;
+        private readonly ChallengeDbContext _context;
+        private readonly IWebHostEnvironment _environment;
         private readonly IAchievementService _achievementService;
-
-        // Logger records important challenge operations and problems.
         private readonly ILogger<ChallengeController> _logger;
 
         public ChallengeController(
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
+            IUserImageRepository userImageRepository,
+            ChallengeDbContext context,
+            IWebHostEnvironment environment,
             IAchievementService achievementService,
             ILogger<ChallengeController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _userImageRepository = userImageRepository;
+            _context = context;
+            _environment = environment;
             _achievementService = achievementService;
             _logger = logger;
         }
 
         // Shows published challenges in a table.
-        public async Task<IActionResult> Table(
-            string filter = "All")
+        public async Task<IActionResult> Table(string filter = "All")
         {
             List<Challenge> challenges =
-                await _challengeRepository
-                    .GetPublishedChallengesAsync();
+                await _challengeRepository.GetPublishedChallengesAsync();
 
-            // Filters challenges by type.
             if (filter == "Core")
             {
-                challenges =
-                    challenges
-                        .Where(c => c.IsCore)
-                        .ToList();
+                challenges = challenges.Where(c => c.IsCore).ToList();
             }
             else if (filter == "Community")
             {
-                challenges =
-                    challenges
-                        .Where(c => !c.IsCore)
-                        .ToList();
+                challenges = challenges.Where(c => !c.IsCore).ToList();
             }
             else
             {
                 filter = "All";
             }
 
-            // Calculates max points from the questions.
+            // Show Core challenges first, followed by Community.
+            challenges = challenges
+                .OrderByDescending(c => c.IsCore)
+                .ThenBy(c => c.ChallengeId)
+                .ToList();
+
             foreach (var challenge in challenges)
             {
-                challenge.MaxPoints =
-                    challenge.Questions.Sum(q => q.Points);
+                challenge.MaxPoints = challenge.Questions.Sum(q => q.Points);
             }
 
-            var completedChallengeIds =
-                new List<int>();
+            var completedChallengeIds = new List<int>();
 
-            // Gets completed challenges only
-            // when the user is logged in.
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userIdString =
-                    User.FindFirstValue(
-                        ClaimTypes.NameIdentifier);
+                    User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userIdString != null)
                 {
-                    int userId =
-                        int.Parse(userIdString);
+                    int userId = int.Parse(userIdString);
 
-                    completedChallengeIds =
-                        await _attemptRepository
-                            .GetCompletedChallengeIdsAsync(
-                                userId);
+                    completedChallengeIds = await _attemptRepository
+                        .GetCompletedChallengeIdsAsync(userId);
                 }
             }
 
-            var challengesViewModel =
-                new ChallengesViewModel(
-                    challenges,
-                    "Table",
-                    filter,
-                    completedChallengeIds);
+            var challengesViewModel = new ChallengesViewModel(
+                challenges,
+                "Table",
+                filter,
+                completedChallengeIds);
 
             return View(challengesViewModel);
         }
 
         // Shows published challenges in a grid.
-        public async Task<IActionResult> Grid(
-            string filter = "All")
+        public async Task<IActionResult> Grid(string filter = "All")
         {
             List<Challenge> challenges =
-                await _challengeRepository
-                    .GetPublishedChallengesAsync();
+                await _challengeRepository.GetPublishedChallengesAsync();
 
-            // Filters challenges by type.
             if (filter == "Core")
             {
-                challenges =
-                    challenges
-                        .Where(c => c.IsCore)
-                        .ToList();
+                challenges = challenges.Where(c => c.IsCore).ToList();
             }
             else if (filter == "Community")
             {
-                challenges =
-                    challenges
-                        .Where(c => !c.IsCore)
-                        .ToList();
+                challenges = challenges.Where(c => !c.IsCore).ToList();
             }
             else
             {
                 filter = "All";
             }
 
-            // Calculates max points from the questions.
+            // Show Core challenges first, followed by Community.
+            challenges = challenges
+                .OrderByDescending(c => c.IsCore)
+                .ThenBy(c => c.ChallengeId)
+                .ToList();
+
             foreach (var challenge in challenges)
             {
-                challenge.MaxPoints =
-                    challenge.Questions.Sum(q => q.Points);
+                challenge.MaxPoints = challenge.Questions.Sum(q => q.Points);
             }
 
-            var completedChallengeIds =
-                new List<int>();
+            var completedChallengeIds = new List<int>();
 
-            // Gets completed challenges only
-            // when the user is logged in.
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userIdString =
-                    User.FindFirstValue(
-                        ClaimTypes.NameIdentifier);
+                    User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userIdString != null)
                 {
-                    int userId =
-                        int.Parse(userIdString);
+                    int userId = int.Parse(userIdString);
 
-                    completedChallengeIds =
-                        await _attemptRepository
-                            .GetCompletedChallengeIdsAsync(
-                                userId);
+                    completedChallengeIds = await _attemptRepository
+                        .GetCompletedChallengeIdsAsync(userId);
                 }
             }
 
-            var challengesViewModel =
-                new ChallengesViewModel(
-                    challenges,
-                    "Grid",
-                    filter,
-                    completedChallengeIds);
+            var challengesViewModel = new ChallengesViewModel(
+                challenges,
+                "Grid",
+                filter,
+                completedChallengeIds);
 
             return View(challengesViewModel);
         }
@@ -173,50 +153,31 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> MyChallenges()
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
 
             var challenges =
-                await _challengeRepository
-                    .GetChallengesByUserIdAsync(userId);
+                await _challengeRepository.GetChallengesByUserIdAsync(userId);
 
-            // Prepares the challenge information
-            // needed by the view.
-            var viewModel =
-                new MyChallengesViewModel();
+            var viewModel = new MyChallengesViewModel();
 
             foreach (var challenge in challenges)
             {
-                viewModel.Challenges.Add(
-                    new MyChallengeViewModel
-                    {
-                        ChallengeId =
-                            challenge.ChallengeId,
-
-                        Title =
-                            challenge.Title,
-
-                        QuestionCount =
-                            challenge.Questions.Count,
-
-                        MaxPoints =
-                            challenge.Questions
-                                .Sum(q => q.Points),
-
-                        IsPublished =
-                            challenge.IsPublished,
-
-                        IsCore =
-                            challenge.IsCore
-                    });
+                viewModel.Challenges.Add(new MyChallengeViewModel
+                {
+                    ChallengeId = challenge.ChallengeId,
+                    Title = challenge.Title,
+                    QuestionCount = challenge.Questions.Count,
+                    MaxPoints = challenge.Questions.Sum(q => q.Points),
+                    IsPublished = challenge.IsPublished,
+                    IsCore = challenge.IsCore
+                });
             }
 
             return View(viewModel);
@@ -226,13 +187,10 @@ namespace GamificationPlatform.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Publish(
-            int id,
-            string? returnUrl)
+        public async Task<IActionResult> Publish(int id, string? returnUrl)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeWithQuestionsAsync(id);
+                await _challengeRepository.GetChallengeWithQuestionsAsync(id);
 
             if (challenge == null)
             {
@@ -244,22 +202,17 @@ namespace GamificationPlatform.Controllers
             }
 
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
-            bool isAdmin =
-                User.IsInRole("Admin");
-
-            if (!isAdmin &&
-                challenge.CreatedByUserId != userId)
+            if (!isAdmin && challenge.CreatedByUserId != userId)
             {
                 _logger.LogWarning(
                     "User {UserId} attempted to publish challenge {ChallengeId} without permission.",
@@ -269,8 +222,6 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            // A challenge must have at least one
-            // question before publishing.
             if (!challenge.Questions.Any())
             {
                 _logger.LogWarning(
@@ -286,14 +237,12 @@ namespace GamificationPlatform.Controllers
                     return LocalRedirect(returnUrl);
                 }
 
-                return RedirectToAction(
-                    nameof(MyChallenges));
+                return RedirectToAction(nameof(MyChallenges));
             }
 
             challenge.IsPublished = true;
 
-            await _challengeRepository
-                .SaveChangesAsync();
+            await _challengeRepository.SaveChangesAsync();
 
             _logger.LogInformation(
                 "Challenge {ChallengeId} was published by user {UserId}.",
@@ -309,8 +258,7 @@ namespace GamificationPlatform.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            return RedirectToAction(
-                nameof(MyChallenges));
+            return RedirectToAction(nameof(MyChallenges));
         }
 
         // Unpublishes a challenge.
@@ -322,8 +270,7 @@ namespace GamificationPlatform.Controllers
             string? returnUrl)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(id);
+                await _challengeRepository.GetChallengeByIdAsync(id);
 
             if (challenge == null)
             {
@@ -331,24 +278,17 @@ namespace GamificationPlatform.Controllers
             }
 
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
-            bool isAdmin =
-                User.IsInRole("Admin");
-
-            // Normal users can only unpublish
-            // challenges they created.
-            if (!isAdmin &&
-                challenge.CreatedByUserId != userId)
+            if (!isAdmin && challenge.CreatedByUserId != userId)
             {
                 _logger.LogWarning(
                     "User {UserId} was denied challenge management access.",
@@ -359,8 +299,7 @@ namespace GamificationPlatform.Controllers
 
             challenge.IsPublished = false;
 
-            await _challengeRepository
-                .SaveChangesAsync();
+            await _challengeRepository.SaveChangesAsync();
 
             _logger.LogInformation(
                 "Challenge {ChallengeId} was unpublished by user {UserId}.",
@@ -376,12 +315,10 @@ namespace GamificationPlatform.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            return RedirectToAction(
-                nameof(MyChallenges));
+            return RedirectToAction(nameof(MyChallenges));
         }
 
         // Marks a challenge as Core.
-        // Only admins can change the challenge type.
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -390,8 +327,7 @@ namespace GamificationPlatform.Controllers
             string? returnUrl)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(id);
+                await _challengeRepository.GetChallengeByIdAsync(id);
 
             if (challenge == null)
             {
@@ -400,15 +336,13 @@ namespace GamificationPlatform.Controllers
 
             challenge.IsCore = true;
 
-            await _challengeRepository
-                .SaveChangesAsync();
+            await _challengeRepository.SaveChangesAsync();
 
             _logger.LogInformation(
                 "Challenge {ChallengeId} was marked as Core.",
                 id);
 
-            TempData["SuccessMessage"] =
-                "Challenge marked as Core.";
+            TempData["SuccessMessage"] = "Challenge marked as Core.";
 
             if (!string.IsNullOrEmpty(returnUrl) &&
                 Url.IsLocalUrl(returnUrl))
@@ -416,13 +350,10 @@ namespace GamificationPlatform.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            return RedirectToAction(
-                nameof(Details),
-                new { id });
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         // Marks a challenge as Community.
-        // Only admins can change the challenge type.
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -431,8 +362,7 @@ namespace GamificationPlatform.Controllers
             string? returnUrl)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(id);
+                await _challengeRepository.GetChallengeByIdAsync(id);
 
             if (challenge == null)
             {
@@ -441,15 +371,13 @@ namespace GamificationPlatform.Controllers
 
             challenge.IsCore = false;
 
-            await _challengeRepository
-                .SaveChangesAsync();
+            await _challengeRepository.SaveChangesAsync();
 
             _logger.LogInformation(
                 "Challenge {ChallengeId} was marked as Community.",
                 id);
 
-            TempData["SuccessMessage"] =
-                "Challenge marked as Community.";
+            TempData["SuccessMessage"] = "Challenge marked as Community.";
 
             if (!string.IsNullOrEmpty(returnUrl) &&
                 Url.IsLocalUrl(returnUrl))
@@ -457,105 +385,74 @@ namespace GamificationPlatform.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            return RedirectToAction(
-                nameof(Details),
-                new { id });
+            return RedirectToAction(nameof(Details), new { id });
         }
 
-        // Shows information about a challenge
-        // and the user's attempt history.
+        // Shows challenge details and attempt history.
         public async Task<IActionResult> Details(
             int id,
             bool showQuestions = false)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeWithQuestionsAsync(id);
+                await _challengeRepository.GetChallengeWithQuestionsAsync(id);
 
             if (challenge == null)
             {
                 return NotFound();
             }
 
-            // Calculates max points from the questions.
-            int maxPoints =
-                challenge.Questions.Sum(q => q.Points);
-
+            int maxPoints = challenge.Questions.Sum(q => q.Points);
             challenge.MaxPoints = maxPoints;
 
-            var viewModel =
-                new ChallengeDetailsHistoryViewModel
-                {
-                    Challenge = challenge,
-                    MaxPoints = maxPoints,
-                    ShowQuestions = showQuestions
-                };
+            var viewModel = new ChallengeDetailsHistoryViewModel
+            {
+                Challenge = challenge,
+                MaxPoints = maxPoints,
+                ShowQuestions = showQuestions
+            };
 
-            // Gets history and management permission
-            // only if the user is logged in.
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userIdString =
-                    User.FindFirstValue(
-                        ClaimTypes.NameIdentifier);
+                    User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userIdString != null)
                 {
-                    int userId =
-                        int.Parse(userIdString);
+                    int userId = int.Parse(userIdString);
 
-                    // The challenge owner and admins
-                    // can manage the challenge.
                     viewModel.CanManage =
                         User.IsInRole("Admin") ||
                         challenge.CreatedByUserId == userId;
 
-                    var attempts =
-                        await _attemptRepository
-                            .GetCompletedAttemptsAsync(
-                                userId,
-                                id);
+                    var attempts = await _attemptRepository
+                        .GetCompletedAttemptsAsync(userId, id);
 
                     if (attempts.Any())
                     {
-                        var chronologicalAttempts =
-                            attempts
-                                .OrderBy(a => a.CompletedAt)
-                                .ToList();
+                        var chronologicalAttempts = attempts
+                            .OrderBy(a => a.CompletedAt)
+                            .ToList();
 
-                        // Gets the latest completed attempt.
-                        var latestAttempt =
-                            attempts.First();
+                        var latestAttempt = attempts.First();
 
-                        // Gets the best completed attempt.
-                        var bestAttempt =
-                            attempts
-                                .OrderByDescending(a =>
-                                    a.Score)
-                                .ThenByDescending(a =>
-                                    a.CompletedAt)
-                                .First();
+                        var bestAttempt = attempts
+                            .OrderByDescending(a => a.Score)
+                            .ThenByDescending(a => a.CompletedAt)
+                            .First();
 
-                        // Places the best attempt first.
-                        attempts =
-                            attempts
-                                .OrderByDescending(a =>
-                                    a.ChallengeAttemptId ==
-                                    bestAttempt.ChallengeAttemptId)
-                                .ThenByDescending(a =>
-                                    a.CompletedAt)
-                                .ToList();
+                        attempts = attempts
+                            .OrderByDescending(a =>
+                                a.ChallengeAttemptId ==
+                                bestAttempt.ChallengeAttemptId)
+                            .ThenByDescending(a => a.CompletedAt)
+                            .ToList();
 
-                        // Prepares attempt history
-                        // for the view.
                         foreach (var attempt in attempts)
                         {
                             int attemptNumber =
-                                chronologicalAttempts
-                                    .FindIndex(a =>
-                                        a.ChallengeAttemptId ==
-                                        attempt.ChallengeAttemptId)
-                                + 1;
+                                chronologicalAttempts.FindIndex(a =>
+                                    a.ChallengeAttemptId ==
+                                    attempt.ChallengeAttemptId) + 1;
 
                             string? timeUsed = null;
 
@@ -582,25 +479,14 @@ namespace GamificationPlatform.Controllers
                                 {
                                     ChallengeAttemptId =
                                         attempt.ChallengeAttemptId,
-
-                                    AttemptNumber =
-                                        attemptNumber,
-
-                                    Score =
-                                        attempt.Score,
-
-                                    TimeUsed =
-                                        timeUsed,
-
-                                    CompletedAt =
-                                        attempt.CompletedAt?
-                                            .ToString(
-                                                "dd.MM.yyyy HH:mm"),
-
+                                    AttemptNumber = attemptNumber,
+                                    Score = attempt.Score,
+                                    TimeUsed = timeUsed,
+                                    CompletedAt = attempt.CompletedAt?
+                                        .ToString("dd.MM.yyyy HH:mm"),
                                     IsBest =
                                         attempt.ChallengeAttemptId ==
                                         bestAttempt.ChallengeAttemptId,
-
                                     IsLatest =
                                         attempt.ChallengeAttemptId ==
                                         latestAttempt.ChallengeAttemptId
@@ -613,11 +499,193 @@ namespace GamificationPlatform.Controllers
             return View(viewModel);
         }
 
+        // Loads images for the Challenge Create and Update forms.
+        // Topic images appear alphabetically first.
+        // Numbered Question images appear last, in numerical order.
+        private async Task LoadImagesAsync(int userId)
+        {
+            ViewBag.MyImages =
+                await _userImageRepository.GetImagesByUserIdAsync(userId);
+
+            var defaultImages = await _context.DefaultImages
+                .ToListAsync();
+
+            ViewData["DefaultImages"] = defaultImages
+                .OrderBy(image =>
+                    image.Name.StartsWith(
+                        "Question ",
+                        StringComparison.OrdinalIgnoreCase) &&
+                    int.TryParse(image.Name.Substring(9), out _)
+                        ? 1
+                        : 0)
+                .ThenBy(image =>
+                    image.Name.StartsWith(
+                        "Question ",
+                        StringComparison.OrdinalIgnoreCase) &&
+                    int.TryParse(image.Name.Substring(9), out int number)
+                        ? number
+                        : 0)
+                .ThenBy(image => image.Name)
+                .ToList();
+        }
+
+        // Checks that the selected image is a registered default image
+        // or belongs to the logged-in user.
+        private async Task<bool> IsAllowedImageAsync(
+            string? imageUrl,
+            int userId)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return true;
+            }
+
+            bool isDefaultImage = await _context.DefaultImages
+                .AnyAsync(image => image.ImageUrl == imageUrl);
+
+            if (isDefaultImage)
+            {
+                return true;
+            }
+
+            var images =
+                await _userImageRepository.GetImagesByUserIdAsync(userId);
+
+            return images.Any(image => image.ImageUrl == imageUrl);
+        }
+
+        // Validates an uploaded image and saves it
+        // to the logged-in user's image library.
+        private async Task<string?> SaveImageAsync(
+            IFormFile file,
+            int userId)
+        {
+            const long maxSize = 5 * 1024 * 1024;
+
+            string extension =
+                Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (file.Length == 0 ||
+                file.Length > maxSize ||
+                !new[] { ".jpg", ".jpeg", ".png", ".webp" }
+                    .Contains(extension))
+            {
+                ModelState.AddModelError(
+                    "imageUpload",
+                    "Choose a JPG, PNG or WebP image up to 5 MB.");
+
+                return null;
+            }
+
+            // Check the file signature.
+            byte[] header = new byte[12];
+
+            using (var stream = file.OpenReadStream())
+            {
+                int count =
+                    await stream.ReadAsync(header.AsMemory());
+
+                bool jpeg =
+                    count >= 3 &&
+                    header[0] == 0xFF &&
+                    header[1] == 0xD8 &&
+                    header[2] == 0xFF;
+
+                bool png =
+                    count >= 8 &&
+                    header.AsSpan(0, 8).SequenceEqual(
+                        new byte[]
+                        {
+                            137, 80, 78, 71, 13, 10, 26, 10
+                        });
+
+                bool webp =
+                    count >= 12 &&
+                    System.Text.Encoding.ASCII.GetString(
+                        header, 0, 4) == "RIFF" &&
+                    System.Text.Encoding.ASCII.GetString(
+                        header, 8, 4) == "WEBP";
+
+                bool valid = extension switch
+                {
+                    ".jpg" or ".jpeg" => jpeg,
+                    ".png" => png,
+                    ".webp" => webp,
+                    _ => false
+                };
+
+                if (!valid)
+                {
+                    ModelState.AddModelError(
+                        "imageUpload",
+                        "The file does not match a supported image format.");
+
+                    return null;
+                }
+            }
+
+            string fileName =
+                $"{Guid.NewGuid():N}{extension}";
+
+            string folder = Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "images");
+
+            Directory.CreateDirectory(folder);
+
+            string fullPath =
+                Path.Combine(folder, fileName);
+
+            string url =
+                $"/uploads/images/{fileName}";
+
+            try
+            {
+                await using (var output =
+                    new FileStream(fullPath, FileMode.CreateNew))
+                {
+                    await file.CopyToAsync(output);
+                }
+
+                await _userImageRepository.AddImageAsync(
+                    new UserImage
+                    {
+                        UserId = userId,
+                        FileName = Path.GetFileName(file.FileName),
+                        ImageUrl = url
+                    });
+
+                return url;
+            }
+            catch
+            {
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+
+                throw;
+            }
+        }
+
         // Shows the Create Challenge form.
         [Authorize]
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var userIdString =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdString);
+
+            await LoadImagesAsync(userId);
+
             return View();
         }
 
@@ -626,23 +694,21 @@ namespace GamificationPlatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            Challenge challenge)
+            Challenge challenge,
+            IFormFile? imageUpload)
         {
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
 
             // The logged-in user becomes the owner.
-            challenge.CreatedByUserId =
-                userId;
+            challenge.CreatedByUserId = userId;
 
             // MaxPoints is calculated from questions later.
             challenge.MaxPoints = 0;
@@ -656,13 +722,47 @@ namespace GamificationPlatform.Controllers
             // Navigation property is not received from the form.
             ModelState.Remove("CreatedByUser");
 
+            // ImageUrl may be empty when uploading a new image
+            // or when the user chooses No image.
+            ModelState.Remove("ImageUrl");
+
+            // The user cannot upload and select an existing
+            // image at the same time.
+            if (imageUpload != null &&
+                !string.IsNullOrWhiteSpace(challenge.ImageUrl))
+            {
+                ModelState.AddModelError(
+                    "ImageUrl",
+                    "Choose either an existing image or an upload.");
+            }
+
+            // Verify that the user is allowed to use this image.
+            if (!await IsAllowedImageAsync(challenge.ImageUrl, userId))
+            {
+                ModelState.AddModelError(
+                    "ImageUrl",
+                    "This image is not available to you.");
+            }
+
+            // Save the uploaded image if validation succeeds.
+            if (ModelState.IsValid && imageUpload != null)
+            {
+                string? url =
+                    await SaveImageAsync(imageUpload, userId);
+
+                if (url != null)
+                {
+                    challenge.ImageUrl = url;
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 challenge = new Challenge
                 {
                     Title = challenge.Title,
                     Description = challenge.Description,
-                    ImageUrl = challenge.ImageUrl,
+                    ImageUrl = challenge.ImageUrl ?? string.Empty,
                     TimeLimitMinutes = challenge.TimeLimitMinutes,
                     CreatedByUserId = userId,
                     IsPublished = false,
@@ -694,6 +794,8 @@ namespace GamificationPlatform.Controllers
                 "Challenge creation rejected because validation failed for user {UserId}.",
                 userId);
 
+            await LoadImagesAsync(userId);
+
             return View(challenge);
         }
 
@@ -703,8 +805,7 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Update(int id)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(id);
+                await _challengeRepository.GetChallengeByIdAsync(id);
 
             if (challenge == null)
             {
@@ -712,24 +813,17 @@ namespace GamificationPlatform.Controllers
             }
 
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
-            bool isAdmin =
-                User.IsInRole("Admin");
-
-            // Normal users can only update
-            // challenges they created.
-            if (!isAdmin &&
-                challenge.CreatedByUserId != userId)
+            if (!isAdmin && challenge.CreatedByUserId != userId)
             {
                 _logger.LogWarning(
                     "User {UserId} was denied challenge management access.",
@@ -737,6 +831,8 @@ namespace GamificationPlatform.Controllers
 
                 return Forbid();
             }
+
+            await LoadImagesAsync(userId);
 
             return View(challenge);
         }
@@ -746,12 +842,12 @@ namespace GamificationPlatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(
-            Challenge challenge)
+            Challenge challenge,
+            IFormFile? imageUpload)
         {
             var existingChallenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(
-                        challenge.ChallengeId);
+                await _challengeRepository.GetChallengeByIdAsync(
+                    challenge.ChallengeId);
 
             if (existingChallenge == null)
             {
@@ -759,25 +855,18 @@ namespace GamificationPlatform.Controllers
             }
 
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
-            bool isAdmin =
-                User.IsInRole("Admin");
-
-            // Normal users can only update
-            // challenges they created.
             if (!isAdmin &&
-                existingChallenge.CreatedByUserId !=
-                    userId)
+                existingChallenge.CreatedByUserId != userId)
             {
                 _logger.LogWarning(
                     "User {UserId} was denied challenge management access.",
@@ -786,48 +875,79 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            // Navigation property is not
-            // received from the form.
+            // Navigation property is not received from the form.
             ModelState.Remove("CreatedByUser");
+
+            // ImageUrl may be empty when uploading a new image
+            // or when the user chooses No image.
+            ModelState.Remove("ImageUrl");
+
+            if (imageUpload != null &&
+                !string.IsNullOrWhiteSpace(challenge.ImageUrl))
+            {
+                ModelState.AddModelError(
+                    "ImageUrl",
+                    "Choose either an existing image or an upload.");
+            }
+
+            // The current image may belong to another user.
+            // Admins can keep that image, but cannot select
+            // a different image belonging to another user.
+            bool keepingExistingImage =
+                challenge.ImageUrl == existingChallenge.ImageUrl;
+
+            if (!keepingExistingImage &&
+                !await IsAllowedImageAsync(challenge.ImageUrl, userId))
+            {
+                ModelState.AddModelError(
+                    "ImageUrl",
+                    "This image is not available to you.");
+            }
+
+            if (ModelState.IsValid && imageUpload != null)
+            {
+                string? url =
+                    await SaveImageAsync(imageUpload, userId);
+
+                if (url != null)
+                {
+                    challenge.ImageUrl = url;
+                }
+            }
 
             if (ModelState.IsValid)
             {
-                // Only updates fields the user
-                // is allowed to change.
-                existingChallenge.Title =
-                    challenge.Title;
+                // Only update fields the user is allowed to change.
+                existingChallenge.Title = challenge.Title;
 
-                existingChallenge.Description =
-                    challenge.Description;
+                existingChallenge.Description = challenge.Description;
 
                 existingChallenge.ImageUrl =
-                    challenge.ImageUrl;
+                    challenge.ImageUrl ?? string.Empty;
 
                 existingChallenge.TimeLimitMinutes =
                     challenge.TimeLimitMinutes;
 
                 // CreatedByUserId is not changed.
                 // The original owner stays the owner.
-                // IsCore is also not changed here.
-                // Only admins can change it using
-                // MakeCore or MakeCommunity.
+                // IsCore is only changed by admin actions.
 
-                await _challengeRepository
-                    .SaveChangesAsync();
+                await _challengeRepository.SaveChangesAsync();
 
                 _logger.LogInformation(
                     "Challenge {ChallengeId} was updated by user {UserId}.",
                     existingChallenge.ChallengeId,
                     userId);
 
-                return RedirectToAction(
-                    nameof(Table));
+                return RedirectToAction(nameof(Table));
             }
 
             _logger.LogWarning(
                 "Challenge update rejected because validation failed for user {UserId} on challenge {ChallengeId}.",
                 userId,
                 existingChallenge.ChallengeId);
+
+            await LoadImagesAsync(userId);
 
             return View(challenge);
         }
@@ -838,8 +958,7 @@ namespace GamificationPlatform.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(id);
+                await _challengeRepository.GetChallengeByIdAsync(id);
 
             if (challenge == null)
             {
@@ -847,24 +966,17 @@ namespace GamificationPlatform.Controllers
             }
 
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
-            bool isAdmin =
-                User.IsInRole("Admin");
-
-            // Normal users can only delete
-            // challenges they created.
-            if (!isAdmin &&
-                challenge.CreatedByUserId != userId)
+            if (!isAdmin && challenge.CreatedByUserId != userId)
             {
                 _logger.LogWarning(
                     "User {UserId} was denied challenge management access.",
@@ -880,12 +992,10 @@ namespace GamificationPlatform.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(
-            int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var challenge =
-                await _challengeRepository
-                    .GetChallengeByIdAsync(id);
+                await _challengeRepository.GetChallengeByIdAsync(id);
 
             if (challenge == null)
             {
@@ -893,24 +1003,17 @@ namespace GamificationPlatform.Controllers
             }
 
             var userIdString =
-                User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
+            bool isAdmin = User.IsInRole("Admin");
 
-            bool isAdmin =
-                User.IsInRole("Admin");
-
-            // Normal users can only delete
-            // challenges they created.
-            if (!isAdmin &&
-                challenge.CreatedByUserId != userId)
+            if (!isAdmin && challenge.CreatedByUserId != userId)
             {
                 _logger.LogWarning(
                     "User {UserId} was denied challenge management access.",
@@ -919,16 +1022,14 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            await _challengeRepository
-                .DeleteChallengeAsync(challenge);
+            await _challengeRepository.DeleteChallengeAsync(challenge);
 
             _logger.LogInformation(
                 "Challenge {ChallengeId} was deleted by user {UserId}.",
                 id,
                 userId);
 
-            return RedirectToAction(
-                nameof(Table));
+            return RedirectToAction(nameof(Table));
         }
     }
 }

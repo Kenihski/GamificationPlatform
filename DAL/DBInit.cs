@@ -64,6 +64,8 @@ namespace GamificationPlatform.DAL
             // Useful while testing with dummy data.
             context.Database.EnsureDeleted();
             context.Database.Migrate();
+            // Remove uploaded images when resetting the development database.
+            ClearUploadedImages();
             // --------------------------------
             // Users
             // --------------------------------
@@ -477,7 +479,7 @@ namespace GamificationPlatform.DAL
                         "Test your knowledge of HTML.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_2.png",
+                        "/images/HTML.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = true,
@@ -491,7 +493,7 @@ namespace GamificationPlatform.DAL
                         "Test your basic programming knowledge.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_3.png",
+                        "/images/Programming.png",
                     TimeLimitMinutes = 20,
                     IsPublished = true,
                     IsCore = true,
@@ -505,7 +507,7 @@ namespace GamificationPlatform.DAL
                         "Answer questions about web development.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_4.png",
+                        "/images/Web development.png",
                     TimeLimitMinutes = 30,
                     IsPublished = true,
                     IsCore = true,
@@ -519,7 +521,7 @@ namespace GamificationPlatform.DAL
                         "Test your knowledge of C#.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_5.png",
+                        "/images/CSharp.png",
                     TimeLimitMinutes = 20,
                     IsPublished = true,
                     IsCore = true,
@@ -533,7 +535,7 @@ namespace GamificationPlatform.DAL
                         "Test your database knowledge.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_6.png",
+                        "/images/Databases.png",
                     TimeLimitMinutes = null,
                     IsPublished = true,
                     IsCore = true,
@@ -547,7 +549,7 @@ namespace GamificationPlatform.DAL
                         "Test your knowledge of CSS and styling.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_7.png",
+                        "/images/CSS.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = false,
@@ -561,7 +563,7 @@ namespace GamificationPlatform.DAL
                         "Test your ASP.NET Core knowledge.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_11.png",
+                        "/images/ASP.NET.png",
                     TimeLimitMinutes = 60,
                     IsPublished = true,
                     IsCore = false,
@@ -576,7 +578,7 @@ namespace GamificationPlatform.DAL
                         "Test your JavaScript knowledge.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_9.png",
+                        "/images/Javascript.png",
                     TimeLimitMinutes = 30,
                     IsPublished = true,
                     IsCore = false,
@@ -590,7 +592,7 @@ namespace GamificationPlatform.DAL
                         "Test your basic Python knowledge.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_10.png",
+                        "/images/Python.png",
                     TimeLimitMinutes = 20,
                     IsPublished = true,
                     IsCore = false,
@@ -604,7 +606,7 @@ namespace GamificationPlatform.DAL
                         "Test your knowledge of SQL queries.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_12.png",
+                        "/images/SQL.png",
                     TimeLimitMinutes = 20,
                     IsPublished = true,
                     IsCore = false,
@@ -618,7 +620,7 @@ namespace GamificationPlatform.DAL
                         "Test your knowledge of Git and version control.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_13.png",
+                        "/images/GitHub.png",
                     TimeLimitMinutes = 20,
                     IsPublished = true,
                     IsCore = false,
@@ -632,7 +634,7 @@ namespace GamificationPlatform.DAL
                         "Test your basic cybersecurity knowledge.",
                     MaxPoints = 0,
                     ImageUrl =
-                        "/images/Question_1.png",
+                        "/images/Cybersecurity.png",
                     TimeLimitMinutes = 30,
                     IsPublished = true,
                     IsCore = false,
@@ -2237,6 +2239,25 @@ namespace GamificationPlatform.DAL
             SeedRealisticAchievementData(context);
         }
 
+        private static void ClearUploadedImages()
+        {
+            string uploadsPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads",
+                "images");
+
+            if (!Directory.Exists(uploadsPath))
+            {
+                return;
+            }
+
+            foreach (string filePath in Directory.GetFiles(uploadsPath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
         private static void SeedRealisticAchievementData(
             ChallengeDbContext context)
         {
@@ -2275,7 +2296,7 @@ namespace GamificationPlatform.DAL
                     Title = "Accessibility Basics",
                     Description = "Test basic web accessibility knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_2.png",
+                    ImageUrl = "/images/Accessibility.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = false,
@@ -2286,7 +2307,7 @@ namespace GamificationPlatform.DAL
                     Title = "Linux Basics",
                     Description = "Test basic Linux knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_3.png",
+                    ImageUrl = "/images/Linux.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = false,
@@ -2297,7 +2318,7 @@ namespace GamificationPlatform.DAL
                     Title = "Network Basics",
                     Description = "Test basic networking knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_4.png",
+                    ImageUrl = "/images/Network.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = false,
@@ -2308,7 +2329,7 @@ namespace GamificationPlatform.DAL
                     Title = "Cloud Basics",
                     Description = "Test basic cloud knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_5.png",
+                    ImageUrl = "/images/Cloud.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = true,
@@ -2319,7 +2340,7 @@ namespace GamificationPlatform.DAL
                     Title = "API Basics",
                     Description = "Test basic API knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_6.png",
+                    ImageUrl = "/images/API.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = true,
@@ -2330,7 +2351,7 @@ namespace GamificationPlatform.DAL
                     Title = "Testing Basics",
                     Description = "Test basic software testing knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_7.png",
+                    ImageUrl = "/images/Testing.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = true,
@@ -2341,7 +2362,7 @@ namespace GamificationPlatform.DAL
                     Title = "Security Basics",
                     Description = "Test basic application security knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_1.png",
+                    ImageUrl = "/images/Security.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = true,
@@ -2352,7 +2373,7 @@ namespace GamificationPlatform.DAL
                     Title = "Software Architecture",
                     Description = "Test basic software architecture knowledge.",
                     MaxPoints = 10,
-                    ImageUrl = "/images/Question_11.png",
+                    ImageUrl = "/images/Software architecture.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
                     IsCore = true,

@@ -172,6 +172,29 @@ namespace GamificationPlatform.Migrations
                     b.ToTable("ChallengeAttempts");
                 });
 
+            modelBuilder.Entity("GamificationPlatform.Models.DefaultImage", b =>
+                {
+                    b.Property<int>("DefaultImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DefaultImageId");
+
+                    b.ToTable("DefaultImages");
+                });
+
             modelBuilder.Entity("GamificationPlatform.Models.Question", b =>
                 {
                     b.Property<int>("QuestionId")
@@ -339,6 +362,30 @@ namespace GamificationPlatform.Migrations
                     b.ToTable("UserChallenges");
                 });
 
+            modelBuilder.Entity("GamificationPlatform.Models.UserImage", b =>
+                {
+                    b.Property<int>("UserImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UserImageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserImages");
+                });
+
             modelBuilder.Entity("GamificationPlatform.Models.AttemptAnswer", b =>
                 {
                     b.HasOne("GamificationPlatform.Models.ChallengeAttempt", "ChallengeAttempt")
@@ -470,6 +517,17 @@ namespace GamificationPlatform.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GamificationPlatform.Models.UserImage", b =>
+                {
+                    b.HasOne("GamificationPlatform.Models.User", "User")
+                        .WithMany("UserImages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GamificationPlatform.Models.Achievement", b =>
                 {
                     b.Navigation("UserAchievements");
@@ -506,6 +564,8 @@ namespace GamificationPlatform.Migrations
                     b.Navigation("UserAchievements");
 
                     b.Navigation("UserChallenges");
+
+                    b.Navigation("UserImages");
                 });
 
             modelBuilder.Entity("GamificationPlatform.Models.UserChallenge", b =>
