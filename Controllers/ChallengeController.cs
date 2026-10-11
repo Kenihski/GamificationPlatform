@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +57,12 @@ namespace GamificationPlatform.Controllers
                 filter = "All";
             }
 
+            // Show Core challenges first, followed by Community.
+            challenges = challenges
+                .OrderByDescending(c => c.IsCore)
+                .ThenBy(c => c.ChallengeId)
+                .ToList();
+
             foreach (var challenge in challenges)
             {
                 challenge.MaxPoints = challenge.Questions.Sum(q => q.Points);
@@ -104,6 +111,12 @@ namespace GamificationPlatform.Controllers
             {
                 filter = "All";
             }
+
+            // Show Core challenges first, followed by Community.
+            challenges = challenges
+                .OrderByDescending(c => c.IsCore)
+                .ThenBy(c => c.ChallengeId)
+                .ToList();
 
             foreach (var challenge in challenges)
             {
@@ -487,7 +500,8 @@ namespace GamificationPlatform.Controllers
         }
 
         // Loads images for the Challenge Create and Update forms.
-        // Numbered Question images are sorted numerically.
+        // Topic images appear alphabetically first.
+        // Numbered Question images appear last, in numerical order.
         private async Task LoadImagesAsync(int userId)
         {
             ViewBag.MyImages =
@@ -498,15 +512,19 @@ namespace GamificationPlatform.Controllers
 
             ViewData["DefaultImages"] = defaultImages
                 .OrderBy(image =>
-                {
-                    if (image.Name.StartsWith("Question ") &&
-                        int.TryParse(image.Name.Substring(9), out int number))
-                    {
-                        return number;
-                    }
-
-                    return int.MaxValue;
-                })
+                    image.Name.StartsWith(
+                        "Question ",
+                        StringComparison.OrdinalIgnoreCase) &&
+                    int.TryParse(image.Name.Substring(9), out _)
+                        ? 1
+                        : 0)
+                .ThenBy(image =>
+                    image.Name.StartsWith(
+                        "Question ",
+                        StringComparison.OrdinalIgnoreCase) &&
+                    int.TryParse(image.Name.Substring(9), out int number)
+                        ? number
+                        : 0)
                 .ThenBy(image => image.Name)
                 .ToList();
         }

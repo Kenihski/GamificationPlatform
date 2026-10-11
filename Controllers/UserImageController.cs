@@ -1,3 +1,4 @@
+
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
@@ -256,13 +257,31 @@ namespace GamificationPlatform.Controllers
             // Populate filenames for existing images after migration.
             await UpdateMissingDefaultFileNamesAsync();
 
+            var defaultImages = await _context.DefaultImages
+                .ToListAsync();
+
             var viewModel = new ManageImagesViewModel
             {
                 UserImages = await _imageRepository.GetAllImagesAsync(),
 
-                DefaultImages = await _context.DefaultImages
-                    .OrderBy(image => image.Name)
-                    .ToListAsync()
+                // Topic images first, Question images last.
+                DefaultImages = defaultImages
+                    .OrderBy(image =>
+                        image.Name.StartsWith(
+                            "Question ",
+                            StringComparison.OrdinalIgnoreCase) &&
+                        int.TryParse(image.Name.Substring(9), out _)
+                            ? 1
+                            : 0)
+                    .ThenBy(image =>
+                        image.Name.StartsWith(
+                            "Question ",
+                            StringComparison.OrdinalIgnoreCase) &&
+                        int.TryParse(image.Name.Substring(9), out int number)
+                            ? number
+                            : 0)
+                    .ThenBy(image => image.Name)
+                    .ToList()
             };
 
             return View(viewModel);
@@ -487,7 +506,7 @@ namespace GamificationPlatform.Controllers
             return RedirectToAction(nameof(Admin));
         }
 
-        // Registers bundled images once when the default image table is empty.
+        // Registers bundled Question images if the table is empty.
         private async Task RegisterExistingDefaultImagesAsync()
         {
             if (await _context.DefaultImages.AnyAsync())
@@ -497,7 +516,7 @@ namespace GamificationPlatform.Controllers
 
             var defaultImages = new List<DefaultImage>();
 
-            for (int number = 1; number <= 13; number++)
+            for (int number = 1; number <= 7; number++)
             {
                 string fileName = $"Question_{number}.png";
                 string imageUrl = "/images/" + fileName;

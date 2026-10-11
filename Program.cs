@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using GamificationPlatform.Authentication;
@@ -86,34 +87,59 @@ else
     app.UseExceptionHandler("/Home/Error");
 }
 
-// Register bundled default images at application startup.
+// Register default images from wwwroot/images at application startup.
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider
         .GetRequiredService<ChallengeDbContext>();
 
-    if (!await context.DefaultImages.AnyAsync())
+    string imagesPath = Path.Combine(
+        app.Environment.WebRootPath,
+        "images");
+
+    if (Directory.Exists(imagesPath))
     {
+        // Get all PNG images in the default images folder.
+        var imageFiles = Directory.GetFiles(
+            imagesPath,
+            "*.png");
+
+        // Get images already registered in the database.
+        var existingFileNames = await context.DefaultImages
+            .Select(image => image.FileName)
+            .ToListAsync();
+
         var defaultImages = new List<DefaultImage>();
 
-        for (int number = 1; number <= 13; number++)
+        foreach (string imagePath in imageFiles)
         {
-            string fileName = $"Question_{number}.png";
+            string fileName = Path.GetFileName(imagePath);
 
-            string filePath = Path.Combine(
-                app.Environment.WebRootPath,
-                "images",
-                fileName);
-
-            if (File.Exists(filePath))
+            // Skip images already registered.
+            if (existingFileNames.Contains(
+                fileName,
+                StringComparer.OrdinalIgnoreCase))
             {
-                defaultImages.Add(new DefaultImage
-                {
-                    Name = $"Question {number}",
-                    FileName = fileName,
-                    ImageUrl = "/images/" + fileName
-                });
+                continue;
             }
+
+            string imageName =
+                Path.GetFileNameWithoutExtension(fileName);
+
+            // Display bundled question images with readable names.
+            if (imageName.StartsWith(
+                "Question_",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                imageName = imageName.Replace("_", " ");
+            }
+
+            defaultImages.Add(new DefaultImage
+            {
+                Name = imageName,
+                FileName = fileName,
+                ImageUrl = "/images/" + fileName
+            });
         }
 
         if (defaultImages.Count > 0)
