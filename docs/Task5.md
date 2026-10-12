@@ -10,12 +10,13 @@ Validation runs on the server before data is saved. MVC validates data annotatio
 | --- | --- |
 | Challenge title and description | Required; maximum 100 and 500 characters respectively |
 | Challenge time limit | Unlimited (`null`) or 10, 20, 30, 60, 90, or 120 minutes, matching the form dropdown |
-| Challenge image | Required and must identify one of the 13 bundled images |
-| Question title and description | Required; maximum 150 and 500 characters respectively |
+| Challenge image | Optional. If selected, it must identify a registered default image or an uploaded image owned by the user; uploads are checked for supported type, signature, and size |
+| Question title, description, and explanation | Title required (maximum 150 characters); description optional (maximum 500); explanation optional (maximum 1000) |
 | Question points | Between 1 and 100 |
-| Question image | Optional; if supplied, must identify one of the bundled images |
-| Answer options | Between 2 and 4 filled options, at most four submitted fields; maximum 200 characters per filled answer; distinct after trimming and ignoring case |
-| Correct answer | Explicit selection required; must refer to a filled answer field |
+| Question image | Optional. If supplied, it must be a registered default image or an uploaded image owned by the user |
+| Choice answer options | Between 2 and 4 filled options, at most four submitted fields; maximum 200 characters per filled answer; distinct after trimming and ignoring case |
+| Correct answer | Explicit selection required; must refer to a filled answer field; single choice allows exactly one correct answer |
+| Short-answer accepted answers | Between 1 and 4 filled answers, maximum 200 characters each; distinct after trimming and ignoring case |
 | Registration | Username 3–50 characters, email format and maximum length, password length, matching confirmation, and username/password comparison |
 | Username uniqueness | Registration trims the username and checks for an existing account. A SQLite unique index prevents competing registrations from creating duplicates. `NOCASE` treats ASCII case variants such as `Alice` and `alice` as the same username |
 | Login | Required username/password, username length limit, password verification, generic invalid-credentials message |
@@ -84,13 +85,16 @@ An older database created with `EnsureCreated` has no migration history and cann
 
 ## Verification and demonstration
 
-GitHub Actions runs `.github/workflows/build.yml` on pushes to `Salman-branch` and `main`, pull requests to `main`, and manual dispatch. The workflow builds the application in Release configuration to catch compilation failures.
+GitHub Actions runs `.github/workflows/build.yml` on pushes to `Salman-branch` and `main`, pull requests to `main`, and manual dispatch. The workflow builds the application in Release configuration, then runs the xUnit test project with `dotnet test`. A green workflow requires both steps to succeed.
 
-Run the same build locally:
+Run the same build and tests locally:
 
 ```bash
 dotnet build GamificationPlatform.csproj --configuration Release
+dotnet test tests/GamificationPlatform.Tests/GamificationPlatform.Tests.csproj --configuration Release
 ```
+
+The automated suite covers representative challenge and question validation, registration/login model validation, quiz submission rejection, repository save errors, logging, and shared error actions. Direct controller unit tests do not invoke ASP.NET Core's complete request pipeline; authorization attributes, anti-forgery filters, model binding, middleware, and the rendered error pages still need browser or integration checks.
 
 Verify Task 5 behavior manually through the browser and the generated log file. Representative checks include invalid challenge and question forms, duplicate usernames, failed login, access denial, missing anti-forgery tokens, friendly error pages, publishing rules, question-history resets, unanswered quizzes, invalid quiz option and attempt IDs, Exit Challenge, draft-challenge protection, and rejection of stale authentication cookies. Confirm that expected warnings contain a request reference, invalid actions do not change stored data, and logs do not contain submitted credentials.
 

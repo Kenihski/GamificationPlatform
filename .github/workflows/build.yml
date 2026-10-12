@@ -1,4 +1,4 @@
-name: Build
+name: Build and test
 
 on:
   push:
@@ -21,3 +21,5 @@ jobs:
           dotnet-version: '10.0.100'
       - name: Build application
         run: dotnet build GamificationPlatform.csproj --configuration Release
+      - name: Run Task 5 unit tests
+        run: dotnet test tests/GamificationPlatform.Tests/GamificationPlatform.Tests.csproj --configuration Release
