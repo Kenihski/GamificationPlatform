@@ -253,4 +253,111 @@ public class ChallengeControllerTests
 
         return controller;
     }
+
+    [Fact]
+    public async Task Create_WhenInputIsValid_SavesDraftAndRedirectsWithInformationLog()
+    {
+        // Arrange
+        var repository = Substitute.For<IChallengeRepository>();
+        var logger = Substitute.For<ILogger<ChallengeController>>();
+        var achievementService = Substitute.For<IAchievementService>();
+
+        using var context = new ChallengeDbContext(
+            new DbContextOptionsBuilder<ChallengeDbContext>().Options);
+
+        Challenge? savedChallenge = null;
+
+        // Simulate saving and assigning a database-generated ID.
+        repository.CreateChallengeAsync(Arg.Any<Challenge>())
+            .Returns(call =>
+            {
+                savedChallenge = call.Arg<Challenge>();
+                savedChallenge.ChallengeId = 42;
+
+                return Task.FromResult(true);
+            });
+
+        achievementService.CheckAchievementsAsync(7)
+            .Returns(Task.CompletedTask);
+
+        var controller = new ChallengeController(
+            repository,
+            Substitute.For<IAttemptRepository>(),
+            Substitute.For<IUserImageRepository>(),
+            context,
+            Substitute.For<IWebHostEnvironment>(),
+            achievementService,
+            logger);
+
+        var identity = new ClaimsIdentity(
+            new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "7")
+            },
+            authenticationType: "Test");
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(identity)
+            }
+        };
+
+        var submittedChallenge = new Challenge
+        {
+            Title = "A valid challenge",
+            Description = "A valid challenge description.",
+            TimeLimitMinutes = 10,
+            ImageUrl = "",
+
+            // Submitted values must not override server-controlled fields.
+            CreatedByUserId = 99,
+            IsPublished = true,
+            IsCore = true,
+            MaxPoints = 999
+        };
+
+        // Act: an empty image selection is allowed; no upload is supplied.
+        var result = await controller.Create(
+            submittedChallenge,
+            imageUpload: null);
+
+        // Assert: create exactly one challenge with the correct values.
+        await repository.Received(1)
+            .CreateChallengeAsync(Arg.Any<Challenge>());
+
+        Assert.NotNull(savedChallenge);
+
+        Assert.Equal("A valid challenge", savedChallenge.Title);
+        Assert.Equal(
+            "A valid challenge description.",
+            savedChallenge.Description);
+
+        Assert.Equal(10, savedChallenge.TimeLimitMinutes);
+        Assert.Equal(7, savedChallenge.CreatedByUserId);
+        Assert.False(savedChallenge.IsPublished);
+        Assert.False(savedChallenge.IsCore);
+        Assert.Equal(0, savedChallenge.MaxPoints);
+
+        // Redirect to the newly created challenge's details.
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+
+        Assert.Equal("Details", redirect.ActionName);
+        Assert.Equal(42, redirect.RouteValues!["id"]);
+
+        await achievementService.Received(1)
+            .CheckAchievementsAsync(7);
+
+        // Successful creation must produce an information log.
+        var informationLog = Assert.Single(
+            logger.ReceivedCalls(),
+            call =>
+                call.GetMethodInfo().Name == nameof(ILogger.Log) &&
+                Equals(call.GetArguments()[0], LogLevel.Information));
+
+        Assert.Contains(
+            "was created by user",
+            informationLog.GetArguments()[2]?.ToString() ?? "");
+    }
 }
