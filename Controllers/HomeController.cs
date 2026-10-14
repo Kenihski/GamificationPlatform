@@ -1,10 +1,11 @@
-
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Security.Claims;
 
 using GamificationPlatform.DAL;
+using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
 
 namespace GamificationPlatform.Controllers
@@ -14,6 +15,7 @@ namespace GamificationPlatform.Controllers
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<User> _userManager;
         private readonly IAchievementRepository _achievementRepository;
         private readonly ILogger<HomeController> _logger;
 
@@ -21,21 +23,21 @@ namespace GamificationPlatform.Controllers
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
             IUserRepository userRepository,
+            UserManager<User> userManager,
             IAchievementRepository achievementRepository,
             ILogger<HomeController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
             _userRepository = userRepository;
+            _userManager = userManager;
             _achievementRepository = achievementRepository;
             _logger = logger;
         }
 
-
         public async Task<IActionResult> Index()
         {
             var viewModel = new HomeViewModel();
-
 
             // Gets all published challenges.
             var challenges =
@@ -43,7 +45,6 @@ namespace GamificationPlatform.Controllers
                     .GetPublishedChallengesAsync())
                 .OrderBy(c => c.ChallengeId)
                 .ToList();
-
 
             // Selects Challenge of the Day.
             if (challenges.Any())
@@ -68,6 +69,9 @@ namespace GamificationPlatform.Controllers
                     maxPoints;
             }
 
+            // Admins may test quizzes but do not participate in leaderboards.
+            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+            var adminIds = adminUsers.Select(u => u.Id).ToHashSet();
 
             // Core Leaderboard
 
@@ -75,17 +79,16 @@ namespace GamificationPlatform.Controllers
                 await _attemptRepository
                     .GetAllCompletedAttemptsAsync();
 
-
             // Only Core Challenges count.
             // Challenge creators are excluded.
             attempts =
                 attempts
                     .Where(a =>
                         a.UserChallenge.Challenge.IsCore &&
+                            !adminIds.Contains(a.UserChallenge.UserId) &&
                         a.UserChallenge.UserId !=
                         a.UserChallenge.Challenge.CreatedByUserId)
                     .ToList();
-
 
             // Only the first completed attempt
             // per user and Core Challenge counts.
@@ -103,7 +106,6 @@ namespace GamificationPlatform.Controllers
                             .First())
                     .Where(a => a.Score > 0)
                     .ToList();
-
 
             // Calculates normalized total points.
             var coreEntries =
@@ -130,20 +132,18 @@ namespace GamificationPlatform.Controllers
                                     maxPoints * 100;
                             });
 
-
                         TimeSpan totalTime =
                             TimeSpan.FromTicks(
                                 group.Sum(attempt =>
                                     (attempt.CompletedAt!.Value -
                                      attempt.StartedAt).Ticks));
 
-
                         return new TotalLeaderboardEntryViewModel
                         {
                             Username =
                                 group.First()
                                     .UserChallenge
-                                    .User.Username,
+                                    .User.UserName ?? "",
 
                             TotalPoints =
                                 Math.Round(totalPoints, 1),
@@ -160,13 +160,11 @@ namespace GamificationPlatform.Controllers
                     .ThenBy(entry => entry.TotalTime)
                     .ToList();
 
-
             // Dense ranking: equal results share a rank.
             int coreRank = 0;
             double? previousCorePoints = null;
             int? previousChallenges = null;
             TimeSpan? previousCoreTime = null;
-
 
             foreach (var entry in coreEntries)
             {
@@ -185,29 +183,24 @@ namespace GamificationPlatform.Controllers
                 previousCoreTime = entry.TotalTime;
             }
 
-
             viewModel.CoreLeaderboardEntries =
                 coreEntries.Take(3).ToList();
-
 
             // Hall of Fame
 
             var users =
                 (await _userRepository.GetAllUsersAsync())
-                    .Where(u => !u.IsAdmin)
+                    .Where(u => !adminIds.Contains(u.Id))
                     .ToList();
-
 
             var hallOfFameEntries =
                 new List<HallOfFameUserViewModel>();
-
 
             foreach (var user in users)
             {
                 var userAchievements =
                     await _achievementRepository
-                        .GetUserAchievementsAsync(user.UserId);
-
+                        .GetUserAchievementsAsync(user.Id);
 
                 // Only active, non-goal achievements
                 // contribute Achievement Points.
@@ -218,16 +211,14 @@ namespace GamificationPlatform.Controllers
                             !ua.Achievement.IsGoal)
                         .Sum(ua => ua.Achievement.Points);
 
-
                 hallOfFameEntries.Add(
                     new HallOfFameUserViewModel
                     {
-                        UserId = user.UserId,
-                        Username = user.Username,
+                        UserId = user.Id,
+                        Username = user.UserName ?? "",
                         AchievementPoints = achievementPoints
                     });
             }
-
 
             hallOfFameEntries =
                 hallOfFameEntries
@@ -235,11 +226,9 @@ namespace GamificationPlatform.Controllers
                     .ThenBy(u => u.Username)
                     .ToList();
 
-
             // Users with equal AP share a rank.
             int hallRank = 0;
             int? previousAchievementPoints = null;
-
 
             foreach (var entry in hallOfFameEntries)
             {
@@ -256,14 +245,11 @@ namespace GamificationPlatform.Controllers
                     entry.AchievementPoints;
             }
 
-
             viewModel.HallOfFameEntries =
                 hallOfFameEntries.Take(3).ToList();
 
-
             return View(viewModel);
         }
-
 
         [AllowAnonymous]
         [ResponseCache(
@@ -284,7 +270,6 @@ namespace GamificationPlatform.Controllers
                 RequestId = HttpContext.TraceIdentifier
             });
         }
-
 
         [AllowAnonymous]
         [ResponseCache(
@@ -313,7 +298,6 @@ namespace GamificationPlatform.Controllers
                 User.FindFirstValue(ClaimTypes.NameIdentifier)
                     ?? "anonymous");
 
-
             var (title, message) = code switch
             {
                 400 => (
@@ -336,7 +320,6 @@ namespace GamificationPlatform.Controllers
                     "Request failed",
                     "We could not complete your request. Please try again later.")
             };
-
 
             return View("Error", new ErrorViewModel
             {

@@ -1,5 +1,6 @@
 
 @model GamificationPlatform.ViewModels.ChallengeDetailsHistoryViewModel
+
 @using System.Security.Claims
 
 @{
@@ -56,7 +57,7 @@
 
         <p>
             <strong>Created by:</strong>
-            @Model.Challenge.CreatedByUser.Username
+            @Model.Challenge.CreatedByUser.UserName
         </p>
 
         <p>
@@ -147,7 +148,7 @@
         }
         else if (Model.Challenge.IsPublished && hasQuestions)
         {
-            <a asp-controller="User"
+            <a asp-controller="Account"
                asp-action="Login"
                asp-route-returnUrl="@Url.Action(
                     "Details",

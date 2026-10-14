@@ -1,20 +1,13 @@
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-
+using Microsoft.AspNetCore.Mvc;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
 
-using System.Security.Claims;
-
 namespace GamificationPlatform.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
@@ -29,7 +22,6 @@ namespace GamificationPlatform.Controllers
         }
 
         // Shows all users - admin only.
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Table()
         {
             List<User> users =
@@ -39,7 +31,6 @@ namespace GamificationPlatform.Controllers
         }
 
         // Shows details and history for one user - admin only.
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int id)
         {
             var user =
@@ -158,309 +149,6 @@ namespace GamificationPlatform.Controllers
             }
 
             return View(viewModel);
-        }
-
-        // Shows the registration form.
-        [HttpGet]
-        public IActionResult Register(string? returnUrl)
-        {
-            ViewBag.ReturnUrl = returnUrl;
-
-            return View();
-        }
-
-        // Creates a new user.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(
-            RegisterViewModel model,
-            string? returnUrl,
-            bool isModal = false)
-        {
-            ViewBag.ReturnUrl = returnUrl;
-
-            if (ModelState.IsValid)
-            {
-                model.Username = model.Username.Trim();
-                model.Email = model.Email.Trim();
-
-                if (await _userRepository.GetUserByUsernameAsync(model.Username) != null)
-                {
-                    ModelState.AddModelError(
-                        nameof(model.Username),
-                        "This username is already taken.");
-
-                    _logger.LogWarning(
-                        "Registration rejected because the username is already taken.");
-
-                    if (isModal)
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            message = "This username is already taken."
-                        });
-                    }
-
-                    return View(model);
-                }
-
-                var user = new User
-                {
-                    Username = model.Username,
-                    Email = model.Email,
-
-                    // New users are normal users by default.
-                    IsAdmin = false
-                };
-
-                var passwordHasher = new PasswordHasher<User>();
-
-                user.PasswordHash =
-                    passwordHasher.HashPassword(user, model.Password);
-
-                try
-                {
-                    await _userRepository.CreateUserAsync(user);
-                }
-                catch (DbUpdateException ex) when (
-                    ex.InnerException is SqliteException sqlite &&
-                    sqlite.SqliteExtendedErrorCode == 2067 &&
-                    sqlite.Message.Contains(
-                        "Users.Username",
-                        StringComparison.Ordinal))
-                {
-                    // A competing registration may win after the initial check.
-                    ModelState.AddModelError(
-                        nameof(model.Username),
-                        "This username is already taken.");
-
-                    _logger.LogWarning(
-                        "Registration rejected by the unique username constraint.");
-
-                    if (isModal)
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            message = "This username is already taken."
-                        });
-                    }
-
-                    return View(model);
-                }
-
-                _logger.LogInformation(
-                    "User {UserId} registered successfully.",
-                    user.UserId);
-
-                // The popup will open the Login modal.
-                if (isModal)
-                {
-                    return Json(new
-                    {
-                        success = true
-                    });
-                }
-
-                // Sends the ReturnUrl to the login page.
-                return RedirectToAction(
-                    nameof(Login),
-                    new
-                    {
-                        returnUrl = returnUrl
-                    });
-            }
-
-            _logger.LogWarning(
-                "Registration rejected because form validation failed.");
-
-            if (isModal)
-            {
-                var errors = ModelState
-                    .Where(entry => entry.Value?.Errors.Count > 0)
-                    .SelectMany(entry =>
-                        entry.Value!.Errors.Select(error =>
-                            error.ErrorMessage))
-                    .ToList();
-
-                return Json(new
-                {
-                    success = false,
-                    message = string.Join(" ", errors)
-                });
-            }
-
-            return View(model);
-        }
-
-        // Shows the login form.
-        [HttpGet]
-        public IActionResult Login(string? returnUrl)
-        {
-            var model = new LoginViewModel
-            {
-                ReturnUrl = returnUrl
-            };
-
-            return View(model);
-        }
-
-        // Logs the user in.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(
-            LoginViewModel model,
-            bool isModal = false)
-        {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning(
-                    "Login rejected because form validation failed.");
-
-                if (isModal)
-                {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Please enter a valid username and password."
-                    });
-                }
-
-                return View(model);
-            }
-
-            model.Username = model.Username.Trim();
-
-            var user = await _userRepository
-                .GetUserByUsernameAsync(model.Username);
-
-            if (user == null)
-            {
-                _logger.LogWarning(
-                    "Login failed because the credentials were invalid.");
-
-                ModelState.AddModelError(
-                    "",
-                    "Invalid username or password.");
-
-                if (isModal)
-                {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Invalid username or password."
-                    });
-                }
-
-                return View(model);
-            }
-
-            var passwordHasher = new PasswordHasher<User>();
-
-            var result = passwordHasher.VerifyHashedPassword(
-                user,
-                user.PasswordHash,
-                model.Password);
-
-            if (result == PasswordVerificationResult.Failed)
-            {
-                _logger.LogWarning(
-                    "Login failed because the credentials were invalid.");
-
-                ModelState.AddModelError(
-                    "",
-                    "Invalid username or password.");
-
-                if (isModal)
-                {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Invalid username or password."
-                    });
-                }
-
-                return View(model);
-            }
-
-            var claims = new List<Claim>
-            {
-                // Stores the user's ID.
-                new Claim(
-                    ClaimTypes.NameIdentifier,
-                    user.UserId.ToString()),
-
-                // Stores the username.
-                new Claim(
-                    ClaimTypes.Name,
-                    user.Username),
-
-                // Stores the user's role.
-                new Claim(
-                    ClaimTypes.Role,
-                    user.IsAdmin ? "Admin" : "User")
-            };
-
-            var claimsIdentity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
-            var claimsPrincipal =
-                new ClaimsPrincipal(claimsIdentity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                claimsPrincipal);
-
-            _logger.LogInformation(
-                "User {UserId} logged in successfully.",
-                user.UserId);
-
-            // The popup will refresh the current page.
-            if (isModal)
-            {
-                return Json(new
-                {
-                    success = true
-                });
-            }
-
-            // Returns the user to the page
-            // they came from.
-            if (!string.IsNullOrEmpty(model.ReturnUrl) &&
-                Url.IsLocalUrl(model.ReturnUrl))
-            {
-                return LocalRedirect(model.ReturnUrl);
-            }
-
-            // Normal login from the navbar.
-            return RedirectToAction(
-                "Grid",
-                "Challenge");
-        }
-
-        // Logs the user out.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            var userId =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
-            _logger.LogInformation(
-                "User {UserId} logged out successfully.",
-                userId);
-
-            TempData["SuccessMessage"] =
-                "You have been logged out successfully.";
-
-            return RedirectToAction(
-                "Index",
-                "Home");
         }
     }
 }

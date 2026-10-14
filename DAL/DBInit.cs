@@ -17,6 +17,12 @@ namespace GamificationPlatform.DAL
                 serviceScope.ServiceProvider
                     .GetRequiredService<ChallengeDbContext>();
 
+            var userManager = serviceScope.ServiceProvider
+                .GetRequiredService<UserManager<User>>();
+
+            var roleManager = serviceScope.ServiceProvider
+                .GetRequiredService<RoleManager<IdentityRole<int>>>();
+
             var achievementService =
                 serviceScope.ServiceProvider
                     .GetRequiredService<IAchievementService>();
@@ -30,13 +36,12 @@ namespace GamificationPlatform.DAL
 
             try
             {
-                SeedDatabase(context);
+                await SeedDatabaseAsync(context, userManager, roleManager);
 
-                // Check achievements after all dummy data
-                // has been added to the database.
+                // Update achievements for the seeded users.
                 var userIds =
                     await context.Users
-                        .Select(u => u.UserId)
+                        .Select(u => u.Id)
                         .ToListAsync();
 
                 foreach (var userId in userIds)
@@ -58,70 +63,55 @@ namespace GamificationPlatform.DAL
             }
         }
 
-        private static void SeedDatabase(ChallengeDbContext context)
+        private static async Task SeedDatabaseAsync(
+            ChallengeDbContext context,
+            UserManager<User> userManager,
+            RoleManager<IdentityRole<int>> roleManager)
         {
-            // Delete the existing database and create it again.
-            // Useful while testing with dummy data.
+            // Reset the development database.
             context.Database.EnsureDeleted();
             context.Database.Migrate();
-            // Remove uploaded images when resetting the development database.
+            // Remove uploaded images from the previous database.
             ClearUploadedImages();
             // --------------------------------
             // Users
             // --------------------------------
             var users = new List<User>
             {
-                new User
-                {
-                    Username = "admin",
-                    Email = "admin@example.com",
-                    IsAdmin = true
-                },
-                new User
-                {
-                    Username = "Alice",
-                    Email = "alice@example.com",
-                    IsAdmin = false
-                },
-                new User
-                {
-                    Username = "Bob",
-                    Email = "bob@example.com",
-                    IsAdmin = false
-                },
-                new User
-                {
-                    Username = "Charlie",
-                    Email = "charlie@example.com",
-                    IsAdmin = false
-                },
-                new User
-                {
-                    Username = "Emma",
-                    Email = "emma@example.com",
-                    IsAdmin = false
-                },
-                new User
-                {
-                    Username = "David",
-                    Email = "david@example.com",
-                    IsAdmin = false
-                }
+                new User { Id = 1, UserName = "admin", Email = "admin@example.com"},
+                new User { Id = 2, UserName = "Alice", Email = "alice@example.com" },
+                new User { Id = 3, UserName = "Bob", Email = "bob@example.com" },
+                new User { Id = 4, UserName = "Charlie", Email = "charlie@example.com" },
+                new User { Id = 5, UserName = "Emma", Email = "emma@example.com" },
+                new User { Id = 6, UserName = "David", Email = "david@example.com" }
             };
-            // Gives all dummy users the same
-            // password for easier testing.
-            var passwordHasher =
-                new PasswordHasher<User>();
+
+            var roleResult = await roleManager.CreateAsync(
+                new IdentityRole<int>("Admin"));
+
+            if (!roleResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    string.Join("; ", roleResult.Errors.Select(e => e.Description)));
+            }
+
             foreach (var user in users)
             {
-                user.PasswordHash =
-                    passwordHasher.HashPassword(
-                        user,
-                        "Password123!");
+                var result = await userManager.CreateAsync(user, "Password123!");
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        $"Could not create {user.UserName}: " +
+                        string.Join("; ", result.Errors.Select(e => e.Description)));
+                }
             }
-            context.Users.AddRange(users);
-            context.SaveChanges();
 
+            var adminRoleResult = await userManager.AddToRoleAsync(users[0], "Admin");
+            if (!adminRoleResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    string.Join("; ", adminRoleResult.Errors.Select(e => e.Description)));
+            }
 
             // --------------------------------
             // Achievements
@@ -471,7 +461,6 @@ namespace GamificationPlatform.DAL
             // --------------------------------
             var challenges = new List<Challenge>
             {
-                // Alice
                 new Challenge
                 {
                     Title = "HTML Quiz",
@@ -485,7 +474,6 @@ namespace GamificationPlatform.DAL
                     IsCore = true,
                     CreatedByUserId = 1
                 },
-                // Bob
                 new Challenge
                 {
                     Title = "Programming Challenge",
@@ -499,7 +487,6 @@ namespace GamificationPlatform.DAL
                     IsCore = true,
                     CreatedByUserId = 1
                 },
-                // Charlie
                 new Challenge
                 {
                     Title = "Web Development",
@@ -513,7 +500,6 @@ namespace GamificationPlatform.DAL
                     IsCore = true,
                     CreatedByUserId = 1
                 },
-                // Emma
                 new Challenge
                 {
                     Title = "C# Quiz",
@@ -527,7 +513,6 @@ namespace GamificationPlatform.DAL
                     IsCore = true,
                     CreatedByUserId = 1
                 },
-                // David
                 new Challenge
                 {
                     Title = "Database Quiz",
@@ -541,7 +526,6 @@ namespace GamificationPlatform.DAL
                     IsCore = true,
                     CreatedByUserId = 1
                 },
-                // Alice
                 new Challenge
                 {
                     Title = "CSS Challenge",
@@ -555,7 +539,6 @@ namespace GamificationPlatform.DAL
                     IsCore = false,
                     CreatedByUserId = 2
                 },
-                // Bob
                 new Challenge
                 {
                     Title = "ASP.NET Core Quiz",
@@ -584,7 +567,6 @@ namespace GamificationPlatform.DAL
                     IsCore = false,
                     CreatedByUserId = 4
                 },
-                // Bob
                 new Challenge
                 {
                     Title = "Python Quiz",
@@ -598,7 +580,6 @@ namespace GamificationPlatform.DAL
                     IsCore = false,
                     CreatedByUserId = 3
                 },
-                // Emma
                 new Challenge
                 {
                     Title = "SQL Challenge",
@@ -612,7 +593,6 @@ namespace GamificationPlatform.DAL
                     IsCore = false,
                     CreatedByUserId = 5
                 },
-                // David
                 new Challenge
                 {
                     Title = "Git Challenge",
@@ -626,7 +606,6 @@ namespace GamificationPlatform.DAL
                     IsCore = false,
                     CreatedByUserId = 6
                 },
-                // Alice
                 new Challenge
                 {
                     Title = "Cybersecurity Quiz",
@@ -2236,7 +2215,7 @@ namespace GamificationPlatform.DAL
             // Adds realistic activity for achievement testing.
             // Achievements themselves are still unlocked only
             // by AchievementService.
-            SeedRealisticAchievementData(context);
+            await SeedUserActivityAsync(context, userManager);
         }
 
         private static void ClearUploadedImages()
@@ -2258,37 +2237,30 @@ namespace GamificationPlatform.DAL
             }
         }
 
-        private static void SeedRealisticAchievementData(
-            ChallengeDbContext context)
+        private static async Task SeedUserActivityAsync(
+            ChallengeDbContext context,
+            UserManager<User> userManager)
         {
-            // Six extra students make it possible for a creator
-            // to have ten different participants.
             var extraUsers = new List<User>
             {
-                new User { Username = "Freya", Email = "freya@example.com", IsAdmin = false },
-                new User { Username = "George", Email = "george@example.com", IsAdmin = false },
-                new User { Username = "Hannah", Email = "hannah@example.com", IsAdmin = false },
-                new User { Username = "Isaac", Email = "isaac@example.com", IsAdmin = false },
-                new User { Username = "Julia", Email = "julia@example.com", IsAdmin = false },
-                new User { Username = "Kevin", Email = "kevin@example.com", IsAdmin = false }
+                new User { Id = 7, UserName = "Freya", Email = "freya@example.com" },
+                new User { Id = 8, UserName = "George", Email = "george@example.com" },
+                new User { Id = 9, UserName = "Hannah", Email = "hannah@example.com" },
+                new User { Id = 10, UserName = "Isaac", Email = "isaac@example.com" },
+                new User { Id = 11, UserName = "Julia", Email = "julia@example.com" },
+                new User { Id = 12, UserName = "Kevin", Email = "kevin@example.com" }
             };
 
-            var passwordHasher = new PasswordHasher<User>();
             foreach (var user in extraUsers)
             {
-                user.PasswordHash = passwordHasher.HashPassword(
-                    user,
-                    "Password123!");
+                var result = await userManager.CreateAsync(user, "Password123!");
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        $"Could not create {user.UserName}: " +
+                        string.Join("; ", result.Errors.Select(e => e.Description)));
+                }
             }
-
-            context.Users.AddRange(extraUsers);
-            context.SaveChanges();
-
-            // Eight extra challenges give the platform twenty
-            // challenges in total. Alice creates three of them,
-            // giving her five community challenges altogether.
-            // Bob creates three of the remaining challenges so
-            // his creator progress is also earned naturally.
             var extraChallenges = new List<Challenge>
             {
                 new Challenge
@@ -2383,49 +2355,42 @@ namespace GamificationPlatform.DAL
 
             context.Challenges.AddRange(extraChallenges);
             context.SaveChanges();
-
-            // One simple question per extra challenge is enough
-            // to make each challenge fully playable.
-            var extraQuestions = new List<Question>();
-            for (int challengeId = 13; challengeId <= 20; challengeId++)
+            var additionalQuestions = new (string Title, string Correct, string Incorrect1, string Incorrect2)[]
             {
-                extraQuestions.Add(
-                    new Question
-                    {
-                        Title = $"Demo question for challenge {challengeId}",
-                        Description = "Choose the correct answer.",
-                        Points = 10,
-                        QuestionType = "SingleChoice",
-                        ChallengeId = challengeId
-                    });
-            }
+                ("What is the purpose of alternative text on an image?", "To describe the image to assistive technologies", "To increase the image resolution", "To change the image file format"),
+                ("Which Linux command displays the current directory?", "pwd", "mkdir", "touch"),
+                ("Which protocol is used to translate domain names into IP addresses?", "DNS", "FTP", "SSH"),
+                ("What is a key benefit of cloud computing?", "Resources can be scaled according to demand", "Applications no longer need security", "Internet connectivity is never required"),
+                ("Which HTTP method is normally used to retrieve a resource?", "GET", "DELETE", "PATCH"),
+                ("What is the main purpose of a unit test?", "To verify a small part of an application", "To replace all integration tests", "To deploy the application"),
+                ("What is SQL injection?", "Inserting malicious SQL through untrusted input", "Encrypting database backups", "Adding an index to a database table"),
+                ("What is the main purpose of dependency injection?", "To provide dependencies from outside a class", "To store passwords in source code", "To remove the need for interfaces")
+            };
 
-            context.Questions.AddRange(extraQuestions);
-            context.SaveChanges();
-
-            foreach (var question in extraQuestions)
+            for (int i = 0; i < additionalQuestions.Length; i++)
             {
+                var item = additionalQuestions[i];
+                var question = new Question
+                {
+                    Title = item.Title,
+                    Description = "Choose the correct answer.",
+                    Points = 10,
+                    QuestionType = "SingleChoice",
+                    ChallengeId = extraChallenges[i].ChallengeId
+                };
+
+                context.Questions.Add(question);
+                context.SaveChanges();
+
                 context.QuestionOptions.AddRange(
-                    new QuestionOption
-                    {
-                        Text = "Correct answer",
-                        IsCorrect = true,
-                        QuestionId = question.QuestionId
-                    },
-                    new QuestionOption
-                    {
-                        Text = "Wrong answer",
-                        IsCorrect = false,
-                        QuestionId = question.QuestionId
-                    });
+                    new QuestionOption { Text = item.Correct, IsCorrect = true, QuestionId = question.QuestionId },
+                    new QuestionOption { Text = item.Incorrect1, IsCorrect = false, QuestionId = question.QuestionId },
+                    new QuestionOption { Text = item.Incorrect2, IsCorrect = false, QuestionId = question.QuestionId });
             }
 
             context.SaveChanges();
 
             var now = DateTime.Now;
-
-            // Alice completes every challenge. Together with the
-            // five existing completions this gives her twenty.
             var aliceExistingChallengeIds = new HashSet<int> { 1, 2, 3, 4, 5 };
             var aliceNewUserChallenges = new List<UserChallenge>();
 
@@ -2466,10 +2431,6 @@ namespace GamificationPlatform.DAL
 
                 dayOffset--;
             }
-
-            // Alice has five attempts on HTML. Her second attempt
-            // improves on the first and her later attempts show
-            // realistic practice before reaching a perfect score.
             context.ChallengeAttempts.AddRange(
                 new ChallengeAttempt
                 {
@@ -2489,19 +2450,15 @@ namespace GamificationPlatform.DAL
                 });
 
             context.SaveChanges();
-
-            // Ten different students complete Alice's Accessibility
-            // challenge. This satisfies the creator participant
-            // achievements through actual completed attempts.
             var participantIds = new List<int>
             {
                 3, 4, 5, 6,
-                extraUsers[0].UserId,
-                extraUsers[1].UserId,
-                extraUsers[2].UserId,
-                extraUsers[3].UserId,
-                extraUsers[4].UserId,
-                extraUsers[5].UserId
+                extraUsers[0].Id,
+                extraUsers[1].Id,
+                extraUsers[2].Id,
+                extraUsers[3].Id,
+                extraUsers[4].Id,
+                extraUsers[5].Id
             };
 
             int participantNumber = 0;
@@ -2515,9 +2472,6 @@ namespace GamificationPlatform.DAL
 
                 context.UserChallenges.Add(userChallenge);
                 context.SaveChanges();
-
-                // Different scores and times make the leaderboard
-                // look like real activity rather than duplicate rows.
                 int score = participantNumber < 3 ? 10 : 0;
                 context.ChallengeAttempts.Add(
                     new ChallengeAttempt
@@ -2534,10 +2488,6 @@ namespace GamificationPlatform.DAL
             }
 
             context.SaveChanges();
-
-            // Bob has broader activity than the newer students.
-            // He completes ten different challenges and practices
-            // Web Development five times, improving on attempt two.
             foreach (int challengeId in new[] { 2, 5, 8, 19, 20 })
             {
                 var userChallenge = new UserChallenge
@@ -2563,10 +2513,6 @@ namespace GamificationPlatform.DAL
                         CompletedAt = now.AddDays(-12 - challengeId)
                     });
             }
-
-            // Bob already has one Web Development attempt.
-            // Four more bring him to five attempts on the same
-            // challenge and the second attempt is an improvement.
             var bobWeb = context.UserChallenges
                 .First(uc => uc.UserId == 3 && uc.ChallengeId == 3);
 
@@ -2582,10 +2528,6 @@ namespace GamificationPlatform.DAL
                         CompletedAt = now.AddDays(-1).AddHours(-(i + 1))
                     });
             }
-
-            // David completes ten different challenges in total.
-            // This gives him stronger progress than Charlie without
-            // giving him Alice's practice or creator milestones.
             foreach (int challengeId in new[] { 8, 9, 10, 14, 15 })
             {
                 var userChallenge = new UserChallenge
@@ -2611,10 +2553,6 @@ namespace GamificationPlatform.DAL
                         CompletedAt = now.AddDays(-18 - challengeId)
                     });
             }
-
-            // David also completes CSS with a perfect first attempt.
-            // This keeps Emma's strong CSS result believable while
-            // placing her below first place on that leaderboard.
             var davidCss = new UserChallenge
             {
                 UserId = 6,
@@ -2634,9 +2572,6 @@ namespace GamificationPlatform.DAL
                 });
 
             context.SaveChanges();
-
-            // Charlie reaches five completed challenges and earns
-            // a perfect score through normal activity.
             var charlieAccessibility = new UserChallenge
             {
                 UserId = 4,
@@ -2656,15 +2591,12 @@ namespace GamificationPlatform.DAL
                 });
 
             context.SaveChanges();
-
-            // Give the extra students a little additional activity
-            // so the demo database does not look artificial.
             for (int i = 0; i < extraUsers.Count; i++)
             {
                 int challengeId = 14 + (i % 3);
                 var userChallenge = new UserChallenge
                 {
-                    UserId = extraUsers[i].UserId,
+                    UserId = extraUsers[i].Id,
                     ChallengeId = challengeId
                 };
 
@@ -2683,6 +2615,72 @@ namespace GamificationPlatform.DAL
             }
 
             context.SaveChanges();
+            var furtherQuizzes = new (string Title, string Description, string Image,
+                string Question, string Correct, string Incorrect1, string Incorrect2)[]
+            {
+                ("Java Fundamentals", "Explore Java syntax and object-oriented programming.", "/images/Java.png",
+                    "Which keyword is used to inherit a class in Java?", "extends", "implements", "inherits"),
+                ("Python Data Structures", "Practice lists, dictionaries and other Python collections.", "/images/Python.png",
+                    "Which Python collection stores key-value pairs?", "dict", "list", "tuple"),
+                ("SQL Joins", "Learn how to combine data from related database tables.", "/images/SQL.png",
+                    "Which SQL join returns only matching rows from both tables?", "INNER JOIN", "LEFT JOIN", "FULL OUTER JOIN"),
+                ("Git Branching", "Practice working with branches in version control.", "/images/GitHub.png",
+                    "Which Git command creates a new branch without switching to it?", "git branch feature", "git merge feature", "git pull feature"),
+                ("HTTP and REST", "Explore HTTP status codes and REST API conventions.", "/images/API.png",
+                    "Which HTTP status code means a resource was not found?", "404", "200", "201")
+            };
+
+            foreach (var item in furtherQuizzes)
+            {
+                var challenge = new Challenge
+                {
+                    Title = item.Title,
+                    Description = item.Description,
+                    MaxPoints = 10,
+                    ImageUrl = item.Image,
+                    TimeLimitMinutes = 10,
+                    IsPublished = true,
+                    IsCore = false,
+                    CreatedByUserId = 1
+                };
+                context.Challenges.Add(challenge);
+                context.SaveChanges();
+
+                var question = new Question
+                {
+                    Title = item.Question,
+                    Description = "Choose the correct answer.",
+                    Points = 10,
+                    QuestionType = "SingleChoice",
+                    ChallengeId = challenge.ChallengeId
+                };
+                context.Questions.Add(question);
+                context.SaveChanges();
+
+                context.QuestionOptions.AddRange(
+                    new QuestionOption { Text = item.Correct, IsCorrect = true, QuestionId = question.QuestionId },
+                    new QuestionOption { Text = item.Incorrect1, IsCorrect = false, QuestionId = question.QuestionId },
+                    new QuestionOption { Text = item.Incorrect2, IsCorrect = false, QuestionId = question.QuestionId });
+                context.SaveChanges();
+
+                var aliceChallenge = new UserChallenge
+                {
+                    UserId = 2,
+                    ChallengeId = challenge.ChallengeId
+                };
+                context.UserChallenges.Add(aliceChallenge);
+                context.SaveChanges();
+
+                context.ChallengeAttempts.Add(new ChallengeAttempt
+                {
+                    UserChallengeId = aliceChallenge.UserChallengeId,
+                    Score = 10,
+                    Completed = true,
+                    StartedAt = now.AddDays(-(40 + Array.IndexOf(furtherQuizzes, item) + 1)).AddMinutes(-5),
+                    CompletedAt = now.AddDays(-(40 + Array.IndexOf(furtherQuizzes, item) + 1))
+                });
+                context.SaveChanges();
+            }
         }
 
         private static AttemptAnswer CreateAttemptAnswer(

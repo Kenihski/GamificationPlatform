@@ -1029,7 +1029,7 @@ namespace GamificationPlatform.Controllers
                 id,
                 userId);
 
-            return RedirectToAction(nameof(Table));
+            return RedirectToAction(nameof(MyChallenges));
         }
     }
 }

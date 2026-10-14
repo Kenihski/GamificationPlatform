@@ -1,45 +1,36 @@
-
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Identity;
 namespace GamificationPlatform.Services
 {
     public class AchievementService : IAchievementService
     {
         private readonly IAchievementRepository _achievementRepository;
         private readonly ChallengeDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<AchievementService> _logger;
-
         public AchievementService(
             IAchievementRepository achievementRepository,
             ChallengeDbContext context,
+            UserManager<User> userManager,
             ILogger<AchievementService> logger)
         {
             _achievementRepository = achievementRepository;
             _context = context;
+            _userManager = userManager;
             _logger = logger;
         }
-
         public async Task CheckAchievementsAsync(int userId)
         {
-            // Admins do not participate in the
-            // achievement system or Hall of Fame.
-            var user =
-                await _context.Users
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(u =>
-                        u.UserId == userId);
-
-            if (user == null || user.IsAdmin)
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null || await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 return;
             }
-
             var achievements =
                 (await _achievementRepository.GetActiveAsync())
-                .ToList();
-
+                    .ToList();
             // Check regular achievements first.
             foreach (var achievement in achievements.Where(a => !a.IsGoal))
             {
@@ -49,50 +40,40 @@ namespace GamificationPlatform.Services
                 {
                     continue;
                 }
-
                 bool unlocked = achievement.Type switch
                 {
                     "ChallengesCompleted" =>
                         await CheckChallengesCompletedAsync(
                             userId,
                             achievement.RequirementValue),
-
                     "ScorePercentage" =>
                         await CheckScorePercentageAsync(
                             userId,
                             achievement.RequirementValue),
-
                     "SecondAttemptImprovement" =>
                         await CheckSecondAttemptImprovementAsync(userId),
-
                     "SameChallengeAttempts" =>
                         await CheckSameChallengeAttemptsAsync(
                             userId,
                             achievement.RequirementValue),
-
                     "ChallengesCreated" =>
                         await CheckChallengesCreatedAsync(
                             userId,
                             achievement.RequirementValue),
-
                     "CreatorUniqueParticipants" =>
                         await CheckCreatorUniqueParticipantsAsync(
                             userId,
                             achievement.RequirementValue),
-
                     "ChallengeLeaderboardPosition" =>
                         await CheckChallengeLeaderboardPositionAsync(
                             userId,
                             achievement.RequirementValue),
-
                     "CoreLeaderboardPosition" =>
                         await CheckCoreLeaderboardPositionAsync(
                             userId,
                             achievement.RequirementValue),
-
                     _ => false
                 };
-
                 if (unlocked)
                 {
                     await UnlockAchievementAsync(
@@ -100,11 +81,9 @@ namespace GamificationPlatform.Services
                         achievement);
                 }
             }
-
             // Save regular achievements before checking goals,
             // because milestone goals depend on the user's AP.
             await _achievementRepository.SaveChangesAsync();
-
             // Check milestone goals after the AP has been updated.
             foreach (var achievement in achievements.Where(a => a.IsGoal))
             {
@@ -114,12 +93,10 @@ namespace GamificationPlatform.Services
                 {
                     continue;
                 }
-
                 bool unlocked =
                     await CheckMilestoneAsync(
                         userId,
                         achievement.RequirementValue);
-
                 if (unlocked)
                 {
                     await UnlockAchievementAsync(
@@ -127,10 +104,8 @@ namespace GamificationPlatform.Services
                         achievement);
                 }
             }
-
             await _achievementRepository.SaveChangesAsync();
         }
-
         private async Task<bool> CheckChallengesCompletedAsync(
             int userId,
             int requiredCount)
@@ -144,10 +119,8 @@ namespace GamificationPlatform.Services
                     .Select(a => a.UserChallenge.ChallengeId)
                     .Distinct()
                     .CountAsync();
-
             return completedChallenges >= requiredCount;
         }
-
         private async Task<bool> CheckScorePercentageAsync(
             int userId,
             int requiredPercentage)
@@ -161,7 +134,6 @@ namespace GamificationPlatform.Services
                     .Select(a => new
                     {
                         a.Score,
-
                         // The maximum score is calculated
                         // from the questions in the challenge.
                         MaxPoints =
@@ -169,13 +141,11 @@ namespace GamificationPlatform.Services
                                 .Sum(q => q.Points)
                     })
                     .ToListAsync();
-
             return attempts.Any(a =>
                 a.MaxPoints > 0 &&
                 (double)a.Score / a.MaxPoints * 100
                     >= requiredPercentage);
         }
-
         private async Task<bool>
             CheckSecondAttemptImprovementAsync(int userId)
         {
@@ -193,24 +163,19 @@ namespace GamificationPlatform.Services
                         a.Score
                     })
                     .ToListAsync();
-
             var challengeGroups =
                 attempts.GroupBy(a => a.ChallengeId);
-
             foreach (var group in challengeGroups)
             {
                 var firstTwo = group.Take(2).ToList();
-
                 if (firstTwo.Count == 2 &&
                     firstTwo[1].Score > firstTwo[0].Score)
                 {
                     return true;
                 }
             }
-
             return false;
         }
-
         private async Task<bool> CheckSameChallengeAttemptsAsync(
             int userId,
             int requiredCount)
@@ -227,16 +192,13 @@ namespace GamificationPlatform.Services
                         a.UserChallenge.ChallengeId)
                     .Select(group => group.Count())
                     .ToListAsync();
-
             // Find the challenge with the most attempts.
             int highestAttemptCount =
                 attemptCounts.Count > 0
                     ? attemptCounts.Max()
                     : 0;
-
             return highestAttemptCount >= requiredCount;
         }
-
         private async Task<bool> CheckChallengesCreatedAsync(
             int userId,
             int requiredCount)
@@ -245,10 +207,8 @@ namespace GamificationPlatform.Services
                 await _context.Challenges
                     .CountAsync(c =>
                         c.CreatedByUserId == userId);
-
             return createdChallenges >= requiredCount;
         }
-
         private async Task<bool>
             CheckCreatorUniqueParticipantsAsync(
                 int userId,
@@ -264,10 +224,8 @@ namespace GamificationPlatform.Services
                     .Select(a => a.UserChallenge.UserId)
                     .Distinct()
                     .CountAsync();
-
             return uniqueParticipants >= requiredCount;
         }
-
         private async Task<bool>
             CheckChallengeLeaderboardPositionAsync(
                 int userId,
@@ -284,26 +242,22 @@ namespace GamificationPlatform.Services
                         a.UserChallenge.ChallengeId)
                     .Distinct()
                     .ToListAsync();
-
             foreach (var challengeId in challengeIds)
             {
                 var challenge =
                     await _context.Challenges
                         .FirstOrDefaultAsync(c =>
                             c.ChallengeId == challengeId);
-
                 if (challenge == null)
                 {
                     continue;
                 }
-
                 // The challenge creator is excluded
                 // from their own leaderboard.
                 if (challenge.CreatedByUserId == userId)
                 {
                     continue;
                 }
-
                 var attempts =
                     await _context.ChallengeAttempts
                         .Where(a =>
@@ -313,7 +267,6 @@ namespace GamificationPlatform.Services
                             a.UserChallenge.UserId !=
                                 challenge.CreatedByUserId)
                         .ToListAsync();
-
                 // Only the first completed attempt
                 // from each user can count.
                 var firstAttempts =
@@ -335,17 +288,14 @@ namespace GamificationPlatform.Services
                             a.CompletedAt!.Value -
                             a.StartedAt)
                         .ToList();
-
                 int rank = 0;
                 int? previousScore = null;
                 TimeSpan? previousTime = null;
-
                 foreach (var attempt in firstAttempts)
                 {
                     TimeSpan timeUsed =
                         attempt.CompletedAt!.Value -
                         attempt.StartedAt;
-
                     // Dense ranking:
                     // equal score and time share the same rank.
                     if (previousScore == null ||
@@ -354,7 +304,6 @@ namespace GamificationPlatform.Services
                     {
                         rank++;
                     }
-
                     // A better position also satisfies
                     // lower leaderboard achievements.
                     if (attempt.UserChallenge.UserId == userId &&
@@ -362,18 +311,14 @@ namespace GamificationPlatform.Services
                     {
                         return true;
                     }
-
                     previousScore =
                         attempt.Score;
-
                     previousTime =
                         timeUsed;
                 }
             }
-
             return false;
         }
-
         private async Task<bool>
             CheckCoreLeaderboardPositionAsync(
                 int userId,
@@ -385,16 +330,14 @@ namespace GamificationPlatform.Services
                         a.Completed &&
                         a.UserChallenge.Challenge.IsCore)
                     .ToListAsync();
-
             // The challenge creator is excluded
             // from their own challenge.
             attempts =
                 attempts
                     .Where(a =>
                         a.UserChallenge.UserId !=
-                        a.UserChallenge.Challenge.CreatedByUserId)
+                            a.UserChallenge.Challenge.CreatedByUserId)
                     .ToList();
-
             // Only the first completed attempt
             // from each user on each Core Challenge can count.
             var firstAttempts =
@@ -414,7 +357,6 @@ namespace GamificationPlatform.Services
                     .Where(a =>
                         a.Score > 0)
                     .ToList();
-
             var entries =
                 firstAttempts
                     .GroupBy(a =>
@@ -429,34 +371,27 @@ namespace GamificationPlatform.Services
                                         .Challenge
                                         .Questions
                                         .Sum(q => q.Points);
-
                                 if (maxPoints <= 0)
                                 {
                                     return 0;
                                 }
-
                                 return
                                     (double)attempt.Score /
                                     maxPoints * 100;
                             });
-
                         TimeSpan totalTime =
                             TimeSpan.FromTicks(
                                 group.Sum(attempt =>
                                     (attempt.CompletedAt!.Value -
                                      attempt.StartedAt).Ticks));
-
                         return new
                         {
                             UserId =
                                 group.Key,
-
                             TotalPoints =
                                 Math.Round(totalPoints, 1),
-
                             CoreChallengesCompleted =
                                 group.Count(),
-
                             TotalTime =
                                 totalTime
                         };
@@ -468,12 +403,10 @@ namespace GamificationPlatform.Services
                     .ThenBy(entry =>
                         entry.TotalTime)
                     .ToList();
-
             int rank = 0;
             double? previousPoints = null;
             int? previousChallenges = null;
             TimeSpan? previousTime = null;
-
             foreach (var entry in entries)
             {
                 // Dense ranking:
@@ -486,7 +419,6 @@ namespace GamificationPlatform.Services
                 {
                     rank++;
                 }
-
                 // A better position also satisfies
                 // lower leaderboard achievements.
                 if (entry.UserId == userId &&
@@ -494,20 +426,15 @@ namespace GamificationPlatform.Services
                 {
                     return true;
                 }
-
                 previousPoints =
                     entry.TotalPoints;
-
                 previousChallenges =
                     entry.CoreChallengesCompleted;
-
                 previousTime =
                     entry.TotalTime;
             }
-
             return false;
         }
-
         private async Task<bool> CheckMilestoneAsync(
             int userId,
             int requiredPercentage)
@@ -519,12 +446,10 @@ namespace GamificationPlatform.Services
                         a.IsActive &&
                         !a.IsGoal)
                     .SumAsync(a => a.Points);
-
             if (maxPoints <= 0)
             {
                 return false;
             }
-
             // Calculate the AP from achievements
             // the user has already unlocked.
             int userPoints =
@@ -535,14 +460,11 @@ namespace GamificationPlatform.Services
                         !ua.Achievement.IsGoal)
                     .SumAsync(ua =>
                         ua.Achievement.Points);
-
             double percentage =
                 (double)userPoints /
                 maxPoints * 100;
-
             return percentage >= requiredPercentage;
         }
-
         private async Task UnlockAchievementAsync(
             int userId,
             Achievement achievement)
@@ -553,10 +475,8 @@ namespace GamificationPlatform.Services
                 AchievementId = achievement.AchievementId,
                 UnlockedAt = DateTime.Now
             };
-
             await _achievementRepository
                 .AddUserAchievementAsync(userAchievement);
-
             _logger.LogInformation(
                 "User {UserId} unlocked achievement {AchievementName}.",
                 userId,

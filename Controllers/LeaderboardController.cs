@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 
 using GamificationPlatform.DAL;
+using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
 
 namespace GamificationPlatform.Controllers
@@ -9,15 +11,17 @@ namespace GamificationPlatform.Controllers
     {
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly UserManager<User> _userManager;
 
         public LeaderboardController(
             IChallengeRepository challengeRepository,
-            IAttemptRepository attemptRepository)
+            IAttemptRepository attemptRepository,
+            UserManager<User> userManager)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
+            _userManager = userManager;
         }
-
 
         // Shows the leaderboard for a challenge.
         [HttpGet]
@@ -35,13 +39,25 @@ namespace GamificationPlatform.Controllers
             int maxPoints =
                 challenge.Questions.Sum(q => q.Points);
 
-
             // Gets all completed attempts
             // for this challenge.
             var attempts =
                 await _attemptRepository
                     .GetCompletedAttemptsForChallengeAsync(id);
 
+            // Exclude admins from the leaderboard.
+            var adminUsers =
+                await _userManager.GetUsersInRoleAsync("Admin");
+
+            var adminIds = adminUsers
+                .Select(user => user.Id)
+                .ToHashSet();
+
+            attempts =
+                attempts
+                    .Where(a =>
+                        !adminIds.Contains(a.UserChallenge.UserId))
+                    .ToList();
 
             // The challenge creator is excluded
             // from their own leaderboard.
@@ -51,7 +67,6 @@ namespace GamificationPlatform.Controllers
                         a.UserChallenge.UserId !=
                         challenge.CreatedByUserId)
                     .ToList();
-
 
             // Only the first completed attempt
             // from each user can count.
@@ -68,7 +83,6 @@ namespace GamificationPlatform.Controllers
                             .First())
                     .ToList();
 
-
             // Users with zero points on their first attempt
             // are not shown on the leaderboard.
             firstAttempts =
@@ -82,7 +96,6 @@ namespace GamificationPlatform.Controllers
                         a.StartedAt)
                     .ToList();
 
-
             var viewModel =
                 new LeaderboardViewModel
                 {
@@ -90,18 +103,15 @@ namespace GamificationPlatform.Controllers
                     MaxPoints = maxPoints
                 };
 
-
             int rank = 0;
             int? previousScore = null;
             TimeSpan? previousTime = null;
-
 
             foreach (var attempt in firstAttempts)
             {
                 TimeSpan timeUsed =
                     attempt.CompletedAt!.Value -
                     attempt.StartedAt;
-
 
                 // Dense ranking:
                 // equal score and time share the same rank.
@@ -112,7 +122,6 @@ namespace GamificationPlatform.Controllers
                     rank++;
                 }
 
-
                 viewModel.Entries.Add(
                     new LeaderboardEntryViewModel
                     {
@@ -120,7 +129,7 @@ namespace GamificationPlatform.Controllers
 
                         Username =
                             attempt.UserChallenge
-                                .User.Username,
+                                .User.UserName ?? "",
 
                         Score =
                             attempt.Score,
@@ -132,7 +141,6 @@ namespace GamificationPlatform.Controllers
                             attempt.CompletedAt
                     });
 
-
                 previousScore =
                     attempt.Score;
 
@@ -140,10 +148,8 @@ namespace GamificationPlatform.Controllers
                     timeUsed;
             }
 
-
             return View(viewModel);
         }
-
 
         // Shows the total leaderboard
         // based only on Core Challenges.
@@ -154,6 +160,19 @@ namespace GamificationPlatform.Controllers
                 await _attemptRepository
                     .GetAllCompletedAttemptsAsync();
 
+            // Exclude admins from the leaderboard.
+            var adminUsers =
+                await _userManager.GetUsersInRoleAsync("Admin");
+
+            var adminIds = adminUsers
+                .Select(user => user.Id)
+                .ToHashSet();
+
+            attempts =
+                attempts
+                    .Where(a =>
+                        !adminIds.Contains(a.UserChallenge.UserId))
+                    .ToList();
 
             // Only Core Challenges count.
             attempts =
@@ -161,7 +180,6 @@ namespace GamificationPlatform.Controllers
                     .Where(a =>
                         a.UserChallenge.Challenge.IsCore)
                     .ToList();
-
 
             // The challenge creator is excluded
             // from their own challenge.
@@ -171,7 +189,6 @@ namespace GamificationPlatform.Controllers
                         a.UserChallenge.UserId !=
                         a.UserChallenge.Challenge.CreatedByUserId)
                     .ToList();
-
 
             // Only the first completed attempt
             // from each user on each Core Challenge can count.
@@ -191,7 +208,6 @@ namespace GamificationPlatform.Controllers
                             .First())
                     .ToList();
 
-
             // A zero score on the first attempt
             // does not contribute to the leaderboard.
             firstAttempts =
@@ -199,7 +215,6 @@ namespace GamificationPlatform.Controllers
                     .Where(a =>
                         a.Score > 0)
                     .ToList();
-
 
             var entries =
                 firstAttempts
@@ -226,20 +241,18 @@ namespace GamificationPlatform.Controllers
                                     maxPoints * 100;
                             });
 
-
                         TimeSpan totalTime =
                             TimeSpan.FromTicks(
                                 group.Sum(attempt =>
                                     (attempt.CompletedAt!.Value -
                                      attempt.StartedAt).Ticks));
 
-
                         return new TotalLeaderboardEntryViewModel
                         {
                             Username =
                                 group.First()
                                     .UserChallenge
-                                    .User.Username,
+                                    .User.UserName ?? "",
 
                             TotalPoints =
                                 Math.Round(totalPoints, 1),
@@ -259,14 +272,12 @@ namespace GamificationPlatform.Controllers
                         entry.TotalTime)
                     .ToList();
 
-
             // Dense ranking:
             // completely equal results share the same rank.
             int rank = 0;
             double? previousPoints = null;
             int? previousChallenges = null;
             TimeSpan? previousTime = null;
-
 
             foreach (var entry in entries)
             {
@@ -278,10 +289,8 @@ namespace GamificationPlatform.Controllers
                     rank++;
                 }
 
-
                 entry.Rank =
                     rank;
-
 
                 previousPoints =
                     entry.TotalPoints;
@@ -293,13 +302,11 @@ namespace GamificationPlatform.Controllers
                     entry.TotalTime;
             }
 
-
             var viewModel =
                 new TotalLeaderboardViewModel
                 {
                     Entries = entries
                 };
-
 
             return View(viewModel);
         }

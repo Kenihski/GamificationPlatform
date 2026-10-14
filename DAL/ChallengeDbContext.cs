@@ -1,10 +1,13 @@
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.DAL
 {
-    public class ChallengeDbContext : DbContext
+    public class ChallengeDbContext
+        : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public ChallengeDbContext(
             DbContextOptions<ChallengeDbContext> options)
@@ -19,8 +22,6 @@ namespace GamificationPlatform.DAL
         public DbSet<QuestionOption> QuestionOptions { get; set; }
 
         public DbSet<QuestionAcceptedAnswer> QuestionAcceptedAnswers { get; set; }
-
-        public DbSet<User> Users { get; set; }
 
         public DbSet<UserChallenge> UserChallenges { get; set; }
 
@@ -47,15 +48,14 @@ namespace GamificationPlatform.DAL
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
         {
-            // SQLite NOCASE makes username lookup and uniqueness consistent
+            // Configure ASP.NET Core Identity tables and relationships.
+            base.OnModelCreating(modelBuilder);
+
+            // SQLite NOCASE makes username lookup consistent
             // for ASCII case variants such as Alice and alice.
             modelBuilder.Entity<User>()
-                .Property(u => u.Username)
+                .Property(u => u.UserName)
                 .UseCollation("NOCASE");
-
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Username)
-                .IsUnique();
 
             // One user can create many challenges.
             modelBuilder.Entity<Challenge>()
@@ -96,9 +96,7 @@ namespace GamificationPlatform.DAL
                 .HasOne(ua => ua.Achievement)
                 .WithMany(a => a.UserAchievements)
                 .HasForeignKey(ua => ua.AchievementId)
-                .OnDelete(DeleteBehavior.Restrict == DeleteBehavior.Cascade
-                    ? DeleteBehavior.Restrict
-                    : DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -1,6 +1,6 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
@@ -14,6 +14,7 @@ namespace GamificationPlatform.Controllers
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<User> _userManager;
         private readonly IAchievementService _achievementService;
         private readonly ILogger<QuizController> _logger;
 
@@ -21,12 +22,14 @@ namespace GamificationPlatform.Controllers
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
             IUserRepository userRepository,
+            UserManager<User> userManager,
             IAchievementService achievementService,
             ILogger<QuizController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
             _userRepository = userRepository;
+            _userManager = userManager;
             _achievementService = achievementService;
             _logger = logger;
         }
@@ -669,10 +672,15 @@ namespace GamificationPlatform.Controllers
             // for all normal users.
             var users = await _userRepository.GetAllUsersAsync();
 
-            foreach (var user in users.Where(u => !u.IsAdmin))
+            foreach (var user in users)
             {
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    continue;
+                }
+
                 await _achievementService
-                    .CheckAchievementsAsync(user.UserId);
+                    .CheckAchievementsAsync(user.Id);
             }
 
             _logger.LogInformation(
