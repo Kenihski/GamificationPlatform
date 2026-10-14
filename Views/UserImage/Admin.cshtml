@@ -1,3 +1,4 @@
+
 @model GamificationPlatform.ViewModels.ManageImagesViewModel
 
 @{
@@ -118,7 +119,7 @@
                                     </div>
 
                                     <div class="fw-semibold mb-3">
-                                        @(image.User?.Username ?? $"User #{image.UserId}")
+                                        @(image.User?.UserName ?? $"User #{image.UserId}")
                                     </div>
 
                                     <hr class="dropdown-divider" />

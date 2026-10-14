@@ -1,4 +1,6 @@
+
 @model IEnumerable<GamificationPlatform.Models.User>
+@inject Microsoft.AspNetCore.Identity.UserManager<GamificationPlatform.Models.User> UserManager
 
 <div class="container">
     <table class="table table-striped">
@@ -14,19 +16,18 @@
         </thead>
 
         <tbody>
-
             @foreach (var user in Model)
             {
                 <tr>
                     <td>
-                        @user.UserId
+                        @user.Id
                     </td>
 
                     <td>
                         <a asp-controller="User"
                            asp-action="Details"
-                           asp-route-id="@user.UserId">
-                            @user.Username
+                           asp-route-id="@user.Id">
+                            @user.UserName
                         </a>
                     </td>
 
@@ -35,7 +36,7 @@
                     </td>
 
                     <td>
-                        @if (user.IsAdmin)
+                        @if (await UserManager.IsInRoleAsync(user, "Admin"))
                         {
                             <span class="badge bg-danger">
                                 Admin
@@ -54,7 +55,6 @@
                     </td>
                 </tr>
             }
-
         </tbody>
     </table>
 </div>

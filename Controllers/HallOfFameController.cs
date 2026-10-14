@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
@@ -9,15 +10,18 @@ namespace GamificationPlatform.Controllers
     public class HallOfFameController : Controller
     {
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<User> _userManager;
         private readonly IAchievementRepository _achievementRepository;
         private readonly ILogger<HallOfFameController> _logger;
 
         public HallOfFameController(
             IUserRepository userRepository,
+            UserManager<User> userManager,
             IAchievementRepository achievementRepository,
             ILogger<HallOfFameController> logger)
         {
             _userRepository = userRepository;
+            _userManager = userManager;
             _achievementRepository = achievementRepository;
             _logger = logger;
         }
@@ -26,10 +30,16 @@ namespace GamificationPlatform.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var users =
-                (await _userRepository.GetAllUsersAsync())
-                .Where(u => !u.IsAdmin)
-                .ToList();
+            var allUsers = await _userRepository.GetAllUsersAsync();
+            var users = new List<User>();
+
+            foreach (var user in allUsers)
+            {
+                if (!await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    users.Add(user);
+                }
+            }
 
             var activeAchievements =
                 (await _achievementRepository.GetActiveAsync())
@@ -48,7 +58,7 @@ namespace GamificationPlatform.Controllers
             {
                 var userAchievements =
                     (await _achievementRepository
-                        .GetUserAchievementsAsync(user.UserId))
+                        .GetUserAchievementsAsync(user.Id))
                     .Where(ua => ua.Achievement.IsActive)
                     .ToList();
 
@@ -65,22 +75,19 @@ namespace GamificationPlatform.Controllers
                 hallOfFameUsers.Add(
                     new HallOfFameUserViewModel
                     {
-                        UserId = user.UserId,
-                        Username = user.Username,
+                        UserId = user.Id,
+                        Username = user.UserName ?? "",
                         MilestoneName = milestone.Name,
                         MilestoneIcon = milestone.Icon,
-                        AchievementCount =
-                            userAchievements.Count,
-                        AchievementPoints =
-                            achievementPoints
+                        AchievementCount = userAchievements.Count,
+                        AchievementPoints = achievementPoints
                     });
             }
 
             // Users with the most AP are shown first.
             hallOfFameUsers =
                 hallOfFameUsers
-                    .OrderByDescending(
-                        u => u.AchievementPoints)
+                    .OrderByDescending(u => u.AchievementPoints)
                     .ThenBy(u => u.Username)
                     .ToList();
 
@@ -97,19 +104,15 @@ namespace GamificationPlatform.Controllers
                 }
 
                 user.Rank = rank;
-
-                previousPoints =
-                    user.AchievementPoints;
+                previousPoints = user.AchievementPoints;
             }
 
-            var viewModel =
-                new HallOfFameViewModel
-                {
-                    Users = hallOfFameUsers
-                };
+            var viewModel = new HallOfFameViewModel
+            {
+                Users = hallOfFameUsers
+            };
 
-            _logger.LogInformation(
-                "Hall of Fame viewed.");
+            _logger.LogInformation("Hall of Fame viewed.");
 
             return View(viewModel);
         }
@@ -127,7 +130,7 @@ namespace GamificationPlatform.Controllers
             }
 
             // Admins do not participate in achievements.
-            if (user.IsAdmin)
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 return NotFound();
             }
@@ -142,7 +145,7 @@ namespace GamificationPlatform.Controllers
 
             var userAchievements =
                 (await _achievementRepository
-                    .GetUserAchievementsAsync(user.UserId))
+                    .GetUserAchievementsAsync(user.Id))
                 .Where(ua => ua.Achievement.IsActive)
                 .ToList();
 
@@ -158,42 +161,33 @@ namespace GamificationPlatform.Controllers
                     .Where(a => !a.IsGoal)
                     .Sum(a => a.Points);
 
-            var viewModel =
-                new AchievementsViewModel
-                {
-                    Username = user.Username,
-                    TotalPoints = totalPoints,
-                    MaxPoints = maxPoints,
-                    UnlockedCount = userAchievements.Count,
-                    TotalAchievements = achievements.Count
-                };
+            var viewModel = new AchievementsViewModel
+            {
+                Username = user.UserName ?? "",
+                TotalPoints = totalPoints,
+                MaxPoints = maxPoints,
+                UnlockedCount = userAchievements.Count,
+                TotalAchievements = achievements.Count
+            };
 
             // Creates one row for every published achievement.
             foreach (var achievement in achievements)
             {
                 var unlocked =
                     userAchievements.FirstOrDefault(
-                        ua =>
-                            ua.AchievementId ==
-                            achievement.AchievementId);
+                        ua => ua.AchievementId ==
+                              achievement.AchievementId);
 
                 viewModel.Achievements.Add(
                     new AchievementItemViewModel
                     {
-                        AchievementId =
-                            achievement.AchievementId,
-                        Name =
-                            achievement.Name,
-                        Description =
-                            achievement.Description,
-                        Points =
-                            achievement.Points,
-                        IsGoal =
-                            achievement.IsGoal,
-                        IsUnlocked =
-                            unlocked != null,
-                        UnlockedAt =
-                            unlocked?.UnlockedAt
+                        AchievementId = achievement.AchievementId,
+                        Name = achievement.Name,
+                        Description = achievement.Description,
+                        Points = achievement.Points,
+                        IsGoal = achievement.IsGoal,
+                        IsUnlocked = unlocked != null,
+                        UnlockedAt = unlocked?.UnlockedAt
                     });
             }
 
@@ -201,7 +195,7 @@ namespace GamificationPlatform.Controllers
 
             _logger.LogInformation(
                 "Public achievements viewed for user {UserId}.",
-                user.UserId);
+                user.Id);
 
             return View(
                 "~/Views/Achievement/Index.cshtml",
@@ -221,19 +215,13 @@ namespace GamificationPlatform.Controllers
             return achievement.Type switch
             {
                 "ChallengesCompleted" => 1,
-
                 "ScorePercentage" => 2,
-
                 "SecondAttemptImprovement" => 3,
                 "SameChallengeAttempts" => 3,
-
                 "ChallengesCreated" => 4,
                 "CreatorUniqueParticipants" => 4,
-
                 "ChallengeLeaderboardPosition" => 5,
-
                 "CoreLeaderboardPosition" => 6,
-
                 _ => 99
             };
         }
@@ -245,61 +233,40 @@ namespace GamificationPlatform.Controllers
         {
             if (maxPoints <= 0)
             {
-                return (
-                    "Getting Started",
-                    "🌱");
+                return ("Getting Started", "🌱");
             }
 
-            int bronze =
-                (int)Math.Ceiling(maxPoints * 0.20);
-
-            int silver =
-                (int)Math.Ceiling(maxPoints * 0.40);
-
-            int gold =
-                (int)Math.Ceiling(maxPoints * 0.60);
-
-            int diamond =
-                (int)Math.Ceiling(maxPoints * 0.80);
+            int bronze = (int)Math.Ceiling(maxPoints * 0.20);
+            int silver = (int)Math.Ceiling(maxPoints * 0.40);
+            int gold = (int)Math.Ceiling(maxPoints * 0.60);
+            int diamond = (int)Math.Ceiling(maxPoints * 0.80);
 
             if (totalPoints >= maxPoints)
             {
-                return (
-                    "Legend",
-                    "👑");
+                return ("Legend", "👑");
             }
 
             if (totalPoints >= diamond)
             {
-                return (
-                    "Diamond",
-                    "💎");
+                return ("Diamond", "💎");
             }
 
             if (totalPoints >= gold)
             {
-                return (
-                    "Gold",
-                    "🥇");
+                return ("Gold", "🥇");
             }
 
             if (totalPoints >= silver)
             {
-                return (
-                    "Silver",
-                    "🥈");
+                return ("Silver", "🥈");
             }
 
             if (totalPoints >= bronze)
             {
-                return (
-                    "Bronze",
-                    "🥉");
+                return ("Bronze", "🥉");
             }
 
-            return (
-                "Getting Started",
-                "🌱");
+            return ("Getting Started", "🌱");
         }
 
         // Calculates the milestone and progress
@@ -307,64 +274,36 @@ namespace GamificationPlatform.Controllers
         private static void SetMilestone(
             AchievementsViewModel viewModel)
         {
-            int maxPoints =
-                viewModel.MaxPoints;
-
-            int totalPoints =
-                viewModel.TotalPoints;
+            int maxPoints = viewModel.MaxPoints;
+            int totalPoints = viewModel.TotalPoints;
 
             if (maxPoints <= 0)
             {
-                viewModel.MilestoneName =
-                    "Getting Started";
-
-                viewModel.MilestoneIcon =
-                    "🌱";
-
+                viewModel.MilestoneName = "Getting Started";
+                viewModel.MilestoneIcon = "🌱";
                 viewModel.MilestoneMessage =
                     "Every expert has to start somewhere.";
-
                 viewModel.ProgressPercent = 0;
                 viewModel.CurrentMilestonePoints = 0;
                 viewModel.NextMilestonePoints = 0;
-
                 return;
             }
 
-            int bronze =
-                (int)Math.Ceiling(maxPoints * 0.20);
-
-            int silver =
-                (int)Math.Ceiling(maxPoints * 0.40);
-
-            int gold =
-                (int)Math.Ceiling(maxPoints * 0.60);
-
-            int diamond =
-                (int)Math.Ceiling(maxPoints * 0.80);
-
-            int legend =
-                maxPoints;
+            int bronze = (int)Math.Ceiling(maxPoints * 0.20);
+            int silver = (int)Math.Ceiling(maxPoints * 0.40);
+            int gold = (int)Math.Ceiling(maxPoints * 0.60);
+            int diamond = (int)Math.Ceiling(maxPoints * 0.80);
+            int legend = maxPoints;
 
             if (totalPoints >= legend)
             {
-                viewModel.MilestoneName =
-                    "Legend";
-
-                viewModel.MilestoneIcon =
-                    "👑";
-
+                viewModel.MilestoneName = "Legend";
+                viewModel.MilestoneIcon = "👑";
                 viewModel.MilestoneMessage =
                     "Congratulations! You have officially achieved maximum knowledge. There is clearly nothing left to learn.";
-
-                viewModel.CurrentMilestonePoints =
-                    legend;
-
-                viewModel.NextMilestonePoints =
-                    legend;
-
+                viewModel.CurrentMilestonePoints = legend;
+                viewModel.NextMilestonePoints = legend;
                 viewModel.ProgressPercent = 100;
-
                 return;
             }
 
@@ -377,7 +316,6 @@ namespace GamificationPlatform.Controllers
                     "Maximum knowledge is dangerously close. Science is concerned.",
                     diamond,
                     legend);
-
                 return;
             }
 
@@ -390,7 +328,6 @@ namespace GamificationPlatform.Controllers
                     "Impressive. People might start asking you for help now.",
                     gold,
                     diamond);
-
                 return;
             }
 
@@ -403,7 +340,6 @@ namespace GamificationPlatform.Controllers
                     "Things are getting serious. You might actually know what you're doing.",
                     silver,
                     gold);
-
                 return;
             }
 
@@ -416,7 +352,6 @@ namespace GamificationPlatform.Controllers
                     "Not bad. You definitely know more than when you started.",
                     bronze,
                     silver);
-
                 return;
             }
 
@@ -438,27 +373,15 @@ namespace GamificationPlatform.Controllers
             int currentMilestone,
             int nextMilestone)
         {
-            viewModel.MilestoneName =
-                name;
+            viewModel.MilestoneName = name;
+            viewModel.MilestoneIcon = icon;
+            viewModel.MilestoneMessage = message;
+            viewModel.CurrentMilestonePoints = currentMilestone;
+            viewModel.NextMilestonePoints = nextMilestone;
 
-            viewModel.MilestoneIcon =
-                icon;
-
-            viewModel.MilestoneMessage =
-                message;
-
-            viewModel.CurrentMilestonePoints =
-                currentMilestone;
-
-            viewModel.NextMilestonePoints =
-                nextMilestone;
-
-            int milestoneSize =
-                nextMilestone - currentMilestone;
-
+            int milestoneSize = nextMilestone - currentMilestone;
             int pointsInMilestone =
-                viewModel.TotalPoints -
-                currentMilestone;
+                viewModel.TotalPoints - currentMilestone;
 
             if (milestoneSize <= 0)
             {
@@ -467,14 +390,10 @@ namespace GamificationPlatform.Controllers
             }
 
             double progress =
-                (double)pointsInMilestone /
-                milestoneSize * 100;
+                (double)pointsInMilestone / milestoneSize * 100;
 
             viewModel.ProgressPercent =
-                Math.Clamp(
-                    (int)Math.Round(progress),
-                    0,
-                    100);
+                Math.Clamp((int)Math.Round(progress), 0, 100);
         }
     }
 }

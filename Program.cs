@@ -1,7 +1,6 @@
 
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using GamificationPlatform.Authentication;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.Services;
@@ -32,22 +31,40 @@ builder.Host.UseSerilog((context, configuration) =>
 
 builder.Services.AddControllersWithViews();
 
-// Cookie authentication
-builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/User/Login";
-
-        // Reject cookies for users removed after the cookie was issued.
-        options.EventsType = typeof(ValidateUserCookieEvents);
-    });
-
 builder.Services.AddDbContext<ChallengeDbContext>(options =>
 {
     options.UseSqlite(
         builder.Configuration[
             "ConnectionStrings:ChallengeDbContextConnection"]);
+});
+
+// Configure ASP.NET Core Identity.
+builder.Services
+    .AddIdentity<User, IdentityRole<int>>(options =>
+    {
+        // Password requirements.
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 6;
+
+        // User settings.
+        options.User.RequireUniqueEmail = true;
+
+        // Lockout settings.
+        options.Lockout.DefaultLockoutTimeSpan =
+            TimeSpan.FromMinutes(5);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+    })
+    .AddEntityFrameworkStores<ChallengeDbContext>()
+    .AddDefaultTokenProviders();
+
+// Configure Identity authentication cookies.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
 // Register repositories for dependency injection.
@@ -60,8 +77,6 @@ builder.Services.AddScoped<IUserImageRepository, UserImageRepository>();
 
 // Register services for business logic.
 builder.Services.AddScoped<IAchievementService, AchievementService>();
-
-builder.Services.AddScoped<ValidateUserCookieEvents>();
 
 var app = builder.Build();
 
@@ -174,7 +189,7 @@ app.UseStatusCodePagesWithReExecute(
     "/Home/ErrorStatus",
     "?code={0}");
 
-app.MapStaticAssets(); // Enable static assets from wwwroot (images, JS, CSS)
+app.MapStaticAssets();
 app.UseStaticFiles();
 
 app.UseRouting();

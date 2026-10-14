@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,7 +65,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <form asp-controller="User"
+                            <form asp-controller="Account"
                                   asp-action="Logout"
                                   method="post">
 
@@ -76,7 +77,7 @@
                             </form>
                         </li>
                     }
-                    else if (!(ViewContext.RouteData.Values["controller"]?.ToString() == "User" &&
+                    else if (!(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" &&
                                (ViewContext.RouteData.Values["action"]?.ToString() == "Login" ||
                                 ViewContext.RouteData.Values["action"]?.ToString() == "Register")))
                     {
@@ -296,7 +297,7 @@
                     <div class="modal-body">
 
                         <form id="modalLoginForm"
-                              asp-controller="User"
+                              asp-controller="Account"
                               asp-action="Login"
                               method="post">
 
@@ -311,7 +312,7 @@
                             <div class="mb-3">
                                 <label for="modalLoginUsername"
                                        class="form-label">
-                                    Username
+                                    Username or email
                                 </label>
 
                                 <input id="modalLoginUsername"
@@ -385,7 +386,7 @@
                     <div class="modal-body">
 
                         <form id="modalRegisterForm"
-                              asp-controller="User"
+                              asp-controller="Account"
                               asp-action="Register"
                               method="post">
 

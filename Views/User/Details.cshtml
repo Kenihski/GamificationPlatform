@@ -1,11 +1,13 @@
+
 @model GamificationPlatform.ViewModels.UserDetailsViewModel
+@inject Microsoft.AspNetCore.Identity.UserManager<GamificationPlatform.Models.User> UserManager
 
 @{
     ViewData["Title"] = "User Details";
 }
 
 <h2 class="my-4">
-    @Model.User.Username
+    @Model.User.UserName
 </h2>
 
 @if (TempData["SuccessMessage"] != null)
@@ -33,7 +35,7 @@
     <p>
         <strong>Role:</strong>
 
-        @if (Model.User.IsAdmin)
+        @if (await UserManager.IsInRoleAsync(Model.User, "Admin"))
         {
             <span class="badge bg-danger">
                 Admin
@@ -47,7 +49,6 @@
         }
     </p>
 </div>
-
 
 <h3 class="mt-4">Created Challenges</h3>
 
@@ -72,7 +73,6 @@ else
         </thead>
 
         <tbody>
-
             @foreach (var challenge in Model.CreatedChallenges)
             {
                 <tr>
@@ -141,7 +141,6 @@ else
                                         class="btn btn-sm btn-success">
                                     Publish
                                 </button>
-
                             </form>
                         }
                         else
@@ -160,17 +159,14 @@ else
                                         class="btn btn-sm btn-dark">
                                     Unpublish
                                 </button>
-
                             </form>
                         }
                     </td>
                 </tr>
             }
-
         </tbody>
     </table>
 }
-
 
 <h3 class="mt-5">Challenge History</h3>
 
@@ -201,7 +197,6 @@ else
             </thead>
 
             <tbody>
-
                 @foreach (var attempt in challenge.Attempts)
                 {
                     <tr>
@@ -253,19 +248,16 @@ else
                         </td>
                     </tr>
                 }
-
             </tbody>
         </table>
     }
 }
-
 
 <a asp-controller="User"
    asp-action="Table"
    class="btn btn-secondary mt-3">
     Back to Users
 </a>
-
 
 @section Scripts
 {

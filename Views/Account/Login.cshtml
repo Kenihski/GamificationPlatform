@@ -1,3 +1,4 @@
+
 @model GamificationPlatform.ViewModels.LoginViewModel
 
 <h2>Login</h2>
@@ -5,7 +6,7 @@
 @if (!string.IsNullOrEmpty(Model?.ReturnUrl))
 {
     <div class="alert alert-info">
-        You must be logged in to take a challenge.
+        You must be logged in to access this page.
     </div>
 }
 
@@ -24,7 +25,7 @@
     }
 }
 
-<form asp-controller="User"
+<form asp-controller="Account"
       asp-action="Login"
       method="post">
 
@@ -34,7 +35,7 @@
     <div class="mb-3">
         <label asp-for="Username"
                class="form-label">
-            Username
+            Username or email
         </label>
 
         <input asp-for="Username"
@@ -65,7 +66,7 @@
     <p class="mt-3">
         Don't have an account?
 
-        <a asp-controller="User"
+        <a asp-controller="Account"
            asp-action="Register"
            asp-route-returnUrl="@Model?.ReturnUrl">
             Register here

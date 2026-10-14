@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -15,17 +16,20 @@ namespace GamificationPlatform.Controllers
         private readonly IAchievementRepository _achievementRepository;
         private readonly IUserRepository _userRepository;
         private readonly IAchievementService _achievementService;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<AchievementController> _logger;
 
         public AchievementController(
             IAchievementRepository achievementRepository,
             IUserRepository userRepository,
             IAchievementService achievementService,
+            UserManager<User> userManager,
             ILogger<AchievementController> logger)
         {
             _achievementRepository = achievementRepository;
             _userRepository = userRepository;
             _achievementService = achievementService;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -36,7 +40,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -47,18 +50,17 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (user.IsAdmin)
+            if (User.IsInRole("Admin"))
             {
                 return await AdminIndex();
             }
 
-            return await UserIndex(userId, user.Username);
+            return await UserIndex(userId, user.UserName ?? "");
         }
 
         // Builds the personal achievement page for a normal user.
@@ -66,6 +68,7 @@ namespace GamificationPlatform.Controllers
             int userId,
             string username)
         {
+
             // Only published achievements are shown to users.
             // Achievements are grouped by type and requirement.
             var achievements =
@@ -74,7 +77,6 @@ namespace GamificationPlatform.Controllers
                 .ThenBy(a => a.RequirementValue)
                 .ThenBy(a => a.AchievementId)
                 .ToList();
-
             var userAchievements =
                 (await _achievementRepository
                     .GetUserAchievementsAsync(userId))
@@ -92,7 +94,6 @@ namespace GamificationPlatform.Controllers
                 achievements
                     .Where(a => !a.IsGoal)
                     .Sum(a => a.Points);
-
             var viewModel =
                 new AchievementsViewModel
                 {
@@ -111,7 +112,6 @@ namespace GamificationPlatform.Controllers
                         ua =>
                             ua.AchievementId ==
                             achievement.AchievementId);
-
                 viewModel.Achievements.Add(
                     new AchievementItemViewModel
                     {
@@ -126,19 +126,17 @@ namespace GamificationPlatform.Controllers
                         UnlockedAt = unlocked?.UnlockedAt
                     });
             }
-
             SetMilestone(viewModel);
-
             _logger.LogInformation(
                 "Achievements page viewed by user {UserId}.",
                 userId);
-
             return View("Index", viewModel);
         }
 
         // Shows all achievements to admins.
         private async Task<IActionResult> AdminIndex()
         {
+
             // Achievements are grouped by type and requirement.
             var achievements =
                 (await _achievementRepository.GetAllAsync())
@@ -146,7 +144,6 @@ namespace GamificationPlatform.Controllers
                 .ThenBy(a => a.RequirementValue)
                 .ThenBy(a => a.AchievementId)
                 .ToList();
-
             var viewModel =
                 achievements.Select(
                     achievement =>
@@ -167,10 +164,8 @@ namespace GamificationPlatform.Controllers
                                 achievement.IsGoal
                         })
                     .ToList();
-
             _logger.LogInformation(
                 "Achievement management page viewed by admin.");
-
             return View("AdminIndex", viewModel);
         }
 
@@ -180,7 +175,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -191,13 +185,12 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
@@ -208,7 +201,6 @@ namespace GamificationPlatform.Controllers
                     IsActive = true,
                     Points = 5
                 };
-
             return View(viewModel);
         }
 
@@ -220,7 +212,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -231,13 +222,12 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
@@ -254,7 +244,6 @@ namespace GamificationPlatform.Controllers
                 "ChallengeLeaderboardPosition",
                 "CoreLeaderboardPosition"
             };
-
             if (!validTypes.Contains(viewModel.Type))
             {
                 ModelState.AddModelError(
@@ -270,7 +259,6 @@ namespace GamificationPlatform.Controllers
                 15,
                 20
             };
-
             if (!validPoints.Contains(viewModel.Points))
             {
                 ModelState.AddModelError(
@@ -299,7 +287,6 @@ namespace GamificationPlatform.Controllers
             {
                 return View(viewModel);
             }
-
             var achievement =
                 new Achievement
                 {
@@ -314,7 +301,6 @@ namespace GamificationPlatform.Controllers
                     // Admin-created achievements are always regular.
                     IsGoal = false
                 };
-
             await _achievementRepository.AddAsync(achievement);
             await _achievementRepository.SaveChangesAsync();
 
@@ -324,12 +310,10 @@ namespace GamificationPlatform.Controllers
             {
                 await CheckAchievementsForAllUsersAsync();
             }
-
             _logger.LogInformation(
                 "Achievement {AchievementName} created by admin {UserId}.",
                 achievement.Name,
                 userId);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -339,7 +323,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -350,20 +333,17 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
-
             var achievement =
                 await _achievementRepository.GetByIdAsync(id);
-
             if (achievement == null)
             {
                 return NotFound();
@@ -396,7 +376,6 @@ namespace GamificationPlatform.Controllers
                     IsGoal =
                         achievement.IsGoal
                 };
-
             return View(viewModel);
         }
 
@@ -408,7 +387,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -419,21 +397,18 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
-
             var achievement =
                 await _achievementRepository.GetByIdAsync(
                     viewModel.AchievementId);
-
             if (achievement == null)
             {
                 return NotFound();
@@ -445,7 +420,6 @@ namespace GamificationPlatform.Controllers
                 return BadRequest(
                     "System goals cannot be edited.");
             }
-
             var validTypes = new[]
             {
                 "ChallengesCompleted",
@@ -457,14 +431,12 @@ namespace GamificationPlatform.Controllers
                 "ChallengeLeaderboardPosition",
                 "CoreLeaderboardPosition"
             };
-
             if (!validTypes.Contains(viewModel.Type))
             {
                 ModelState.AddModelError(
                     nameof(viewModel.Type),
                     "Invalid achievement type.");
             }
-
             var validPoints = new[]
             {
                 5,
@@ -472,7 +444,6 @@ namespace GamificationPlatform.Controllers
                 15,
                 20
             };
-
             if (!validPoints.Contains(viewModel.Points))
             {
                 ModelState.AddModelError(
@@ -490,35 +461,28 @@ namespace GamificationPlatform.Controllers
 
             if (!ModelState.IsValid)
             {
+
                 // Keep database values for properties
                 // that are not editable in the form.
                 viewModel.IsActive =
                     achievement.IsActive;
-
                 viewModel.IsGoal =
                     achievement.IsGoal;
-
                 return View(viewModel);
             }
-
             achievement.Name =
                 viewModel.Name;
-
             achievement.Description =
                 viewModel.Description;
-
             achievement.Points =
                 viewModel.Points;
-
             achievement.Type =
                 viewModel.Type;
-
             achievement.RequirementValue =
                 viewModel.RequirementValue;
 
             // Publishing is handled separately.
             // Edit does not change IsActive or IsGoal.
-
             _achievementRepository.Update(achievement);
             await _achievementRepository.SaveChangesAsync();
 
@@ -528,12 +492,10 @@ namespace GamificationPlatform.Controllers
             {
                 await CheckAchievementsForAllUsersAsync();
             }
-
             _logger.LogInformation(
                 "Achievement {AchievementId} edited by admin {UserId}.",
                 achievement.AchievementId,
                 userId);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -543,7 +505,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -554,20 +515,17 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
-
             var achievement =
                 await _achievementRepository.GetByIdAsync(id);
-
             if (achievement == null)
             {
                 return NotFound();
@@ -600,7 +558,6 @@ namespace GamificationPlatform.Controllers
                     IsGoal =
                         achievement.IsGoal
                 };
-
             return View(viewModel);
         }
 
@@ -611,7 +568,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -622,20 +578,17 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
-
             var achievement =
                 await _achievementRepository.GetByIdAsync(id);
-
             if (achievement == null)
             {
                 return NotFound();
@@ -647,15 +600,12 @@ namespace GamificationPlatform.Controllers
                 return BadRequest(
                     "System goals cannot be deleted.");
             }
-
             _achievementRepository.Delete(achievement);
             await _achievementRepository.SaveChangesAsync();
-
             _logger.LogInformation(
                 "Achievement {AchievementId} deleted by admin {UserId}.",
                 achievement.AchievementId,
                 userId);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -666,7 +616,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -677,20 +626,17 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
-
             var achievement =
                 await _achievementRepository.GetByIdAsync(id);
-
             if (achievement == null)
             {
                 return NotFound();
@@ -702,21 +648,17 @@ namespace GamificationPlatform.Controllers
                 return BadRequest(
                     "System goals cannot be changed.");
             }
-
             achievement.IsActive = true;
-
             _achievementRepository.Update(achievement);
             await _achievementRepository.SaveChangesAsync();
 
             // Existing normal users are checked when
             // an achievement becomes available.
             await CheckAchievementsForAllUsersAsync();
-
             _logger.LogInformation(
                 "Achievement {AchievementId} published by admin {UserId}.",
                 id,
                 userId);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -727,7 +669,6 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (userIdString == null)
             {
                 return Unauthorized();
@@ -738,20 +679,17 @@ namespace GamificationPlatform.Controllers
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            if (!user.IsAdmin)
+            if (!User.IsInRole("Admin"))
             {
                 return Forbid();
             }
-
             var achievement =
                 await _achievementRepository.GetByIdAsync(id);
-
             if (achievement == null)
             {
                 return NotFound();
@@ -763,17 +701,13 @@ namespace GamificationPlatform.Controllers
                 return BadRequest(
                     "System goals cannot be changed.");
             }
-
             achievement.IsActive = false;
-
             _achievementRepository.Update(achievement);
             await _achievementRepository.SaveChangesAsync();
-
             _logger.LogInformation(
                 "Achievement {AchievementId} unpublished by admin {UserId}.",
                 id,
                 userId);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -782,17 +716,16 @@ namespace GamificationPlatform.Controllers
         {
             var users =
                 await _userRepository.GetAllUsersAsync();
-
             foreach (var user in users)
             {
+
                 // Admins do not participate in achievements.
-                if (user.IsAdmin)
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
                 {
                     continue;
                 }
-
                 await _achievementService.CheckAchievementsAsync(
-                    user.UserId);
+                    user.Id);
             }
         }
 
@@ -800,28 +733,22 @@ namespace GamificationPlatform.Controllers
         private static int GetAchievementCategoryOrder(
             Achievement achievement)
         {
+
             // Milestone goals are always shown last.
             if (achievement.IsGoal)
             {
                 return 7;
             }
-
             return achievement.Type switch
             {
                 "ChallengesCompleted" => 1,
-
                 "ScorePercentage" => 2,
-
                 "SecondAttemptImprovement" => 3,
                 "SameChallengeAttempts" => 3,
-
                 "ChallengesCreated" => 4,
                 "CreatorUniqueParticipants" => 4,
-
                 "ChallengeLeaderboardPosition" => 5,
-
                 "CoreLeaderboardPosition" => 6,
-
                 _ => 99
             };
         }
@@ -833,7 +760,6 @@ namespace GamificationPlatform.Controllers
         {
             int maxPoints =
                 viewModel.MaxPoints;
-
             int totalPoints =
                 viewModel.TotalPoints;
 
@@ -842,54 +768,38 @@ namespace GamificationPlatform.Controllers
             {
                 viewModel.MilestoneName =
                     "Getting Started";
-
                 viewModel.MilestoneIcon =
                     "🌱";
-
                 viewModel.MilestoneMessage =
                     "Every expert has to start somewhere.";
-
                 viewModel.ProgressPercent = 0;
                 viewModel.CurrentMilestonePoints = 0;
                 viewModel.NextMilestonePoints = 0;
-
                 return;
             }
-
             int bronze =
                 (int)Math.Ceiling(maxPoints * 0.20);
-
             int silver =
                 (int)Math.Ceiling(maxPoints * 0.40);
-
             int gold =
                 (int)Math.Ceiling(maxPoints * 0.60);
-
             int diamond =
                 (int)Math.Ceiling(maxPoints * 0.80);
-
             int legend =
                 maxPoints;
-
             if (totalPoints >= legend)
             {
                 viewModel.MilestoneName =
                     "Legend";
-
                 viewModel.MilestoneIcon =
                     "👑";
-
                 viewModel.MilestoneMessage =
                     "Congratulations! You have officially achieved maximum knowledge. There is clearly nothing left to learn.";
-
                 viewModel.CurrentMilestonePoints =
                     legend;
-
                 viewModel.NextMilestonePoints =
                     legend;
-
                 viewModel.ProgressPercent = 100;
-
                 return;
             }
 
@@ -902,7 +812,6 @@ namespace GamificationPlatform.Controllers
                     "Maximum knowledge is dangerously close. Science is concerned.",
                     diamond,
                     legend);
-
                 return;
             }
 
@@ -915,7 +824,6 @@ namespace GamificationPlatform.Controllers
                     "Impressive. People might start asking you for help now.",
                     gold,
                     diamond);
-
                 return;
             }
 
@@ -928,7 +836,6 @@ namespace GamificationPlatform.Controllers
                     "Things are getting serious. You might actually know what you're doing.",
                     silver,
                     gold);
-
                 return;
             }
 
@@ -941,10 +848,8 @@ namespace GamificationPlatform.Controllers
                     "Not bad. You definitely know more than when you started.",
                     bronze,
                     silver);
-
                 return;
             }
-
             SetMilestoneValues(
                 viewModel,
                 "Getting Started",
@@ -965,36 +870,27 @@ namespace GamificationPlatform.Controllers
         {
             viewModel.MilestoneName =
                 name;
-
             viewModel.MilestoneIcon =
                 icon;
-
             viewModel.MilestoneMessage =
                 message;
-
             viewModel.CurrentMilestonePoints =
                 currentMilestone;
-
             viewModel.NextMilestonePoints =
                 nextMilestone;
-
             int milestoneSize =
                 nextMilestone - currentMilestone;
-
             int pointsInMilestone =
                 viewModel.TotalPoints -
                 currentMilestone;
-
             if (milestoneSize <= 0)
             {
                 viewModel.ProgressPercent = 100;
                 return;
             }
-
             double progress =
                 (double)pointsInMilestone /
                 milestoneSize * 100;
-
             viewModel.ProgressPercent =
                 Math.Clamp(
                     (int)Math.Round(progress),
