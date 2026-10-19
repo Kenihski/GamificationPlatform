@@ -281,12 +281,13 @@
     </div>
 
     <button type="submit"
-            class="btn btn-primary">
+            class="btn btn-outline-warning">
         Save Changes
     </button>
 
-    <a asp-action="MyChallenges"
-       class="btn btn-secondary">
+    <a asp-controller="Challenge"
+       asp-action="MyChallenges"
+       class="btn btn-outline-primary">
         Cancel
     </a>
 

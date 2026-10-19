@@ -1,8 +1,9 @@
+
 @model GamificationPlatform.Models.Question
 
 <h2>Delete Question</h2>
 
-<div class="alert alert-warning mt-4">
+<div class="alert question-delete-warning mt-4">
     <p class="mb-2">
         <strong>Warning:</strong>
         Deleting this question will reset all previous attempts
@@ -137,14 +138,14 @@
       method="post">
 
     <button type="submit"
-            class="btn btn-danger">
+            class="btn btn-outline-danger">
         Delete Question
     </button>
 
     <a asp-controller="Challenge"
        asp-action="Details"
        asp-route-id="@Model.ChallengeId"
-       class="btn btn-secondary">
+       class="btn btn-outline-primary">
         Cancel
     </a>
 </form>

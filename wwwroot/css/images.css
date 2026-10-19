@@ -1,0 +1,114 @@
+
+/* Challenge image selection */
+.image-selection-hidden {
+    display: none;
+}
+
+.image-preview {
+    display: none;
+    width: 300px;
+    height: 180px;
+    object-fit: contain;
+}
+
+/* Image management dropdowns */
+.image-options-dropdown {
+    z-index: 2;
+}
+
+.image-options-menu {
+    min-width: 240px;
+}
+
+/* Image management dropdown - readable labels and filenames */
+.image-options-menu {
+    background: #192344;
+    border: 1px solid #7185c3;
+    color: #edf1ff;
+}
+
+.image-options-menu label,
+.image-options-menu .form-label {
+    color: #edf1ff;
+}
+
+.image-options-menu .text-muted,
+.image-options-menu small {
+    color: #b8c8e8 !important;
+}
+
+.image-options-menu .form-control {
+    background-color: #253154;
+    border-color: #7185c3;
+    color: #ffffff;
+}
+
+/* Image management - dropdown stacking */
+.image-options-dropdown {
+    position: relative;
+    z-index: 2;
+}
+
+.image-options-dropdown:has(.image-options-menu.show) {
+    z-index: 1050;
+}
+
+.image-options-menu {
+    position: absolute;
+    z-index: 1055;
+    min-width: 240px;
+}
+
+/* Image management - tabs and empty states */
+.nav-tabs {
+    border-bottom-color: #53649b;
+}
+
+.nav-tabs .nav-link {
+    color: #b8c8e8;
+    background: transparent;
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #fff;
+    border-color: #53649b;
+}
+
+.nav-tabs .nav-link.active {
+    color: #fff;
+    background: #253154;
+    border-color: #53649b #53649b #253154;
+}
+
+.tab-content .alert-light,
+.tab-content .bg-light {
+    background: #192344 !important;
+    color: #edf1ff !important;
+    border: 1px solid #53649b;
+}
+
+.tab-content .text-muted {
+    color: #b8c8e8 !important;
+}
+
+/* Image Management - dark three-dot menu buttons */
+.image-options-dropdown > .btn,
+.image-options-dropdown > .dropdown-toggle {
+    background: #192344;
+    color: #ffffff;
+    border: 1px solid #7769c9;
+    box-shadow: none;
+}
+
+.image-options-dropdown > .btn:hover,
+.image-options-dropdown > .btn:focus,
+.image-options-dropdown > .dropdown-toggle:hover,
+.image-options-dropdown > .dropdown-toggle:focus,
+.image-options-dropdown > .btn.show,
+.image-options-dropdown > .dropdown-toggle.show {
+    background: #303b70;
+    color: #ffffff;
+    border-color: #a58dff;
+    box-shadow: 0 0 0 0.15rem rgba(132, 111, 230, 0.2);
+}

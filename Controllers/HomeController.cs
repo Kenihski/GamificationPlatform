@@ -290,6 +290,14 @@ namespace GamificationPlatform.Controllers
             return View(viewModel);
         }
 
+        // Displays information about the platform and project.
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult About()
+        {
+            return View();
+        }
+
         [AllowAnonymous]
         [ResponseCache(
             Duration = 0,

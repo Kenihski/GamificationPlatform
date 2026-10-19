@@ -1,0 +1,79 @@
+/* User role badges */
+.user-role-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border: 1px solid;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.user-role-admin {
+    color: #ff9da8;
+    background: rgba(220, 53, 69, 0.15);
+    border-color: rgba(220, 53, 69, 0.5);
+}
+
+.user-role-member {
+    color: #b9ccff;
+    background: rgba(112, 137, 217, 0.15);
+    border-color: rgba(112, 137, 217, 0.5);
+}
+
+
+/* User challenge history */
+
+.user-challenge-history {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-history-card {
+    padding: 24px;
+    background: #121a36;
+    border: 1px solid #50649d;
+    border-radius: 16px;
+}
+
+.user-history-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.user-history-card-header h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f5f7ff;
+}
+
+.user-history-attempt-count {
+    padding: 5px 12px;
+    color: #b9c9f5;
+    background: #1c2748;
+    border: 1px solid #3b4b77;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.user-history-card .table {
+    margin-bottom: 0;
+}
+
+@media (max-width: 576px) {
+    .user-history-card {
+        padding: 16px;
+    }
+}

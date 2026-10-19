@@ -32,8 +32,7 @@
 
     <section class="challenge-details-overview" aria-labelledby="challengeDetailsTitle">
         <div class="challenge-details-image">
-            <img src="@Model.Challenge.ImageUrl"
-                 alt="@Model.Challenge.Title" />
+            <img src="@Model.Challenge.ImageUrl" alt="@Model.Challenge.Title" />
         </div>
 
         <div class="challenge-details-content">
@@ -46,6 +45,7 @@
                 {
                     <span class="featured-badge featured-badge-community">COMMUNITY CHALLENGE</span>
                 }
+
                 @if (!Model.Challenge.IsPublished)
                 {
                     <span class="challenge-details-draft">DRAFT</span>
@@ -60,15 +60,24 @@
 
             <div class="challenge-details-meta">
                 <span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="m8 12 3 3 5-6" />
+                    </svg>
                     @Model.MaxPoints points
                 </span>
                 <span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 2" />
+                    </svg>
                     @(Model.Challenge.TimeLimitMinutes.HasValue ? $"{Model.Challenge.TimeLimitMinutes} minutes" : "Unlimited time")
                 </span>
                 <span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21v-2a8 8 0 0 1 16 0v2" />
+                    </svg>
                     Created by @Model.Challenge.CreatedByUser.UserName
                 </span>
             </div>
@@ -134,99 +143,73 @@
         <section class="challenge-details-panel">
             <h2 class="challenge-details-section-title">Challenge Management</h2>
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-4">
                 <div>
                     <div class="mb-2">
                         <strong>Status:</strong>
-
                         @if (Model.Challenge.IsPublished)
                         {
-                            <span class="badge bg-success">Published</span>
+                            <span class="challenge-management-status challenge-management-status-published">Published</span>
                         }
                         else
                         {
-                            <span class="badge bg-secondary">Draft</span>
+                            <span class="challenge-management-status challenge-management-status-draft">Draft</span>
                         }
                     </div>
 
                     <div>
                         <strong>Type:</strong>
-
                         @if (Model.Challenge.IsCore)
                         {
-                            <span class="badge bg-primary">Core</span>
+                            <span class="featured-badge featured-badge-core challenge-table-badge">CORE</span>
                         }
                         else
                         {
-                            <span class="badge bg-secondary">Community</span>
+                            <span class="featured-badge featured-badge-community challenge-table-badge">COMMUNITY</span>
                         }
                     </div>
                 </div>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 flex-wrap">
                     @* Only admins can change whether a challenge is Core or Community. *@
                     @if (User.IsInRole("Admin"))
                     {
                         @if (Model.Challenge.IsCore)
                         {
-                            <form asp-controller="Challenge"
-                                  asp-action="MakeCommunity"
-                                  asp-route-id="@Model.Challenge.ChallengeId"
-                                  method="post">
-                                <button type="submit" class="btn btn-outline-secondary">
-                                    Make Community
-                                </button>
+                            <form asp-controller="Challenge" asp-action="MakeCommunity"
+                                  asp-route-id="@Model.Challenge.ChallengeId" method="post">
+                                <button type="submit" class="btn btn-outline-primary">Make Community</button>
                             </form>
                         }
                         else
                         {
-                            <form asp-controller="Challenge"
-                                  asp-action="MakeCore"
-                                  asp-route-id="@Model.Challenge.ChallengeId"
-                                  method="post">
-                                <button type="submit" class="btn btn-outline-primary">
-                                    Make Core
-                                </button>
+                            <form asp-controller="Challenge" asp-action="MakeCore"
+                                  asp-route-id="@Model.Challenge.ChallengeId" method="post">
+                                <button type="submit" class="btn btn-outline-primary">Make Core</button>
                             </form>
                         }
                     }
 
                     @if (Model.Challenge.IsPublished)
                     {
-                        <form asp-controller="Challenge"
-                              asp-action="Unpublish"
-                              asp-route-id="@Model.Challenge.ChallengeId"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="returnUrl"
-                                   value="@Context.Request.Path" />
-
-                            <button type="submit" class="btn btn-dark">
-                                Unpublish
-                            </button>
+                        <form asp-controller="Challenge" asp-action="Unpublish"
+                              asp-route-id="@Model.Challenge.ChallengeId" method="post">
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <button type="submit" class="btn btn-outline-danger">Unpublish</button>
                         </form>
                     }
                     else
                     {
-                        <form asp-controller="Challenge"
-                              asp-action="Publish"
-                              asp-route-id="@Model.Challenge.ChallengeId"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="returnUrl"
-                                   value="@Context.Request.Path" />
-
-                            <button type="submit" class="btn btn-success">
-                                Publish
-                            </button>
+                        <form asp-controller="Challenge" asp-action="Publish"
+                              asp-route-id="@Model.Challenge.ChallengeId" method="post">
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <button type="submit" class="btn btn-success">Publish</button>
                         </form>
                     }
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3">
                 <button class="btn btn-outline-primary"
                         type="button"
                         data-bs-toggle="collapse"
@@ -236,22 +219,17 @@
                     Questions (@Model.Challenge.Questions.Count)
                 </button>
 
-                <a asp-controller="Question"
-                   asp-action="Create"
+                <a asp-controller="Question" asp-action="Create"
                    asp-route-challengeId="@Model.Challenge.ChallengeId"
                    class="btn btn-primary">
                     + Add Question
                 </a>
             </div>
 
-            <div class="collapse@(Model.ShowQuestions ? " show" : "")"
-                 id="questionOverview">
-
+            <div class="collapse@(Model.ShowQuestions ? " show" : "")" id="questionOverview">
                 @if (!Model.Challenge.Questions.Any())
                 {
-                    <div class="alert alert-info">
-                        No questions have been added yet.
-                    </div>
+                    <div class="alert alert-info">No questions have been added yet.</div>
                 }
                 else
                 {
@@ -265,31 +243,24 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 @foreach (var question in Model.Challenge.Questions.OrderBy(q => q.QuestionId))
                                 {
                                     <tr>
                                         <td>
                                             <strong>@question.Title</strong>
-
                                             @if (!string.IsNullOrWhiteSpace(question.Description))
                                             {
-                                                <div class="text-muted small mt-1">
-                                                    @question.Description
-                                                </div>
+                                                <div class="text-muted small mt-1">@question.Description</div>
                                             }
                                         </td>
-
                                         <td>
                                             @foreach (var option in question.Options)
                                             {
                                                 <div>
                                                     @if (option.IsCorrect)
                                                     {
-                                                        <span>
-                                                            ✓ <strong>@option.Text</strong>
-                                                        </span>
+                                                        <span>✓ <strong>@option.Text</strong></span>
                                                     }
                                                     else
                                                     {
@@ -298,23 +269,20 @@
                                                 </div>
                                             }
                                         </td>
-
                                         <td>@question.Points</td>
-
                                         <td>
-                                            <a asp-controller="Question"
-                                               asp-action="Update"
-                                               asp-route-id="@question.QuestionId"
-                                               class="btn btn-sm btn-warning">
-                                                Edit
-                                            </a>
-
-                                            <a asp-controller="Question"
-                                               asp-action="Delete"
-                                               asp-route-id="@question.QuestionId"
-                                               class="btn btn-sm btn-danger">
-                                                Delete
-                                            </a>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <a asp-controller="Question" asp-action="Update"
+                                                   asp-route-id="@question.QuestionId"
+                                                   class="btn btn-sm btn-outline-warning challenge-question-action">
+                                                    Edit
+                                                </a>
+                                                <a asp-controller="Question" asp-action="Delete"
+                                                   asp-route-id="@question.QuestionId"
+                                                   class="btn btn-sm btn-outline-danger challenge-question-action">
+                                                    Delete
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -333,7 +301,7 @@
 
             @if (!Model.Attempts.Any())
             {
-                <div class="alert alert-info">
+                <div class="challenge-history-empty">
                     You have no previous attempts for this challenge.
                 </div>
             }
@@ -350,7 +318,6 @@
                                 <th>Completed</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             @foreach (var attempt in Model.Attempts)
                             {
@@ -369,21 +336,14 @@
                                             <strong>LATEST</strong>
                                         }
                                     </td>
-
                                     <td>
-                                        <a asp-controller="Quiz"
-                                           asp-action="AttemptDetails"
+                                        <a asp-controller="Quiz" asp-action="AttemptDetails"
                                            asp-route-id="@attempt.ChallengeAttemptId">
                                             Attempt @attempt.AttemptNumber
                                         </a>
                                     </td>
-
                                     <td>@attempt.TimeUsed</td>
-
-                                    <td>
-                                        <strong>@attempt.Score / @Model.MaxPoints</strong>
-                                    </td>
-
+                                    <td><strong>@attempt.Score / @Model.MaxPoints</strong></td>
                                     <td>@attempt.CompletedAt</td>
                                 </tr>
                             }

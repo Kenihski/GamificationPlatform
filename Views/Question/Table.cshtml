@@ -1,95 +1,101 @@
 
 @model IEnumerable<GamificationPlatform.Models.Question>
 
-<h1>List of Questions</h1>
+@{
+    ViewData["Title"] = "List of Questions";
+}
 
-<p class="text-muted">
+<h1 class="fw-bold mb-2">List of Questions</h1>
+
+<p class="challenge-list-description mb-4">
     Overview of all questions in the system.
 </p>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Question</th>
-            <th>Description</th>
-            <th>Points</th>
-            <th>Challenge</th>
-            <th>Owner</th>
-            <th>Image</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var question in Model)
-        {
+<div class="table-responsive">
+    <table class="table table-striped align-middle questions-table">
+        <thead>
             <tr>
-                <td>
-                    @question.QuestionId
-                </td>
-
-                <td>
-                    @question.Title
-                </td>
-
-                <td>
-                    @question.Description
-                </td>
-
-                <td>
-                    @question.Points
-                </td>
-
-                <td>
-                    <a asp-controller="Challenge"
-                       asp-action="Details"
-                       asp-route-id="@question.ChallengeId">
-                        @question.Challenge.Title
-                    </a>
-                </td>
-
-                <td>
-                    <a asp-controller="User"
-                       asp-action="Details"
-                       asp-route-id="@question.Challenge.CreatedByUserId">
-                        @question.Challenge.CreatedByUser.UserName
-                    </a>
-                </td>
-
-                <td>
-                    @if (!string.IsNullOrEmpty(question.ImageUrl))
-                    {
-                        <img src="@question.ImageUrl"
-                             alt="@question.Title"
-                             style="width: 100px;
-                                    height: 60px;
-                                    object-fit: contain;" />
-                    }
-                    else
-                    {
-                        <span>No image</span>
-                    }
-                </td>
-
-                <td class="text-nowrap">
-
-                    <a asp-controller="Question"
-                       asp-action="Update"
-                       asp-route-id="@question.QuestionId"
-                       class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <a asp-controller="Question"
-                       asp-action="Delete"
-                       asp-route-id="@question.QuestionId"
-                       class="btn btn-danger btn-sm">
-                        Delete
-                    </a>
-
-                </td>
+                <th class="text-center">Id</th>
+                <th>Question</th>
+                <th>Description</th>
+                <th class="text-center">Points</th>
+                <th>Challenge</th>
+                <th>Owner</th>
+                <th class="text-center">Image</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+
+        <tbody>
+            @foreach (var question in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        @question.QuestionId
+                    </td>
+
+                    <td>
+                        @question.Title
+                    </td>
+
+                    <td>
+                        @question.Description
+                    </td>
+
+                    <td class="text-center">
+                        @question.Points
+                    </td>
+
+                    <td>
+                        <a asp-controller="Challenge"
+                           asp-action="Details"
+                           asp-route-id="@question.ChallengeId">
+                            @question.Challenge.Title
+                        </a>
+                    </td>
+
+                    <td>
+                        <a asp-controller="User"
+                           asp-action="Details"
+                           asp-route-id="@question.Challenge.CreatedByUserId">
+                            @question.Challenge.CreatedByUser.UserName
+                        </a>
+                    </td>
+
+                    <td class="text-center">
+                        @if (!string.IsNullOrEmpty(question.ImageUrl))
+                        {
+                            <img src="@question.ImageUrl"
+                                 alt="@question.Title"
+                                 class="question-table-image" />
+                        }
+                        else
+                        {
+                            <span class="question-table-no-image">
+                                No image
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <div class="d-flex flex-nowrap gap-1 align-items-center questions-table-actions">
+                            <a asp-controller="Question"
+                               asp-action="Update"
+                               asp-route-id="@question.QuestionId"
+                               class="btn btn-sm btn-outline-warning">
+                                Edit
+                            </a>
+
+                            <a asp-controller="Question"
+                               asp-action="Delete"
+                               asp-route-id="@question.QuestionId"
+                               class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

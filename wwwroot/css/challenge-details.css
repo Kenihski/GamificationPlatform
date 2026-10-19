@@ -1,0 +1,204 @@
+
+/* Challenge Details page */
+.challenge-details-page {
+    padding: 28px 0 65px;
+}
+
+.challenge-details-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.challenge-details-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    overflow: hidden;
+    border: 1px solid var(--content-card-border);
+    border-radius: 18px;
+    background: var(--content-card-bg);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+}
+
+.challenge-details-image {
+    min-width: 0;
+    min-height: 420px;
+    background: #0c1230;
+}
+
+.challenge-details-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.challenge-details-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+    padding: 34px 36px;
+}
+
+.challenge-details-title {
+    margin: 0 0 14px;
+    font-size: clamp(1.8rem, 2.9vw, 2.45rem);
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.challenge-details-description {
+    margin-bottom: 24px;
+    color: var(--home-muted);
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.challenge-details-draft {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border: 1px solid rgba(255, 204, 108, 0.55);
+    border-radius: 7px;
+    background: rgba(175, 121, 28, 0.2);
+    color: #ffe2a0;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+}
+
+.challenge-details-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 26px;
+    color: #e1e9ff;
+}
+
+.challenge-details-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid rgba(125, 151, 230, 0.25);
+    border-radius: 8px;
+    background: rgba(78, 98, 185, 0.12);
+}
+
+.challenge-details-meta svg {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    color: var(--home-blue);
+}
+
+.challenge-details-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.challenge-details-leaderboard-button {
+    padding: 13px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.challenge-details-note {
+    margin: 12px 0 0;
+    color: var(--home-muted);
+    font-size: 0.875rem;
+}
+
+.challenge-details-panel {
+    margin-top: 32px;
+    padding: 28px;
+    border: 1px solid var(--content-card-border);
+    border-radius: 16px;
+    background: var(--content-card-bg);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+}
+
+.challenge-details-section-title {
+    margin: 0 0 24px;
+    font-size: 1.5rem;
+    font-weight: 750;
+}
+
+.challenge-details-panel .table-responsive {
+    max-width: 100%;
+}
+
+/* Responsive layout */
+@media (max-width: 991.98px) {
+    .challenge-details-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .challenge-details-image,
+    .challenge-details-image img {
+        height: 300px;
+        min-height: 0;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .challenge-details-page {
+        padding-top: 18px;
+    }
+
+    .challenge-details-image,
+    .challenge-details-image img {
+        height: 210px;
+    }
+
+    .challenge-details-content {
+        padding: 25px 22px 30px;
+    }
+
+    .challenge-details-panel {
+        padding: 20px 16px;
+    }
+
+    .challenge-details-actions {
+        width: 100%;
+    }
+
+    .challenge-details-actions .btn {
+        width: 100%;
+    }
+
+    .challenge-details-title {
+        font-size: 1.6rem;
+    }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .challenge-details-actions .btn {
+        transition: none;
+    }
+
+    .challenge-details-actions .btn:hover {
+        transform: none;
+    }
+}
+
+/* Empty challenge history */
+.challenge-history-empty {
+    padding: 18px 20px;
+    border: 1px solid #465477;
+    border-left: 4px solid #7089d9;
+    border-radius: 8px;
+    background-color: #1c2745;
+    color: #dce5ff;
+    font-size: 0.95rem;
+}

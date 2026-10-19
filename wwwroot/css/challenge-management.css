@@ -1,0 +1,83 @@
+
+/* Challenge management status */
+
+.challenge-management-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    vertical-align: middle;
+}
+
+.challenge-management-status-published {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.45);
+}
+
+.challenge-management-status-draft {
+    color: #cbd5e1;
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+/* Question management actions */
+
+.challenge-question-action {
+    min-width: 62px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Delete confirmation warnings */
+.question-delete-warning,
+.challenge-delete-warning {
+    background: rgba(255, 193, 7, 0.08);
+    border: 1px solid rgba(255, 193, 7, 0.5);
+    color: #f5dfa0;
+}
+
+/* My Challenges action buttons */
+.my-challenges-actions {
+    white-space: nowrap;
+}
+
+.my-challenges-actions .btn {
+    white-space: nowrap;
+}
+
+
+/* My Challenges type buttons */
+.my-challenges-type-button {
+    font-size: 0.875rem;
+    font-weight: 400;
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+    background: transparent;
+    border: 1px solid;
+}
+
+.my-challenges-type-button.featured-badge-core {
+    color: #b9ccff;
+    border-color: #7089d9;
+    background: transparent;
+}
+
+.my-challenges-type-button.featured-badge-community {
+    color: #d9baff;
+    border-color: #9970c8;
+    background: transparent;
+}
+
+.my-challenges-type-button.featured-badge-core:hover {
+    color: #fff;
+    background: #405ba3;
+}
+
+.my-challenges-type-button.featured-badge-community:hover {
+    color: #fff;
+    background: #69409b;
+}
