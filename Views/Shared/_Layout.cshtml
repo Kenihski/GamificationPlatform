@@ -182,7 +182,7 @@
                 <hr class="my-3" />
 
                 <h6 class="text-muted fw-bold px-3 mb-3">
-                    My Learning
+                    @(User.IsInRole("Admin") ? "My Workspace" : "My Learning")
                 </h6>
 
                 <ul class="nav flex-column">
@@ -258,7 +258,7 @@
                         <a class="nav-link"
                            asp-controller="UserImage"
                            asp-action="Admin">
-                            Manage Images
+                            Images
                         </a>
                     </li>
 

@@ -18,19 +18,23 @@
     <p class="home-subtitle">
         LEARN • CHALLENGE • IMPROVE
     </p>
+
     <h1 class="display-4">
-        Welcome to Learning Challenge Hub
+        Welcome to the Challenge Hub
     </h1>
+
     <p class="lead">
         Test your knowledge, complete challenges
         and track your progress.
     </p>
+
     <div class="home-hero-actions">
         <a asp-controller="Challenge"
            asp-action="Grid"
            class="btn btn-primary btn-lg">
             Browse Challenges
         </a>
+
         @if (User.Identity?.IsAuthenticated == true)
         {
             <a asp-controller="Challenge"
@@ -38,6 +42,15 @@
                class="btn btn-outline-primary btn-lg">
                 Create Challenge
             </a>
+        }
+        else
+        {
+            <button type="button"
+                    class="btn btn-outline-primary btn-lg"
+                    data-bs-toggle="modal"
+                    data-bs-target="#registerModal">
+                Register
+            </button>
         }
     </div>
 </section>
@@ -56,18 +69,22 @@
                     <p class="home-daily-title">
                         CHALLENGE OF THE DAY
                     </p>
+
                     @if (Model.ChallengeOfTheDay != null)
                     {
                         <h2 class="home-daily-heading">
                             @Model.ChallengeOfTheDay.Title
                         </h2>
+
                         <p class="home-daily-description">
                             @Model.ChallengeOfTheDay.Description
                         </p>
+
                         <div class="home-daily-details">
                             <span>
                                 @Model.MaxPoints points
                             </span>
+
                             <span>
                                 @if (Model.ChallengeOfTheDay.TimeLimitMinutes.HasValue)
                                 {
@@ -80,6 +97,7 @@
                                 }
                             </span>
                         </div>
+
                         <a asp-controller="Challenge"
                            asp-action="Details"
                            asp-route-id="@Model.ChallengeOfTheDay.ChallengeId"
@@ -92,12 +110,14 @@
                         <h2 class="home-daily-heading">
                             New challenges coming soon
                         </h2>
+
                         <p class="home-daily-description">
                             No challenges are available right now.
                         </p>
                     }
                 </div>
             </div>
+
             <div class="col-lg-5">
                 @if (Model.ChallengeOfTheDay != null)
                 {
@@ -115,6 +135,7 @@
 <!-- Leaderboards -->
 <section class="home-section">
     <div class="row g-4">
+
         <!-- Core Leaderboard -->
         <div class="col-lg-6">
             <div class="card home-ranking-card h-100">
@@ -124,15 +145,18 @@
                             <p class="home-ranking-label">
                                 COMPETE & IMPROVE
                             </p>
+
                             <h2>
                                 Core Leaderboard
                             </h2>
                         </div>
+
                         <span class="home-ranking-symbol"
                               aria-hidden="true">
                             ⭐
                         </span>
                     </div>
+
                     @if (Model.CoreLeaderboardEntries.Any())
                     {
                         <div class="home-ranking-list">
@@ -143,10 +167,12 @@
                                         <span class="home-ranking-position">
                                             @entry.Rank
                                         </span>
+
                                         <span>
                                             @entry.Username
                                         </span>
                                     </div>
+
                                     <strong>
                                         @entry.TotalPoints.ToString("0.#") pts
                                     </strong>
@@ -160,6 +186,7 @@
                             No Core Challenge results yet.
                         </p>
                     }
+
                     <a asp-controller="Leaderboard"
                        asp-action="TotalLeaderboard"
                        class="btn btn-outline-primary home-ranking-button">
@@ -178,15 +205,18 @@
                             <p class="home-ranking-label">
                                 UNLOCK ACHIEVEMENTS
                             </p>
+
                             <h2>
                                 Hall of Fame
                             </h2>
                         </div>
+
                         <span class="home-ranking-symbol"
                               aria-hidden="true">
                             🏆
                         </span>
                     </div>
+
                     @if (Model.HallOfFameEntries.Any())
                     {
                         <div class="home-ranking-list">
@@ -197,10 +227,12 @@
                                         <span class="home-ranking-position">
                                             @entry.Rank
                                         </span>
+
                                         <span>
                                             @entry.Username
                                         </span>
                                     </div>
+
                                     <strong>
                                         @entry.AchievementPoints AP
                                     </strong>
@@ -214,6 +246,7 @@
                             No achievement results yet.
                         </p>
                     }
+
                     <a asp-controller="HallOfFame"
                        asp-action="Index"
                        class="btn btn-outline-primary home-ranking-button">
@@ -228,6 +261,7 @@
 <!-- Feature cards -->
 <section class="home-section home-features">
     <div class="row g-4">
+
         <!-- Take Challenges -->
         <div class="col-md-4">
             <a asp-controller="Challenge"
@@ -252,9 +286,11 @@
                                 </svg>
                             </div>
                         </div>
+
                         <h3 class="card-title">
                             Take Challenges
                         </h3>
+
                         <p class="card-text">
                             Test your knowledge with
                             interactive quizzes.
@@ -281,14 +317,17 @@
                                      stroke="currentColor"
                                      stroke-width="2"
                                      stroke-linecap="round"
+                                     stroke-linejoin="round"
                                      aria-hidden="true">
                                     <path d="M5 20v-6M10 20V9M15 20V5M20 20V2" />
                                 </svg>
                             </div>
                         </div>
+
                         <h3 class="card-title">
                             Track Your Progress
                         </h3>
+
                         <p class="card-text">
                             View your achievements, earned points, and milestones.
                         </p>
@@ -322,9 +361,11 @@
                                 </svg>
                             </div>
                         </div>
+
                         <h3 class="card-title">
                             Leaderboards
                         </h3>
+
                         <p class="card-text">
                             Compare your best results
                             with other users.

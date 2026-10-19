@@ -76,9 +76,10 @@ body:not(:has(.home-hero)) #matrixBackground {
     font-weight: 700;
 }
 .site-sidebar .offcanvas-body h6 {
-    color: var(--home-blue) !important;
-    font-size: 0.8rem;
-    letter-spacing: 1.5px;
+    color: #8fa5df !important;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 .site-sidebar .nav-link {
     margin: 3px 0;
@@ -144,6 +145,11 @@ body:not(:has(.home-hero)) #matrixBackground {
     gap: 15px;
     margin-top: 30px;
 }
+
+.home-hero-actions .btn {
+    min-width: 190px;
+}
+
 /* Homepage buttons */
 .home-hero .btn-primary,
 .home-daily-button {
