@@ -5,11 +5,9 @@ namespace GamificationPlatform.ViewModels
 {
     public class HomeViewModel
     {
-        // The challenge selected as Challenge of the Day.
-        public Challenge? ChallengeOfTheDay { get; set; }
-
-        // Maximum points for Challenge of the Day.
-        public int MaxPoints { get; set; }
+        // Challenges displayed in the featured carousel.
+        public List<FeaturedChallengeViewModel> FeaturedChallenges { get; set; }
+            = new List<FeaturedChallengeViewModel>();
 
         // Top three users from the Core Leaderboard.
         public List<TotalLeaderboardEntryViewModel> CoreLeaderboardEntries { get; set; }

@@ -1,89 +1,119 @@
-@{
-    var carouselImages = new[]
+
+@model GamificationPlatform.ViewModels.HomeViewModel
+
+<section class="featured-challenges" aria-labelledby="featuredChallengesTitle">
+    <h2 id="featuredChallengesTitle" class="featured-challenges-title">Featured Challenges</h2>
+
+    @if (Model.FeaturedChallenges.Any())
     {
-        new { File = "Programming.png", Alt = "Programming" },
-        new { File = "CSharp.png", Alt = "C Sharp" },
-        new { File = "Databases.png", Alt = "Databases" },
-        new { File = "Python.png", Alt = "Python" },
-        new { File = "HTML.png", Alt = "HTML" },
-        new { File = "AI.png", Alt = "Artificial Intelligence" },
-        new { File = "Cybersecurity.png", Alt = "Cybersecurity" },
-        new { File = "Cloud.png", Alt = "Cloud Computing" }
-    };
-}
+        <div id="featuredChallengesCarousel"
+             class="carousel slide featured-carousel"
+             data-bs-ride="carousel"
+             data-bs-interval="6000"
+             aria-label="Featured challenges">
 
-<div id="carouselImages"
-     class="carousel slide carousel-fade mx-auto home-carousel"
-     data-bs-ride="carousel"
-     data-bs-interval="5000">
+            @if (Model.FeaturedChallenges.Count > 1)
+            {
+                <div class="carousel-indicators featured-carousel-indicators">
+                    @for (int i = 0; i < Model.FeaturedChallenges.Count; i++)
+                    {
+                        <button type="button"
+                                data-bs-target="#featuredChallengesCarousel"
+                                data-bs-slide-to="@i"
+                                class="@(i == 0 ? "active" : "")"
+                                aria-current="@(i == 0 ? "true" : "false")"
+                                aria-label="Go to challenge @(i + 1)"></button>
+                    }
+                </div>
+            }
 
-    <!-- Indicators -->
-    <div class="carousel-indicators">
+            <div class="carousel-inner">
+                @for (int i = 0; i < Model.FeaturedChallenges.Count; i++)
+                {
+                    var featured = Model.FeaturedChallenges[i];
+                    var challenge = featured.Challenge;
 
-        @for (int i = 0; i < carouselImages.Length; i++)
-        {
-            <button type="button"
-                    data-bs-target="#carouselImages"
-                    data-bs-slide-to="@i"
-                    class="@(i == 0 ? "active" : "")"
-                    aria-current="@(i == 0 ? "true" : "false")"
-                    aria-label="Slide @(i + 1)">
-            </button>
-        }
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="featured-challenge-card">
+                            <div class="featured-challenge-image">
+                                @if (!string.IsNullOrWhiteSpace(challenge.ImageUrl))
+                                {
+                                    <img src="@Url.Content(challenge.ImageUrl)"
+                                         alt="@challenge.Title"
+                                         loading="@(i == 0 ? "eager" : "lazy")" />
+                                }
+                            </div>
 
-    </div>
+                            <div class="featured-challenge-content">
+                                <div class="featured-challenge-badges">
+                                    <span class="featured-badge @(challenge.IsCore ? "featured-badge-core" : "featured-badge-community")">
+                                        @(challenge.IsCore ? "CORE" : "COMMUNITY")
+                                    </span>
+                                    @if (featured.IsPopular)
+                                    {
+                                        <span class="featured-badge featured-badge-popular">★ POPULAR</span>
+                                    }
+                                </div>
 
-    <!-- Images -->
-    <div class="carousel-inner">
+                                <h3 class="featured-challenge-name">@challenge.Title</h3>
+                                <p class="featured-challenge-description">@challenge.Description</p>
 
-        @for (int i = 0; i < carouselImages.Length; i++)
-        {
-            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <div class="featured-challenge-meta">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="m12 2 3.1 6.3 7 1-5 4.9 1.2 7-6.3-3.3-6.3 3.3 1.2-7-5-4.9 7-1L12 2Z" />
+                                        </svg>
+                                        @featured.MaxPoints points
+                                    </span>
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+                                        </svg>
+                                        @(challenge.TimeLimitMinutes.HasValue ? $"{challenge.TimeLimitMinutes.Value} min" : "Unlimited time")
+                                    </span>
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" />
+                                        </svg>
+                                        Created by @featured.CreatorUsername
+                                    </span>
+                                </div>
 
-                <img src="@Url.Content("~/images/" + carouselImages[i].File)"
-                     class="d-block w-100"
-                     alt="@carouselImages[i].Alt">
-
+                                <a asp-controller="Challenge"
+                                   asp-action="Details"
+                                   asp-route-id="@challenge.ChallengeId"
+                                   class="btn btn-primary featured-challenge-button">
+                                    View Challenge <span aria-hidden="true">→</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        }
 
-    </div>
-
-    <!-- Subtle fade along the edges -->
-    <div class="carousel-edge-fade"
-         aria-hidden="true">
-    </div>
-
-    <!-- Previous -->
-    <button class="carousel-control-prev"
-            type="button"
-            data-bs-target="#carouselImages"
-            data-bs-slide="prev">
-
-        <span class="carousel-control-prev-icon"
-              aria-hidden="true">
-        </span>
-
-        <span class="visually-hidden">
-            Previous
-        </span>
-
-    </button>
-
-    <!-- Next -->
-    <button class="carousel-control-next"
-            type="button"
-            data-bs-target="#carouselImages"
-            data-bs-slide="next">
-
-        <span class="carousel-control-next-icon"
-              aria-hidden="true">
-        </span>
-
-        <span class="visually-hidden">
-            Next
-        </span>
-
-    </button>
-
-</div>
+            @if (Model.FeaturedChallenges.Count > 1)
+            {
+                <button class="carousel-control-prev featured-carousel-prev"
+                        type="button"
+                        data-bs-target="#featuredChallengesCarousel"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous challenge</span>
+                </button>
+                <button class="carousel-control-next featured-carousel-next"
+                        type="button"
+                        data-bs-target="#featuredChallengesCarousel"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next challenge</span>
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="featured-challenges-empty">
+            <p>No published challenges are available yet.</p>
+        </div>
+    }
+</section>
