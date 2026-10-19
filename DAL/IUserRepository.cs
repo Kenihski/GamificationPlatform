@@ -26,10 +26,6 @@ namespace GamificationPlatform.DAL
         Task<User?> GetUserByEmailAsync(
             string email);
 
-        // Creates a new user.
-        Task<bool> CreateUserAsync(
-            User user);
-
         // Updates an existing user.
         Task<bool> UpdateUserAsync(
             User user);

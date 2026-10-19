@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -130,35 +129,6 @@ namespace GamificationPlatform.DAL
                     ex,
                     "Database operation {Operation} failed in {Repository}.",
                     nameof(GetUserByEmailAsync),
-                    nameof(UserRepository));
-
-                throw;
-            }
-        }
-
-        // Creates a new user.
-        public async Task<bool> CreateUserAsync(User user)
-        {
-            try
-            {
-                var result = await _userManager.CreateAsync(user);
-
-                if (!result.Succeeded)
-                {
-                    _logger.LogWarning(
-                        "Failed to create user: {Errors}",
-                        string.Join(", ",
-                            result.Errors.Select(e => e.Description)));
-                }
-
-                return result.Succeeded;
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                _logger.LogError(
-                    ex,
-                    "Database operation {Operation} failed in {Repository}.",
-                    nameof(CreateUserAsync),
                     nameof(UserRepository));
 
                 throw;
