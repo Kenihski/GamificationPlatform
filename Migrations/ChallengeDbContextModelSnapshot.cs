@@ -129,6 +129,9 @@ namespace GamificationPlatform.Migrations
                     b.Property<int>("MaxPoints")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("ShowAnswersAfterCompletion")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("TimeLimitMinutes")
                         .HasColumnType("INTEGER");
 

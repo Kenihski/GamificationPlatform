@@ -764,6 +764,7 @@ namespace GamificationPlatform.Controllers
                     Description = challenge.Description,
                     ImageUrl = challenge.ImageUrl ?? string.Empty,
                     TimeLimitMinutes = challenge.TimeLimitMinutes,
+                    ShowAnswersAfterCompletion = challenge.ShowAnswersAfterCompletion,
                     CreatedByUserId = userId,
                     IsPublished = false,
                     IsCore = false
@@ -927,6 +928,9 @@ namespace GamificationPlatform.Controllers
 
                 existingChallenge.TimeLimitMinutes =
                     challenge.TimeLimitMinutes;
+
+                existingChallenge.ShowAnswersAfterCompletion =
+                    challenge.ShowAnswersAfterCompletion;
 
                 // CreatedByUserId is not changed.
                 // The original owner stays the owner.

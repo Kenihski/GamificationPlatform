@@ -1,3 +1,4 @@
+
 @model Challenge
 
 @{
@@ -88,6 +89,25 @@
         <span asp-validation-for="TimeLimitMinutes"
               class="text-danger">
         </span>
+    </div>
+
+    <!-- Result settings -->
+    <div class="form-group mb-3">
+        <div class="form-check">
+            <input asp-for="ShowAnswersAfterCompletion"
+                   class="form-check-input" />
+
+            <label asp-for="ShowAnswersAfterCompletion"
+                   class="form-check-label">
+                Show answers after completion
+            </label>
+        </div>
+
+        <small class="text-muted">
+            Allow participants to review their answers,
+            correct answers and explanations after completing
+            the challenge.
+        </small>
     </div>
 
     <!-- Image selection -->

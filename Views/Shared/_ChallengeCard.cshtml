@@ -1,3 +1,4 @@
+
 @model Challenge
 
 @{
@@ -6,11 +7,10 @@
 }
 
 <div class="col">
-
     <a asp-controller="Challenge"
        asp-action="Details"
        asp-route-id="@Model.ChallengeId"
-       class="text-decoration-none text-dark">
+       class="challenge-card-link">
 
         <div class="card h-100 challenge-card position-relative">
 
@@ -27,64 +27,77 @@
                      alt="@Model.Title">
             </div>
 
-            <div class="card-body">
+            <div class="card-body challenge-card-body">
 
-                <div class="d-flex justify-content-between
-                            align-items-center">
+                <div class="challenge-card-main">
 
-                    @if (Model.IsCore)
-                    {
-                        <span class="badge bg-primary">
-                            Core
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">
-                            Community
-                        </span>
-                    }
+                    <div class="challenge-card-info">
 
-                    <strong>
-                        @Model.MaxPoints points
-                    </strong>
-
-                </div>
-
-                <div class="d-flex justify-content-between
-                            align-items-center">
-
-                    <h5 class="text-start mb-0">
-                        @Model.Title
-                    </h5>
-
-                    <span class="small text-muted text-nowrap">
-
-                        @if (Model.TimeLimitMinutes.HasValue)
+                        @if (Model.IsCore)
                         {
-                            <span>
-                                @Model.TimeLimitMinutes min
+                            <span class="featured-badge featured-badge-core">
+                                CORE
                             </span>
                         }
                         else
                         {
-                            <span>
-                                Unlimited
+                            <span class="featured-badge featured-badge-community">
+                                COMMUNITY
                             </span>
                         }
 
-                    </span>
+                        <h5 class="challenge-card-title">
+                            @Model.Title
+                        </h5>
+
+                    </div>
+
+                    <div class="challenge-card-stats">
+
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="m8 12 3 3 5-6" />
+                            </svg>
+
+                            @Model.MaxPoints points
+                        </span>
+
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 2" />
+                            </svg>
+
+                            @(Model.TimeLimitMinutes.HasValue
+                                ? $"{Model.TimeLimitMinutes} min"
+                                : "Unlimited")
+                        </span>
+
+                    </div>
 
                 </div>
 
-                <p class="card-text mt-3">
+                <p class="card-text challenge-card-description">
                     @Model.Description
                 </p>
 
             </div>
 
         </div>
-
     </a>
-
 </div>

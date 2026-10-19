@@ -1,161 +1,274 @@
+
 @model GamificationPlatform.ViewModels.ChallengeResultViewModel
 
-<h2>Challenge Completed!</h2>
+@{
+    ViewData["Title"] = "Challenge Completed";
 
-<h4>@Model.ChallengeTitle</h4>
+    int totalQuestions = Model.QuestionResults.Count;
+    int questionNumber = 0;
 
-<h3>
-    Score: @Model.Score / @Model.MaxScore
-</h3>
+    int totalSeconds = Math.Max(
+        0,
+        (int)Math.Round(Model.TimeUsed.TotalSeconds));
 
-<p class="mb-4">
-    <strong>Time Used:</strong>
-    @($"{(int)Model.TimeUsed.TotalMinutes:00}:{Model.TimeUsed.Seconds:00}")
-</p>
+    string formattedTime =
+        $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
+}
 
-<hr />
+<div class="quiz-result-page">
 
-@foreach (var result in Model.QuestionResults)
-{
-    <div class="card mb-4">
-        <div class="card-body">
+    <a asp-controller="Challenge"
+       asp-action="Details"
+       asp-route-id="@Model.ChallengeId"
+       class="challenge-details-back">
+        ← Back to Challenge
+    </a>
 
-            <h4>@result.Question.Title</h4>
+    <!-- Result summary -->
+    <section class="quiz-result-header">
 
-            @if (!string.IsNullOrWhiteSpace(result.Question.Description))
-            {
-                <p>@result.Question.Description</p>
-            }
+        <span class="quiz-result-label">
+            CHALLENGE COMPLETED
+        </span>
 
-            @if (!string.IsNullOrEmpty(result.Question.ImageUrl))
-            {
-                <img src="@result.Question.ImageUrl"
-                     alt="@result.Question.Title"
-                     style="width: 300px; height: 180px; object-fit: contain;"
-                     class="mb-3" />
-            }
+        <h1>@Model.ChallengeTitle</h1>
+
+        <div class="quiz-result-stats quiz-result-stats-four">
+
+            <div class="quiz-result-stat">
+                <span class="quiz-result-stat-label">
+                    Score
+                </span>
+
+                <strong>
+                    @Model.Score / @Model.MaxScore
+                </strong>
+            </div>
+
+            <div class="quiz-result-stat">
+                <span class="quiz-result-stat-label">
+                    Time Used
+                </span>
+
+                <strong>@formattedTime</strong>
+            </div>
+
+            <div class="quiz-result-stat">
+                <span class="quiz-result-stat-label">
+                    Questions
+                </span>
+
+                <strong>@totalQuestions</strong>
+            </div>
+
+            <div class="quiz-result-stat">
+                <span class="quiz-result-stat-label">
+                    Completed
+                </span>
+
+                <strong>
+                    @(Model.CompletedAt?.ToString("dd.MM.yyyy HH:mm") ?? "—")
+                </strong>
+            </div>
+
+        </div>
+    </section>
+
+    @if (!Model.ShowAnswers)
+    {
+        <!-- Answer review disabled -->
+        <div class="quiz-result-hidden-notice"
+             role="status">
+
+            <strong>Answers Hidden</strong>
 
             <p>
-                <strong>@result.Question.Points points</strong>
+                The challenge creator has disabled answer review
+                for this challenge. You can still view your overall
+                score and points earned for each question.
             </p>
 
-            @if (result.Question.QuestionType == "ShortAnswer")
-            {
-                <p>
-                    <strong>Your answer:</strong>
+        </div>
+    }
 
-                    @if (!string.IsNullOrWhiteSpace(result.TextAnswer))
-                    {
-                        <span>@result.TextAnswer</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Not answered</span>
-                    }
+    <!-- Question results -->
+    @foreach (var result in Model.QuestionResults)
+    {
+        questionNumber++;
+
+        var question = result.Question;
+
+        bool isAnswered = question.QuestionType == "ShortAnswer"
+            ? !string.IsNullOrWhiteSpace(result.TextAnswer)
+            : result.SelectedOptionIds.Any();
+
+        <section class="quiz-result-question">
+
+            <div class="quiz-question-heading">
+
+                <span class="quiz-question-number">
+                    QUESTION @questionNumber OF @totalQuestions
+                </span>
+
+                <span class="quiz-question-points">
+                    @result.PointsEarned / @question.Points points
+                </span>
+
+            </div>
+
+            <h2 class="quiz-question-title">
+                @question.Title
+            </h2>
+
+            @if (!string.IsNullOrWhiteSpace(question.Description))
+            {
+                <p class="quiz-question-description">
+                    @question.Description
                 </p>
             }
-            else
+
+            @if (!string.IsNullOrWhiteSpace(question.ImageUrl))
             {
-                @foreach (var option in result.Question.Options)
+                <img src="@question.ImageUrl"
+                     alt="@question.Title"
+                     class="quiz-question-image" />
+            }
+
+            @if (Model.ShowAnswers)
+            {
+                <!-- Submitted answers -->
+                @if (question.QuestionType == "ShortAnswer")
                 {
-                    <div class="form-check mb-2">
+                    <div class="quiz-result-text-answer">
 
-                        @if (result.Question.QuestionType == "MultipleChoice")
-                        {
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   disabled
-                                   checked="@result.SelectedOptionIds.Contains(option.QuestionOptionId)" />
-                        }
-                        else
-                        {
-                            <input class="form-check-input"
-                                   type="radio"
-                                   disabled
-                                   checked="@result.SelectedOptionIds.Contains(option.QuestionOptionId)" />
-                        }
+                        <span>Your Answer</span>
 
-                        <label class="form-check-label">
-                            @option.Text
-                        </label>
+                        <div class="quiz-result-answer-value">
+                            @(string.IsNullOrWhiteSpace(result.TextAnswer)
+                                ? "Not answered"
+                                : result.TextAnswer)
+                        </div>
 
                     </div>
                 }
-            }
-
-            <hr />
-
-            @if (result.IsCorrect)
-            {
-                <p class="text-success">
-                    <strong>✓ Correct</strong>
-                </p>
-            }
-            else
-            {
-                <p class="text-danger">
-                    <strong>✗ Wrong</strong>
-                </p>
-            }
-
-            @if (result.Question.QuestionType == "ShortAnswer")
-            {
-                var acceptedAnswers =
-                    result.Question.AcceptedAnswers
-                        .Select(answer => answer.Text)
-                        .ToList();
-
-                @if (acceptedAnswers.Any())
+                else
                 {
-                    <p>
-                        <strong>
-                            @(acceptedAnswers.Count == 1
-                                ? "Correct answer:"
-                                : "Correct answers:")
-                        </strong>
+                    <div class="quiz-result-options">
 
-                        @string.Join(", ", acceptedAnswers)
-                    </p>
+                        @foreach (var option in question.Options)
+                        {
+                            bool isSelected = result.SelectedOptionIds
+                                .Contains(option.QuestionOptionId);
+
+                            string optionClass = option.IsCorrect
+                                ? "quiz-result-option-correct"
+                                : isSelected
+                                    ? "quiz-result-option-selected"
+                                    : "";
+
+                            <div class="quiz-result-option @optionClass">
+
+                                @if (question.QuestionType == "MultipleChoice")
+                                {
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           checked="@isSelected"
+                                           disabled />
+                                }
+                                else
+                                {
+                                    <input type="radio"
+                                           class="form-check-input"
+                                           checked="@isSelected"
+                                           disabled />
+                                }
+
+                                <span>@option.Text</span>
+
+                                @if (isSelected)
+                                {
+                                    <span class="quiz-result-selected-label">
+                                        Your answer
+                                    </span>
+                                }
+
+                                @if (option.IsCorrect)
+                                {
+                                    <span class="quiz-result-correct-label">
+                                        Correct answer
+                                    </span>
+                                }
+
+                            </div>
+                        }
+
+                    </div>
                 }
-            }
-            else
-            {
-                var correctOptions =
-                    result.Question.Options
-                        .Where(option => option.IsCorrect)
-                        .ToList();
 
-                @if (correctOptions.Any())
-                {
-                    <p>
-                        <strong>
-                            @(correctOptions.Count == 1
-                                ? "Correct answer:"
-                                : "Correct answers:")
-                        </strong>
+                <!-- Answer feedback -->
+                <div class="quiz-result-feedback">
 
-                        @string.Join(
-                            ", ",
-                            correctOptions.Select(option => option.Text))
-                    </p>
-                }
-            }
+                    @if (!isAnswered)
+                    {
+                        <span class="quiz-result-status quiz-result-status-unanswered">
+                            Not answered
+                        </span>
+                    }
+                    else if (result.IsCorrect)
+                    {
+                        <span class="quiz-result-status quiz-result-status-correct">
+                            ✓ Correct
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="quiz-result-status quiz-result-status-wrong">
+                            ✗ Wrong
+                        </span>
+                    }
 
-            @if (!string.IsNullOrWhiteSpace(result.Question.Explanation))
-            {
-                <div class="alert alert-info mt-3 mb-0">
-                    <strong>Explanation:</strong>
-                    @result.Question.Explanation
+                    @if (question.QuestionType == "ShortAnswer")
+                    {
+                        var correctAnswers = question.AcceptedAnswers
+                            .Select(answer => answer.Text)
+                            .ToList();
+
+                        @if (correctAnswers.Any())
+                        {
+                            <p class="quiz-result-correct-answer">
+                                <strong>
+                                    @(correctAnswers.Count == 1
+                                        ? "Correct answer:"
+                                        : "Correct answers:")
+                                </strong>
+
+                                @string.Join(", ", correctAnswers)
+                            </p>
+                        }
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(question.Explanation))
+                    {
+                        <div class="quiz-result-explanation">
+
+                            <strong>Explanation</strong>
+
+                            <p>@question.Explanation</p>
+
+                        </div>
+                    }
+
                 </div>
             }
 
-        </div>
-    </div>
-}
+        </section>
+    }
 
-<a asp-controller="Challenge"
-   asp-action="Details"
-   asp-route-id="@Model.ChallengeId"
-   class="btn btn-secondary">
-    Back to Challenge
-</a>
+    <a asp-controller="Challenge"
+       asp-action="Details"
+       asp-route-id="@Model.ChallengeId"
+       class="btn btn-outline-primary quiz-result-back-button">
+        Back to Challenge
+    </a>
+
+</div>

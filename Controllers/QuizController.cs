@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -34,7 +35,7 @@ namespace GamificationPlatform.Controllers
             _logger = logger;
         }
 
-        // Shows the answers from a completed attempt.
+        // Shows the results of a completed attempt.
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> AttemptDetails(int id)
@@ -42,12 +43,11 @@ namespace GamificationPlatform.Controllers
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userIdString == null)
+            if (!int.TryParse(userIdString, out int userId))
             {
                 return Unauthorized();
             }
 
-            int userId = int.Parse(userIdString);
             bool isAdmin = User.IsInRole("Admin");
 
             var attempt = await _attemptRepository
@@ -58,8 +58,7 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
-            // Normal users can only view their own attempts.
-            // Admins can view all attempts.
+            // Users can only view their own attempts.
             if (!isAdmin &&
                 attempt.UserChallenge.UserId != userId)
             {
@@ -73,12 +72,18 @@ namespace GamificationPlatform.Controllers
 
             var challenge = attempt.UserChallenge.Challenge;
 
+            bool showAnswers =
+                challenge.ShowAnswersAfterCompletion ||
+                challenge.CreatedByUserId == userId ||
+                isAdmin;
+
             var viewModel = new AttemptDetailsViewModel
             {
                 ChallengeId = challenge.ChallengeId,
                 ChallengeTitle = challenge.Title,
                 Score = attempt.Score,
                 MaxPoints = challenge.Questions.Sum(q => q.Points),
+                ShowAnswers = showAnswers,
                 CompletedAt = attempt.CompletedAt?
                     .ToString("dd.MM.yyyy HH:mm")
             };
@@ -88,20 +93,18 @@ namespace GamificationPlatform.Controllers
                 var timeUsed =
                     attempt.CompletedAt.Value - attempt.StartedAt;
 
-                if (timeUsed.TotalMinutes >= 1)
-                {
-                    viewModel.TimeUsed =
-                        $"{Math.Round(timeUsed.TotalMinutes)} min";
-                }
-                else
-                {
-                    viewModel.TimeUsed =
-                        $"{Math.Round(timeUsed.TotalSeconds)} sec";
-                }
+                int totalSeconds = Math.Max(
+                    0,
+                    (int)Math.Round(timeUsed.TotalSeconds));
+
+                viewModel.TimeUsed =
+                    $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
             }
 
             foreach (var answer in attempt.Answers)
             {
+                var question = answer.Question;
+
                 var selectedOptionIds = answer.SelectedOptions
                     .Select(selected => selected.QuestionOptionId)
                     .ToList();
@@ -109,19 +112,19 @@ namespace GamificationPlatform.Controllers
                 bool isCorrect;
                 List<string> correctAnswers;
 
-                if (answer.Question.QuestionType == "ShortAnswer")
+                if (question.QuestionType == "ShortAnswer")
                 {
                     isCorrect = IsAcceptedShortAnswer(
                         answer.TextAnswer,
-                        answer.Question.AcceptedAnswers);
+                        question.AcceptedAnswers);
 
-                    correctAnswers = answer.Question.AcceptedAnswers
+                    correctAnswers = question.AcceptedAnswers
                         .Select(accepted => accepted.Text)
                         .ToList();
                 }
                 else
                 {
-                    var correctOptionIds = answer.Question.Options
+                    var correctOptionIds = question.Options
                         .Where(option => option.IsCorrect)
                         .Select(option => option.QuestionOptionId)
                         .ToList();
@@ -133,7 +136,7 @@ namespace GamificationPlatform.Controllers
                             .SequenceEqual(
                                 correctOptionIds.OrderBy(optionId => optionId));
 
-                    correctAnswers = answer.Question.Options
+                    correctAnswers = question.Options
                         .Where(option => option.IsCorrect)
                         .Select(option => option.Text)
                         .ToList();
@@ -141,30 +144,43 @@ namespace GamificationPlatform.Controllers
 
                 var answerViewModel = new AttemptAnswerViewModel
                 {
-                    QuestionTitle = answer.Question.Title,
+                    QuestionTitle = question.Title,
                     QuestionDescription =
-                        answer.Question.Description ?? string.Empty,
-                    QuestionExplanation =
-                        answer.Question.Explanation ?? string.Empty,
-                    QuestionType = answer.Question.QuestionType,
-                    ImageUrl = answer.Question.ImageUrl,
-                    Points = answer.Question.Points,
-                    SelectedOptionIds = selectedOptionIds,
-                    TextAnswer = answer.TextAnswer,
-                    IsCorrect = isCorrect,
-                    CorrectAnswers = correctAnswers
+                        question.Description ?? string.Empty,
+                    QuestionType = question.QuestionType,
+                    ImageUrl = question.ImageUrl,
+                    Points = question.Points,
+                    PointsEarned = isCorrect ? question.Points : 0,
+                    IsCorrect = isCorrect
                 };
 
-                foreach (var option in answer.Question.Options)
+                // Only include sensitive answer data when allowed.
+                if (showAnswers)
                 {
-                    answerViewModel.Options.Add(
-                        new AttemptOptionViewModel
-                        {
-                            QuestionOptionId = option.QuestionOptionId,
-                            Text = option.Text,
-                            IsSelected = selectedOptionIds.Contains(
-                                option.QuestionOptionId)
-                        });
+                    answerViewModel.QuestionExplanation =
+                        question.Explanation ?? string.Empty;
+
+                    answerViewModel.SelectedOptionIds =
+                        selectedOptionIds;
+
+                    answerViewModel.TextAnswer =
+                        answer.TextAnswer;
+
+                    answerViewModel.CorrectAnswers =
+                        correctAnswers;
+
+                    foreach (var option in question.Options)
+                    {
+                        answerViewModel.Options.Add(
+                            new AttemptOptionViewModel
+                            {
+                                QuestionOptionId = option.QuestionOptionId,
+                                Text = option.Text,
+                                IsSelected = selectedOptionIds.Contains(
+                                    option.QuestionOptionId),
+                                IsCorrect = option.IsCorrect
+                            });
+                    }
                 }
 
                 viewModel.Answers.Add(answerViewModel);
@@ -174,7 +190,6 @@ namespace GamificationPlatform.Controllers
         }
 
         // Shows the challenge and its questions.
-        // Owners and admins can also take unpublished challenges.
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Take(int id)
@@ -190,12 +205,10 @@ namespace GamificationPlatform.Controllers
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userIdString == null)
+            if (!int.TryParse(userIdString, out int userId))
             {
                 return Unauthorized();
             }
-
-            int userId = int.Parse(userIdString);
 
             bool isOwner = challenge.CreatedByUserId == userId;
             bool isAdmin = User.IsInRole("Admin");
@@ -217,7 +230,6 @@ namespace GamificationPlatform.Controllers
                     new { id = challenge.ChallengeId });
             }
 
-            // A challenge must contain at least one question.
             if (!challenge.Questions.Any())
             {
                 TempData["ErrorMessage"] =
@@ -244,12 +256,10 @@ namespace GamificationPlatform.Controllers
                     .CreateUserChallengeAsync(userChallenge);
             }
 
-            // Gets an unfinished attempt if one already exists.
             var challengeAttempt = await _attemptRepository
                 .GetUnfinishedAttemptAsync(
                     userChallenge.UserChallengeId);
 
-            // Creates a new attempt if necessary.
             if (challengeAttempt == null)
             {
                 challengeAttempt = new ChallengeAttempt
@@ -390,15 +400,11 @@ namespace GamificationPlatform.Controllers
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userIdString == null)
+            if (!int.TryParse(userIdString, out int userId))
             {
                 return null;
             }
 
-            int userId = int.Parse(userIdString);
-
-            // Apply the same access rules when submitting.
-            // Owners and admins can submit unpublished challenges.
             bool isOwner = challenge.CreatedByUserId == userId;
             bool isAdmin = User.IsInRole("Admin");
 
@@ -425,11 +431,17 @@ namespace GamificationPlatform.Controllers
                 return null;
             }
 
+            bool showAnswers =
+                challenge.ShowAnswersAfterCompletion ||
+                isOwner ||
+                isAdmin;
+
             var result = new ChallengeResultViewModel
             {
                 ChallengeId = challenge.ChallengeId,
                 ChallengeTitle = challenge.Title,
-                MaxScore = challenge.Questions.Sum(q => q.Points)
+                MaxScore = challenge.Questions.Sum(q => q.Points),
+                ShowAnswers = showAnswers
             };
 
             var challengeAttempt = await _attemptRepository
@@ -449,8 +461,7 @@ namespace GamificationPlatform.Controllers
                 return null;
             }
 
-            // Validate that every submitted choice answer
-            // belongs to the submitted question.
+            // Validate submitted choice answers.
             foreach (var answer in answers)
             {
                 var question = challenge.Questions
@@ -498,8 +509,6 @@ namespace GamificationPlatform.Controllers
                     return null;
                 }
 
-                // Single Choice must never contain
-                // more than one selected option.
                 if (question.QuestionType == "SingleChoice" &&
                     submittedOptionIds.Count > 1)
                 {
@@ -516,8 +525,7 @@ namespace GamificationPlatform.Controllers
                 }
             }
 
-            // Validate that every submitted text answer
-            // belongs to a Short Answer question.
+            // Validate submitted short answers.
             foreach (var textAnswer in textAnswers)
             {
                 var question = challenge.Questions
@@ -551,14 +559,12 @@ namespace GamificationPlatform.Controllers
                 }
             }
 
-            // Checks the time limit on the server.
+            // Enforce the time limit on the server.
             if (challenge.TimeLimitMinutes.HasValue)
             {
                 DateTime timeLimit = challengeAttempt.StartedAt
                     .AddMinutes(challenge.TimeLimitMinutes.Value);
 
-                // Allows a few seconds for the automatic
-                // form submission to reach the server.
                 if (DateTime.Now > timeLimit.AddSeconds(5))
                 {
                     _logger.LogWarning(
@@ -609,8 +615,6 @@ namespace GamificationPlatform.Controllers
                         .Select(option => option.QuestionOptionId)
                         .ToList();
 
-                    // All correct options, and no incorrect
-                    // options, must be selected.
                     isCorrect =
                         selectedOptionIds.Count > 0 &&
                         selectedOptionIds
@@ -624,16 +628,34 @@ namespace GamificationPlatform.Controllers
                     result.Score += question.Points;
                 }
 
+                // Do not expose correct answers when review is disabled.
+                var resultQuestion = showAnswers
+                    ? question
+                    : new Question
+                    {
+                        QuestionId = question.QuestionId,
+                        Title = question.Title,
+                        Description = question.Description,
+                        QuestionType = question.QuestionType,
+                        ImageUrl = question.ImageUrl,
+                        Points = question.Points
+                    };
+
                 result.QuestionResults.Add(
                     new QuestionResultViewModel
                     {
-                        Question = question,
-                        SelectedOptionIds = selectedOptionIds,
-                        TextAnswer = submittedTextAnswer,
-                        IsCorrect = isCorrect
+                        Question = resultQuestion,
+                        SelectedOptionIds = showAnswers
+                            ? selectedOptionIds
+                            : new List<int>(),
+                        TextAnswer = showAnswers
+                            ? submittedTextAnswer
+                            : null,
+                        IsCorrect = isCorrect,
+                        PointsEarned = isCorrect ? question.Points : 0
                     });
 
-                // An unanswered question is also saved.
+                // Save answers regardless of review settings.
                 var attemptAnswer = new AttemptAnswer
                 {
                     ChallengeAttemptId =
@@ -654,22 +676,19 @@ namespace GamificationPlatform.Controllers
                 _attemptRepository.AddAttemptAnswer(attemptAnswer);
             }
 
-            // Saves the completed attempt.
             challengeAttempt.Score = result.Score;
             challengeAttempt.Completed = true;
             challengeAttempt.CompletedAt = DateTime.Now;
+
+            result.CompletedAt = challengeAttempt.CompletedAt;
 
             result.TimeUsed =
                 challengeAttempt.CompletedAt.Value -
                 challengeAttempt.StartedAt;
 
-            // Saves all answers and the completed
-            // attempt together.
             await _attemptRepository.SaveChangesAsync();
 
-            // A completed attempt can change leaderboard
-            // positions, so achievements are checked
-            // for all normal users.
+            // Recheck achievements after completion.
             var users = await _userRepository.GetAllUsersAsync();
 
             foreach (var user in users)
@@ -707,8 +726,7 @@ namespace GamificationPlatform.Controllers
                         StringSplitOptions.RemoveEmptyEntries));
         }
 
-        // Checks whether the submitted text matches
-        // one of the accepted answers.
+        // Checks whether a short answer is accepted.
         private static bool IsAcceptedShortAnswer(
             string? submittedAnswer,
             IEnumerable<QuestionAcceptedAnswer> acceptedAnswers)
