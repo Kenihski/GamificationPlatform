@@ -426,3 +426,107 @@
         height: 60px;
     }
 }
+
+
+/* Achievement management badges */
+.achievement-admin-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+}
+
+.achievement-admin-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border: 1px solid;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.achievement-admin-badge-published {
+    background: #103b2e;
+    border-color: #198754;
+    color: #91f2bc;
+}
+
+.achievement-admin-badge-unpublished {
+    background: #303648;
+    border-color: #737e97;
+    color: #d2d9e9;
+}
+
+.achievement-admin-badge-type {
+    background: #1c2b55;
+    border-color: #667fca;
+    color: #c5d5ff;
+}
+
+.achievement-admin-badge-requirement {
+    background: #30364c;
+    border-color: #7985a5;
+    color: #d6ddef;
+}
+
+.achievement-admin-badge-goal {
+    background: #49365e;
+    border-color: #c39352;
+    color: #ffe0ad;
+}
+
+/* Achievement management action buttons */
+.achievement-admin-actions .btn {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Keep unpublished achievements readable in administration */
+.achievement-admin-list .achievement-row.achievement-locked {
+    opacity: 1;
+    background: #171e36;
+    border-color: #465477;
+}
+
+.achievement-admin-list .achievement-row.achievement-locked .achievement-icon,
+.achievement-admin-list .achievement-row.achievement-locked .achievement-name,
+.achievement-admin-list .achievement-row.achievement-locked .achievement-description,
+.achievement-admin-list .achievement-row.achievement-locked .achievement-points {
+    opacity: 1;
+}
+
+.achievement-admin-list .achievement-row.achievement-locked .achievement-name {
+    color: #f1f3ff;
+}
+
+.achievement-admin-list .achievement-row.achievement-locked .achievement-description {
+    color: #b8c4df;
+}
+
+/* Points badge on delete confirmation */
+.achievement-delete-points {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border: 1px solid #e7b94d;
+    border-radius: 6px;
+    background: #45375a;
+    color: #ffe08a;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.achievement-admin-actions .btn-outline-secondary {
+    color: #d0d9f3;
+    border-color: #91a5df;
+}
+
+.achievement-admin-actions .btn-outline-secondary:hover {
+    background: #354568;
+    border-color: #a6b9ed;
+    color: #fff;
+}

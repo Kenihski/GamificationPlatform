@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -41,59 +42,97 @@ namespace GamificationPlatform.Controllers
 
             // Gets all published challenges.
             var challenges =
-                (await _challengeRepository
-                    .GetPublishedChallengesAsync())
-                .OrderBy(c => c.ChallengeId)
+                await _challengeRepository
+                    .GetPublishedChallengesAsync();
+
+            // Selects up to five random featured challenges.
+            var featuredChallenges = challenges
+                .OrderBy(_ => Random.Shared.Next())
+                .Take(5)
                 .ToList();
 
-            // Selects Challenge of the Day.
-            if (challenges.Any())
-            {
-                int challengeIndex =
-                    (DateTime.Today.DayOfYear - 1)
-                    % challenges.Count;
-
-                var challengeOfTheDay =
-                    challenges[challengeIndex];
-
-                int maxPoints =
-                    challengeOfTheDay.Questions
-                        .Sum(q => q.Points);
-
-                challengeOfTheDay.MaxPoints = maxPoints;
-
-                viewModel.ChallengeOfTheDay =
-                    challengeOfTheDay;
-
-                viewModel.MaxPoints =
-                    maxPoints;
-            }
-
             // Admins may test quizzes but do not participate in leaderboards.
-            var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
-            var adminIds = adminUsers.Select(u => u.Id).ToHashSet();
+            var adminUsers =
+                await _userManager.GetUsersInRoleAsync("Admin");
 
-            // Core Leaderboard
+            var adminIds = adminUsers
+                .Select(u => u.Id)
+                .ToHashSet();
 
+            // Gets completed attempts for popularity and leaderboards.
             var attempts =
                 await _attemptRepository
                     .GetAllCompletedAttemptsAsync();
 
+            // Counts unique participants for each challenge.
+            // Admins and challenge creators are excluded.
+            var participantCounts = attempts
+                .Where(a =>
+                    !adminIds.Contains(a.UserChallenge.UserId) &&
+                    a.UserChallenge.UserId !=
+                        a.UserChallenge.Challenge.CreatedByUserId)
+                .GroupBy(a => a.UserChallenge.ChallengeId)
+                .Select(group => new
+                {
+                    ChallengeId = group.Key,
+                    Participants = group
+                        .Select(a => a.UserChallenge.UserId)
+                        .Distinct()
+                        .Count()
+                })
+                .ToList();
+
+            // The five most popular published challenges
+            // need at least one unique participant.
+            var popularChallengeIds = participantCounts
+                .Where(entry =>
+                    entry.Participants >= 1 &&
+                    challenges.Any(c =>
+                        c.ChallengeId == entry.ChallengeId))
+                .OrderByDescending(entry => entry.Participants)
+                .ThenBy(entry => entry.ChallengeId)
+                .Take(5)
+                .Select(entry => entry.ChallengeId)
+                .ToHashSet();
+
+            // Builds the featured challenge cards.
+            foreach (var challenge in featuredChallenges)
+            {
+                var creator = await _userRepository
+                    .GetUserByIdAsync(challenge.CreatedByUserId);
+
+                viewModel.FeaturedChallenges.Add(
+                    new FeaturedChallengeViewModel
+                    {
+                        Challenge = challenge,
+
+                        MaxPoints = challenge.Questions
+                            .Sum(q => q.Points),
+
+                        CreatorUsername =
+                            creator?.UserName ?? "Unknown",
+
+                        IsPopular = popularChallengeIds
+                            .Contains(challenge.ChallengeId)
+                    });
+            }
+
+            // Core Leaderboard
+
             // Only Core Challenges count.
             // Challenge creators are excluded.
-            attempts =
-                attempts
-                    .Where(a =>
-                        a.UserChallenge.Challenge.IsCore &&
-                            !adminIds.Contains(a.UserChallenge.UserId) &&
-                        a.UserChallenge.UserId !=
+            var coreAttempts = attempts
+                .Where(a =>
+                    a.UserChallenge.Challenge.IsCore &&
+                    !adminIds.Contains(a.UserChallenge.UserId) &&
+                    a.UserChallenge.UserId !=
                         a.UserChallenge.Challenge.CreatedByUserId)
-                    .ToList();
+                .ToList();
 
             // Only the first completed attempt
             // per user and Core Challenge counts.
             var firstAttempts =
-                attempts
+                coreAttempts
                     .GroupBy(a => new
                     {
                         a.UserChallenge.UserId,
@@ -249,6 +288,14 @@ namespace GamificationPlatform.Controllers
                 hallOfFameEntries.Take(3).ToList();
 
             return View(viewModel);
+        }
+
+        // Displays information about the platform and project.
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult About()
+        {
+            return View();
         }
 
         [AllowAnonymous]

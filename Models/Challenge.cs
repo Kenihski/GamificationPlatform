@@ -27,7 +27,6 @@ namespace GamificationPlatform.Models
         [AllowedImage(ErrorMessage = "Please select one of the available images.")]
         public string ImageUrl { get; set; } = string.Empty;
 
-        // Time limit in minutes.
         // Null means unlimited time.
         [AllowedTimeLimit(ErrorMessage = "Choose unlimited or a time limit of 10, 20, 30, 60, 90, or 120 minutes.")]
         public int? TimeLimitMinutes { get; set; }
@@ -38,6 +37,9 @@ namespace GamificationPlatform.Models
         // False = Community, True = Core.
         // New challenges are Community by default.
         public bool IsCore { get; set; } = false;
+
+        // Controls whether participants can review answers after completion.
+        public bool ShowAnswersAfterCompletion { get; set; } = true;
 
         // Foreign key: The user who created the challenge.
         public int CreatedByUserId { get; set; }

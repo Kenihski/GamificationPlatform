@@ -6,22 +6,18 @@
     ViewData["Title"] = "User Details";
 }
 
-<h2 class="my-4">
-    @Model.User.UserName
-</h2>
+<h2 class="my-4">@Model.User.UserName</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div id="successMessage"
-         class="alert alert-success">
+    <div id="successMessage" class="alert alert-success">
         @TempData["SuccessMessage"]
     </div>
 }
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div id="errorMessage"
-         class="alert alert-danger">
+    <div id="errorMessage" class="alert alert-danger">
         @TempData["ErrorMessage"]
     </div>
 }
@@ -37,13 +33,13 @@
 
         @if (await UserManager.IsInRoleAsync(Model.User, "Admin"))
         {
-            <span class="badge bg-danger">
+            <span class="user-role-badge user-role-admin">
                 Admin
             </span>
         }
         else
         {
-            <span class="badge bg-secondary">
+            <span class="user-role-badge user-role-member">
                 User
             </span>
         }
@@ -60,115 +56,112 @@
 }
 else
 {
-    <table class="table table-striped">
-
-        <thead>
-            <tr>
-                <th>Challenge</th>
-                <th>Questions</th>
-                <th>Max Points</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var challenge in Model.CreatedChallenges)
-            {
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
                 <tr>
-                    <td>
-                        @challenge.Title
-                    </td>
-
-                    <td>
-                        @challenge.Questions.Count
-                    </td>
-
-                    <td>
-                        @challenge.MaxPoints
-                    </td>
-
-                    <td>
-                        @if (challenge.IsPublished)
-                        {
-                            <span class="badge bg-success">
-                                Published
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">
-                                Draft
-                            </span>
-                        }
-                    </td>
-
-                    <td>
-                        <a asp-controller="Challenge"
-                           asp-action="Details"
-                           asp-route-id="@challenge.ChallengeId"
-                           class="btn btn-sm btn-primary">
-                            View
-                        </a>
-
-                        <a asp-controller="Challenge"
-                           asp-action="Update"
-                           asp-route-id="@challenge.ChallengeId"
-                           class="btn btn-sm btn-warning">
-                            Edit
-                        </a>
-
-                        <a asp-controller="Challenge"
-                           asp-action="Delete"
-                           asp-route-id="@challenge.ChallengeId"
-                           class="btn btn-sm btn-danger">
-                            Delete
-                        </a>
-
-                        @if (!challenge.IsPublished)
-                        {
-                            <form asp-controller="Challenge"
-                                  asp-action="Publish"
-                                  asp-route-id="@challenge.ChallengeId"
-                                  method="post"
-                                  class="d-inline">
-
-                                <input type="hidden"
-                                       name="returnUrl"
-                                       value="@Context.Request.Path" />
-
-                                <button type="submit"
-                                        class="btn btn-sm btn-success">
-                                    Publish
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-controller="Challenge"
-                                  asp-action="Unpublish"
-                                  asp-route-id="@challenge.ChallengeId"
-                                  method="post"
-                                  class="d-inline">
-
-                                <input type="hidden"
-                                       name="returnUrl"
-                                       value="@Context.Request.Path" />
-
-                                <button type="submit"
-                                        class="btn btn-sm btn-dark">
-                                    Unpublish
-                                </button>
-                            </form>
-                        }
-                    </td>
+                    <th>Challenge</th>
+                    <th class="text-center">Questions</th>
+                    <th class="text-center">Max Points</th>
+                    <th class="text-center">Status</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+                @foreach (var challenge in Model.CreatedChallenges)
+                {
+                    <tr>
+                        <td>@challenge.Title</td>
+
+                        <td class="text-center">
+                            @challenge.Questions.Count
+                        </td>
+
+                        <td class="text-center">
+                            @challenge.MaxPoints
+                        </td>
+
+                        <td class="text-center">
+                            @if (challenge.IsPublished)
+                            {
+                                <span class="challenge-management-status challenge-management-status-published">
+                                    Published
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="challenge-management-status challenge-management-status-draft">
+                                    Draft
+                                </span>
+                            }
+                        </td>
+
+                        <td>
+                            <div class="d-flex flex-nowrap gap-1 align-items-center my-challenges-actions">
+                                <a asp-controller="Challenge"
+                                   asp-action="Details"
+                                   asp-route-id="@challenge.ChallengeId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+
+                                <a asp-controller="Challenge"
+                                   asp-action="Update"
+                                   asp-route-id="@challenge.ChallengeId"
+                                   class="btn btn-sm btn-outline-warning">
+                                    Edit
+                                </a>
+
+                                <a asp-controller="Challenge"
+                                   asp-action="Delete"
+                                   asp-route-id="@challenge.ChallengeId"
+                                   class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+
+                                @if (!challenge.IsPublished)
+                                {
+                                    <form asp-controller="Challenge"
+                                          asp-action="Publish"
+                                          asp-route-id="@challenge.ChallengeId"
+                                          method="post">
+                                        <input type="hidden"
+                                               name="returnUrl"
+                                               value="@Context.Request.Path" />
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-success">
+                                            Publish
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Challenge"
+                                          asp-action="Unpublish"
+                                          asp-route-id="@challenge.ChallengeId"
+                                          method="post">
+                                        <input type="hidden"
+                                               name="returnUrl"
+                                               value="@Context.Request.Path" />
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-secondary">
+                                            Unpublish
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
-<h3 class="mt-5">Challenge History</h3>
+<h3 class="mt-5 mb-4">Challenge History</h3>
 
 @if (!Model.ChallengeHistory.Any())
 {
@@ -178,84 +171,79 @@ else
 }
 else
 {
-    @foreach (var challenge in Model.ChallengeHistory)
-    {
-        <h5 class="mt-4">
-            @challenge.ChallengeTitle
-        </h5>
+    <div class="user-challenge-history">
+        @foreach (var challenge in Model.ChallengeHistory)
+        {
+            <section class="user-history-card">
+                <div class="user-history-card-header">
+                    <h4>@challenge.ChallengeTitle</h4>
 
-        <table class="table table-striped">
+                    <span class="user-history-attempt-count">
+                        @challenge.Attempts.Count() @(challenge.Attempts.Count() == 1 ? "attempt" : "attempts")
+                    </span>
+                </div>
 
-            <thead>
-                <tr>
-                    <th>Status</th>
-                    <th>Attempt</th>
-                    <th>Time</th>
-                    <th>Score</th>
-                    <th>Completed</th>
-                </tr>
-            </thead>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Attempt</th>
+                                <th>Time</th>
+                                <th>Score</th>
+                                <th>Completed</th>
+                            </tr>
+                        </thead>
 
-            <tbody>
-                @foreach (var attempt in challenge.Attempts)
-                {
-                    <tr>
-                        <td>
-                            @if (attempt.IsBest &&
-                                 attempt.IsLatest)
+                        <tbody>
+                            @foreach (var attempt in challenge.Attempts)
                             {
-                                <strong>
-                                    BEST / LATEST
-                                </strong>
+                                <tr>
+                                    <td>
+                                        @if (attempt.IsBest && attempt.IsLatest)
+                                        {
+                                            <strong>BEST / LATEST</strong>
+                                        }
+                                        else if (attempt.IsBest)
+                                        {
+                                            <strong>BEST</strong>
+                                        }
+                                        else if (attempt.IsLatest)
+                                        {
+                                            <strong>LATEST</strong>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <a asp-controller="Quiz"
+                                           asp-action="AttemptDetails"
+                                           asp-route-id="@attempt.ChallengeAttemptId">
+                                            Attempt @attempt.AttemptNumber
+                                        </a>
+                                    </td>
+
+                                    <td>@attempt.TimeUsed</td>
+
+                                    <td>
+                                        <strong>
+                                            @attempt.Score / @challenge.MaxPoints
+                                        </strong>
+                                    </td>
+
+                                    <td>@attempt.CompletedAt</td>
+                                </tr>
                             }
-                            else if (attempt.IsBest)
-                            {
-                                <strong>
-                                    BEST
-                                </strong>
-                            }
-                            else if (attempt.IsLatest)
-                            {
-                                <strong>
-                                    LATEST
-                                </strong>
-                            }
-                        </td>
-
-                        <td>
-                            <a asp-controller="Quiz"
-                               asp-action="AttemptDetails"
-                               asp-route-id="@attempt.ChallengeAttemptId">
-
-                                Attempt @attempt.AttemptNumber
-
-                            </a>
-                        </td>
-
-                        <td>
-                            @attempt.TimeUsed
-                        </td>
-
-                        <td>
-                            <strong>
-                                @attempt.Score /
-                                @challenge.MaxPoints
-                            </strong>
-                        </td>
-
-                        <td>
-                            @attempt.CompletedAt
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+    </div>
 }
 
 <a asp-controller="User"
    asp-action="Table"
-   class="btn btn-secondary mt-3">
+   class="btn btn-outline-primary mt-4">
     Back to Users
 </a>
 

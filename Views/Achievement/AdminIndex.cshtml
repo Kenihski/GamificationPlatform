@@ -1,10 +1,13 @@
+
 @model IEnumerable<GamificationPlatform.ViewModels.AchievementAdminViewModel>
 
 @{
     ViewData["Title"] = "Achievement Management";
 }
 
-<link rel="stylesheet" href="~/css/achievements.css" />
+<link rel="stylesheet"
+      href="~/css/achievements.css"
+      asp-append-version="true" />
 
 <div class="container mt-4 mb-5">
 
@@ -21,14 +24,14 @@
             <div>
                 <a asp-controller="Achievement"
                    asp-action="Create"
-                   class="btn btn-success">
+                   class="btn btn-primary">
                     Create Achievement
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="achievement-list">
+    <div class="achievement-list achievement-admin-list">
 
         @foreach (var achievement in Model)
         {
@@ -65,46 +68,43 @@
                         @achievement.Description
                     </div>
 
-                    <div class="mt-2">
+                    <div class="achievement-admin-badges mt-2">
 
                         @if (achievement.IsGoal)
                         {
-                            <span class="badge bg-dark">
+                            <span class="achievement-admin-badge achievement-admin-badge-goal">
                                 System Goal
                             </span>
 
-                            <span class="badge bg-secondary">
-                                Requirement:
-                                @achievement.RequirementValue
+                            <span class="achievement-admin-badge achievement-admin-badge-requirement">
+                                Requirement: @achievement.RequirementValue
                             </span>
                         }
                         else
                         {
                             @if (achievement.IsActive)
                             {
-                                <span class="badge bg-success">
+                                <span class="achievement-admin-badge achievement-admin-badge-published">
                                     Published
                                 </span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">
+                                <span class="achievement-admin-badge achievement-admin-badge-unpublished">
                                     Unpublished
                                 </span>
                             }
 
-                            <span class="badge bg-secondary">
+                            <span class="achievement-admin-badge achievement-admin-badge-type">
                                 @achievement.Type
                             </span>
 
-                            <span class="badge bg-secondary">
-                                Requirement:
-                                @achievement.RequirementValue
+                            <span class="achievement-admin-badge achievement-admin-badge-requirement">
+                                Requirement: @achievement.RequirementValue
                             </span>
                         }
 
                     </div>
-
                 </div>
 
                 <div class="achievement-admin-actions">
@@ -122,7 +122,7 @@
                         <a asp-controller="Achievement"
                            asp-action="Edit"
                            asp-route-id="@achievement.AchievementId"
-                           class="btn btn-warning btn-sm">
+                           class="btn btn-outline-warning btn-sm">
                             Edit
                         </a>
 
@@ -136,7 +136,7 @@
                                 @Html.AntiForgeryToken()
 
                                 <button type="submit"
-                                        class="btn btn-dark btn-sm">
+                                        class="btn btn-outline-secondary btn-sm">
                                     Unpublish
                                 </button>
                             </form>
@@ -151,7 +151,7 @@
                                 @Html.AntiForgeryToken()
 
                                 <button type="submit"
-                                        class="btn btn-success btn-sm">
+                                        class="btn btn-outline-success btn-sm">
                                     Publish
                                 </button>
                             </form>
@@ -160,11 +160,10 @@
                         <a asp-controller="Achievement"
                            asp-action="Delete"
                            asp-route-id="@achievement.AchievementId"
-                           class="btn btn-danger btn-sm">
+                           class="btn btn-outline-danger btn-sm">
                             Delete
                         </a>
                     }
-
                 </div>
 
                 <div class="achievement-points">
@@ -190,7 +189,5 @@
 
             </div>
         }
-
     </div>
-
 </div>

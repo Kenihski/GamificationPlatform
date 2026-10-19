@@ -1,3 +1,4 @@
+
 namespace GamificationPlatform.ViewModels
 {
     public class AttemptDetailsViewModel
@@ -14,6 +15,9 @@ namespace GamificationPlatform.ViewModels
         public string? TimeUsed { get; set; }
 
         public string? CompletedAt { get; set; }
+
+        // Controls whether answers and explanations are visible.
+        public bool ShowAnswers { get; set; }
 
         public List<AttemptAnswerViewModel> Answers { get; set; }
             = new List<AttemptAnswerViewModel>();
@@ -36,6 +40,9 @@ namespace GamificationPlatform.ViewModels
         public string? ImageUrl { get; set; }
 
         public int Points { get; set; }
+
+        // Points earned for this question.
+        public int PointsEarned { get; set; }
 
         // Stores all selected option IDs for choice questions.
         public List<int> SelectedOptionIds { get; set; }
@@ -62,5 +69,7 @@ namespace GamificationPlatform.ViewModels
             = string.Empty;
 
         public bool IsSelected { get; set; }
+
+        public bool IsCorrect { get; set; }
     }
 }

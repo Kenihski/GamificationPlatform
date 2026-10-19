@@ -2,16 +2,15 @@
 @model IEnumerable<GamificationPlatform.Models.User>
 @inject Microsoft.AspNetCore.Identity.UserManager<GamificationPlatform.Models.User> UserManager
 
-<div class="container">
-    <table class="table table-striped">
-
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
         <thead>
             <tr>
-                <th>Id</th>
+                <th class="text-center">Id</th>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Role</th>
-                <th>Challenges Created</th>
+                <th class="text-center">Role</th>
+                <th class="text-center">Challenges Created</th>
             </tr>
         </thead>
 
@@ -19,9 +18,7 @@
             @foreach (var user in Model)
             {
                 <tr>
-                    <td>
-                        @user.Id
-                    </td>
+                    <td class="text-center">@user.Id</td>
 
                     <td>
                         <a asp-controller="User"
@@ -31,26 +28,24 @@
                         </a>
                     </td>
 
-                    <td>
-                        @user.Email
-                    </td>
+                    <td>@user.Email</td>
 
-                    <td>
+                    <td class="text-center">
                         @if (await UserManager.IsInRoleAsync(user, "Admin"))
                         {
-                            <span class="badge bg-danger">
+                            <span class="user-role-badge user-role-admin">
                                 Admin
                             </span>
                         }
                         else
                         {
-                            <span class="badge bg-secondary">
+                            <span class="user-role-badge user-role-member">
                                 User
                             </span>
                         }
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         @user.CreatedChallenges.Count
                     </td>
                 </tr>

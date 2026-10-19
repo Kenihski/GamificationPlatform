@@ -1,3 +1,4 @@
+
 @model GamificationPlatform.ViewModels.AchievementAdminViewModel
 
 @{
@@ -25,16 +26,16 @@
                 @Model.Description
             </p>
 
-            <div class="mb-3">
-                <span class="badge bg-secondary">
+            <div class="achievement-admin-badges mb-3">
+                <span class="achievement-admin-badge achievement-admin-badge-type">
                     @Model.Type
                 </span>
 
-                <span class="badge bg-secondary">
+                <span class="achievement-admin-badge achievement-admin-badge-requirement">
                     Requirement: @Model.RequirementValue
                 </span>
 
-                <span class="badge bg-warning text-dark">
+                <span class="achievement-delete-points">
                     @Model.Points AP
                 </span>
             </div>
@@ -52,13 +53,13 @@
                 @Html.AntiForgeryToken()
 
                 <button type="submit"
-                        class="btn btn-danger">
+                        class="btn btn-outline-danger">
                     Delete Achievement
                 </button>
 
                 <a asp-controller="Achievement"
                    asp-action="Index"
-                   class="btn btn-secondary">
+                   class="btn btn-outline-primary">
                     Cancel
                 </a>
 
