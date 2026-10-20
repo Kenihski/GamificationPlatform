@@ -1,3 +1,4 @@
+
 @model GamificationPlatform.ViewModels.HallOfFameViewModel
 
 @{
@@ -73,5 +74,11 @@
         </table>
 
     </div>
+
+    <a asp-controller="Challenge"
+       asp-action="Grid"
+       class="btn btn-outline-primary leaderboard-back-button mt-4">
+        Back to Challenges
+    </a>
 
 </div>
