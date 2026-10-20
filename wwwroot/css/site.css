@@ -251,9 +251,16 @@ main a:not(.btn):not(.home-feature-link):not(.dropdown-item):hover {
     color: #ffe1e5;
 }
 
+.alert-info {
+    background: #192744;
+    border-color: #5978b8;
+    color: #dce7ff;
+}
+
 .alert-success a,
 .alert-warning a,
-.alert-danger a {
+.alert-danger a,
+.alert-info a {
     color: inherit;
     text-decoration: underline;
 }

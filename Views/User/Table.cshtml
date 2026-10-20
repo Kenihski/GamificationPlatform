@@ -1,5 +1,42 @@
-@model IEnumerable<User>
 
-<h1>List of Users</h1>
+@model IEnumerable<GamificationPlatform.Models.User>
+
+@{
+    ViewData["Title"] = "List of Users";
+}
+
+<div class="users-table-header mb-4">
+    <div>
+        <h1 class="fw-bold mb-1">List of Users</h1>
+        <p class="text-secondary mb-0">
+            View all registered users and click a username to view their details.
+        </p>
+    </div>
+
+    <div class="users-table-search">
+        <label for="userSearch" class="visually-hidden">
+            Search users
+        </label>
+
+        <input type="search"
+               id="userSearch"
+               class="form-control"
+               placeholder="Search username or email..."
+               autocomplete="off" />
+    </div>
+</div>
 
 <partial name="_UserTable" model="Model" />
+
+<div id="usersNoResults"
+     class="alert alert-info mt-3"
+     hidden>
+    No users match your search.
+</div>
+
+@section Scripts
+{
+    <script src="~/js/userTable.js"
+            asp-append-version="true"
+            defer></script>
+}

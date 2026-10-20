@@ -515,7 +515,9 @@
     .home-hero {
         padding-top: 45px;
     }
+}
 
+@media (max-width: 850px) {
     .featured-challenge-card {
         grid-template-columns: 1fr;
     }

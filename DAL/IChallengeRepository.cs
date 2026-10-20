@@ -1,3 +1,4 @@
+
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.DAL
@@ -8,6 +9,11 @@ namespace GamificationPlatform.DAL
     {
         // Returns all published challenges.
         Task<List<Challenge>> GetPublishedChallengesAsync();
+
+        // Returns published challenges filtered by category and search text.
+        Task<List<Challenge>> SearchPublishedChallengesAsync(
+            string filter,
+            string? searchTerm);
 
         // Returns all challenges created by a specific user.
         Task<List<Challenge>> GetChallengesByUserIdAsync(

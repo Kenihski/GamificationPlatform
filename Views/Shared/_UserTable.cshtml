@@ -3,7 +3,7 @@
 @inject Microsoft.AspNetCore.Identity.UserManager<GamificationPlatform.Models.User> UserManager
 
 <div class="table-responsive">
-    <table class="table table-striped align-middle">
+    <table class="table table-striped align-middle users-table">
         <thead>
             <tr>
                 <th class="text-center">Id</th>
@@ -17,8 +17,12 @@
         <tbody>
             @foreach (var user in Model)
             {
-                <tr>
-                    <td class="text-center">@user.Id</td>
+                <tr class="users-table-row"
+                    data-user-search="@($"{user.UserName} {user.Email}")">
+
+                    <td class="text-center">
+                        @user.Id
+                    </td>
 
                     <td>
                         <a asp-controller="User"
@@ -28,7 +32,9 @@
                         </a>
                     </td>
 
-                    <td>@user.Email</td>
+                    <td>
+                        @user.Email
+                    </td>
 
                     <td class="text-center">
                         @if (await UserManager.IsInRoleAsync(user, "Admin"))

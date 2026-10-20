@@ -3,99 +3,232 @@
 
 @{
     ViewData["Title"] = "List of Questions";
+
+    var questions = Model.ToList();
+
+    var challenges = questions
+        .GroupBy(q => new
+        {
+            q.ChallengeId,
+            q.Challenge.Title
+        })
+        .OrderBy(g => g.Key.Title)
+        .ToList();
 }
 
-<h1 class="fw-bold mb-2">List of Questions</h1>
+<div class="questions-page-header mb-4">
+    <div>
+        <h1 class="fw-bold mb-2">List of Questions</h1>
 
-<p class="challenge-list-description mb-4">
-    Overview of all questions in the system.
-</p>
+        <p class="challenge-list-description mb-0">
+            Overview of all questions in the system.
+        </p>
+    </div>
 
-<div class="table-responsive">
-    <table class="table table-striped align-middle questions-table">
-        <thead>
-            <tr>
-                <th class="text-center">Id</th>
-                <th>Question</th>
-                <th>Description</th>
-                <th class="text-center">Points</th>
-                <th>Challenge</th>
-                <th>Owner</th>
-                <th class="text-center">Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+    <div class="questions-search">
+        <label for="questionSearch" class="visually-hidden">
+            Search questions
+        </label>
 
-        <tbody>
-            @foreach (var question in Model)
-            {
-                <tr>
-                    <td class="text-center">
-                        @question.QuestionId
-                    </td>
-
-                    <td>
-                        @question.Title
-                    </td>
-
-                    <td>
-                        @question.Description
-                    </td>
-
-                    <td class="text-center">
-                        @question.Points
-                    </td>
-
-                    <td>
-                        <a asp-controller="Challenge"
-                           asp-action="Details"
-                           asp-route-id="@question.ChallengeId">
-                            @question.Challenge.Title
-                        </a>
-                    </td>
-
-                    <td>
-                        <a asp-controller="User"
-                           asp-action="Details"
-                           asp-route-id="@question.Challenge.CreatedByUserId">
-                            @question.Challenge.CreatedByUser.UserName
-                        </a>
-                    </td>
-
-                    <td class="text-center">
-                        @if (!string.IsNullOrEmpty(question.ImageUrl))
-                        {
-                            <img src="@question.ImageUrl"
-                                 alt="@question.Title"
-                                 class="question-table-image" />
-                        }
-                        else
-                        {
-                            <span class="question-table-no-image">
-                                No image
-                            </span>
-                        }
-                    </td>
-
-                    <td>
-                        <div class="d-flex flex-nowrap gap-1 align-items-center questions-table-actions">
-                            <a asp-controller="Question"
-                               asp-action="Update"
-                               asp-route-id="@question.QuestionId"
-                               class="btn btn-sm btn-outline-warning">
-                                Edit
-                            </a>
-
-                            <a asp-controller="Question"
-                               asp-action="Delete"
-                               asp-route-id="@question.QuestionId"
-                               class="btn btn-sm btn-outline-danger">
-                                Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        <input type="search"
+               id="questionSearch"
+               class="form-control"
+               placeholder="Search questions..."
+               autocomplete="off" />
+    </div>
 </div>
+
+@if (!questions.Any())
+{
+    <div class="alert alert-info">
+        There are no questions in the system yet.
+    </div>
+}
+else
+{
+    <nav class="questions-navigation"
+         aria-label="Filter questions by challenge">
+
+        <div class="questions-navigation-grid">
+            <button type="button"
+                    class="questions-nav-button"
+                    data-challenge-id="all"
+                    aria-pressed="true">
+                All Questions
+                <span class="questions-nav-count">
+                    @questions.Count
+                </span>
+            </button>
+
+            @foreach (var challenge in challenges)
+            {
+                <button type="button"
+                        class="questions-nav-button"
+                        data-challenge-id="@challenge.Key.ChallengeId"
+                        aria-pressed="false">
+                    @challenge.Key.Title
+                    <span class="questions-nav-count">
+                        @challenge.Count()
+                    </span>
+                </button>
+            }
+        </div>
+
+        <div class="questions-navigation-pagination"
+             id="questionChallengePagination"
+             hidden>
+
+            <button type="button"
+                    id="questionChallengePrevious"
+                    class="btn btn-outline-primary">
+                Previous
+            </button>
+
+            <span id="questionChallengePageInfo"
+                  aria-live="polite">
+            </span>
+
+            <button type="button"
+                    id="questionChallengeNext"
+                    class="btn btn-outline-primary">
+                Next
+            </button>
+        </div>
+    </nav>
+
+    <section class="questions-results"
+             aria-labelledby="questionsResultsHeading">
+
+        <div class="questions-results-header">
+            <h2 id="questionsResultsHeading" class="h4 mb-0">
+                All Questions
+            </h2>
+
+            <span id="questionsResultCount"
+                  class="questions-result-count">
+                @questions.Count questions
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped align-middle questions-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center">Id</th>
+                        <th scope="col">Question</th>
+                        <th scope="col" class="text-center">Points</th>
+                        <th scope="col">Challenge</th>
+                        <th scope="col">Owner</th>
+                        <th scope="col" class="text-center">Image</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var question in questions)
+                    {
+                        <tr class="questions-table-row"
+                            data-challenge-id="@question.ChallengeId"
+                            data-question-search="@($"{question.Title} {question.Description}")">
+
+                            <td class="text-center">
+                                @question.QuestionId
+                            </td>
+
+                            <td>
+                                @question.Title
+                            </td>
+
+                            <td class="text-center">
+                                @question.Points
+                            </td>
+
+                            <td>
+                                <a asp-controller="Challenge"
+                                   asp-action="Details"
+                                   asp-route-id="@question.ChallengeId">
+                                    @question.Challenge.Title
+                                </a>
+                            </td>
+
+                            <td>
+                                <a asp-controller="User"
+                                   asp-action="Details"
+                                   asp-route-id="@question.Challenge.CreatedByUserId">
+                                    @question.Challenge.CreatedByUser.UserName
+                                </a>
+                            </td>
+
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(question.ImageUrl))
+                                {
+                                    <img src="@question.ImageUrl"
+                                         alt="@question.Title"
+                                         class="question-table-image" />
+                                }
+                                else
+                                {
+                                    <span class="question-table-no-image">
+                                        No image
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-nowrap gap-1 align-items-center questions-table-actions">
+                                    <a asp-controller="Question"
+                                       asp-action="Update"
+                                       asp-route-id="@question.QuestionId"
+                                       class="btn btn-sm btn-outline-warning">
+                                        Edit
+                                    </a>
+
+                                    <a asp-controller="Question"
+                                       asp-action="Delete"
+                                       asp-route-id="@question.QuestionId"
+                                       class="btn btn-sm btn-outline-danger">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="questionsNoResults"
+             class="alert alert-info"
+             hidden>
+            No questions match your search.
+        </div>
+
+        <div class="questions-table-pagination"
+             id="questionTablePagination"
+             hidden>
+
+            <button type="button"
+                    id="questionTablePrevious"
+                    class="btn btn-outline-primary">
+                Previous
+            </button>
+
+            <span id="questionTablePageInfo"
+                  aria-live="polite">
+            </span>
+
+            <button type="button"
+                    id="questionTableNext"
+                    class="btn btn-outline-primary">
+                Next
+            </button>
+        </div>
+    </section>
+}
+
+@section Scripts
+{
+    <script src="~/js/questionTable.js"
+            asp-append-version="true"
+            defer></script>
+}

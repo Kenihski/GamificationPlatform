@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GamificationPlatform.Models;
@@ -39,6 +40,55 @@ namespace GamificationPlatform.DAL
                     nameof(ChallengeRepository));
 
                 // Preserve the failure and its original stack trace.
+                throw;
+            }
+        }
+
+        // Searches published challenges by category, title and description.
+        public async Task<List<Challenge>> SearchPublishedChallengesAsync(
+            string filter,
+            string? searchTerm)
+        {
+            try
+            {
+                var query = _challengeDbContext.Challenges
+                    .AsNoTracking()
+                    .Include(c => c.Questions)
+                    .Where(c => c.IsPublished);
+
+                if (filter == "Core")
+                {
+                    query = query.Where(c => c.IsCore);
+                }
+                else if (filter == "Community")
+                {
+                    query = query.Where(c => !c.IsCore);
+                }
+
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    // SQLite LIKE is case-insensitive for ASCII characters.
+                    string term = $"%{searchTerm.Trim()}%";
+
+                    query = query.Where(c =>
+                        EF.Functions.Like(c.Title, term) ||
+                        (c.Description != null &&
+                         EF.Functions.Like(c.Description, term)));
+                }
+
+                return await query
+                    .OrderByDescending(c => c.IsCore)
+                    .ThenBy(c => c.ChallengeId)
+                    .ToListAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _logger.LogError(
+                    ex,
+                    "Database operation {Operation} failed in {Repository}.",
+                    nameof(SearchPublishedChallengesAsync),
+                    nameof(ChallengeRepository));
+
                 throw;
             }
         }

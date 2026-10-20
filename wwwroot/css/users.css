@@ -1,3 +1,4 @@
+
 /* User role badges */
 .user-role-badge {
     display: inline-flex;
@@ -25,9 +26,65 @@
     border-color: rgba(112, 137, 217, 0.5);
 }
 
+/* User challenge history navigation */
+.user-history-navigation {
+    margin-bottom: 24px;
+}
+
+.user-history-navigation-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.user-history-nav-button {
+    min-height: 52px;
+    padding: 10px 14px;
+    color: #dce7ff;
+    background: #1c2748;
+    border: 1px solid #50649d;
+    border-radius: 9px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.user-history-nav-button:hover {
+    background: #2d3c65;
+    border-color: #91adff;
+    color: #ffffff;
+}
+
+.user-history-nav-button[aria-pressed="true"] {
+    background: #405ac5;
+    border-color: #91adff;
+    color: #ffffff;
+}
+
+.user-history-nav-button:focus-visible {
+    outline: 3px solid #a5b8ff;
+    outline-offset: 3px;
+}
+
+.user-history-nav-button[hidden],
+.user-history-card[hidden] {
+    display: none !important;
+}
+
+.user-history-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+#historyPageInfo {
+    color: #d1d9ee;
+    font-size: 0.9rem;
+}
 
 /* User challenge history */
-
 .user-challenge-history {
     display: flex;
     flex-direction: column;
@@ -72,8 +129,67 @@
     margin-bottom: 0;
 }
 
+@media (max-width: 991px) {
+    .user-history-navigation-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .user-history-navigation-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 576px) {
     .user-history-card {
         padding: 16px;
+    }
+
+    .user-history-pagination {
+        gap: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .user-history-nav-button {
+        transition: none;
+    }
+}
+
+/* Users table search */
+.users-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 20px;
+}
+
+.users-table-header > div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.users-table-search {
+    flex: 0 0 288px;
+    max-width: 320px;
+}
+
+.users-table-row[hidden],
+#usersNoResults[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 767px) {
+    .users-table-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .users-table-search {
+        flex: none;
+        width: 100%;
+        max-width: none;
     }
 }

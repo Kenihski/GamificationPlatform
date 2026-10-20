@@ -32,19 +32,23 @@ namespace GamificationPlatform.Controllers
         }
 
         // Shows published challenges in a table.
-        public async Task<IActionResult> Table(string filter = "All")
+        public async Task<IActionResult> Table(
+            string filter = "All",
+            string? searchTerm = null)
         {
             var viewModel = await BuildChallengesViewModelAsync(
-                filter, "Table");
+                filter, "Table", searchTerm);
 
             return View(viewModel);
         }
 
         // Shows published challenges in a grid.
-        public async Task<IActionResult> Grid(string filter = "All")
+        public async Task<IActionResult> Grid(
+            string filter = "All",
+            string? searchTerm = null)
         {
             var viewModel = await BuildChallengesViewModelAsync(
-                filter, "Grid");
+                filter, "Grid", searchTerm);
 
             return View(viewModel);
         }
@@ -52,29 +56,17 @@ namespace GamificationPlatform.Controllers
         // Prepares challenge data shared by the Table and Grid views.
         private async Task<ChallengesViewModel> BuildChallengesViewModelAsync(
             string filter,
-            string viewMode)
+            string viewMode,
+            string? searchTerm)
         {
-            List<Challenge> challenges =
-                await _challengeRepository.GetPublishedChallengesAsync();
-
-            if (filter == "Core")
-            {
-                challenges = challenges.Where(c => c.IsCore).ToList();
-            }
-            else if (filter == "Community")
-            {
-                challenges = challenges.Where(c => !c.IsCore).ToList();
-            }
-            else
+            if (filter != "Core" && filter != "Community")
             {
                 filter = "All";
             }
 
-            // Show Core challenges first, followed by Community.
-            challenges = challenges
-                .OrderByDescending(c => c.IsCore)
-                .ThenBy(c => c.ChallengeId)
-                .ToList();
+            List<Challenge> challenges =
+                await _challengeRepository.SearchPublishedChallengesAsync(
+                    filter, searchTerm);
 
             foreach (var challenge in challenges)
             {
@@ -101,7 +93,8 @@ namespace GamificationPlatform.Controllers
                 challenges,
                 viewMode,
                 filter,
-                completedChallengeIds);
+                completedChallengeIds,
+                searchTerm);
         }
 
         // Shows challenges created by the logged-in user.
