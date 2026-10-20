@@ -10,27 +10,8 @@ namespace GamificationPlatform.DAL
             ChallengeDbContext context,
             UserManager<User> userManager)
         {
-            var extraUsers = new List<User>
-            {
-                new User { Id = 7, UserName = "Freya", Email = "freya@example.com" },
-                new User { Id = 8, UserName = "George", Email = "george@example.com" },
-                new User { Id = 9, UserName = "Hannah", Email = "hannah@example.com" },
-                new User { Id = 10, UserName = "Isaac", Email = "isaac@example.com" },
-                new User { Id = 11, UserName = "Julia", Email = "julia@example.com" },
-                new User { Id = 12, UserName = "Kevin", Email = "kevin@example.com" }
-            };
-
-            foreach (var user in extraUsers)
-            {
-                var result = await userManager.CreateAsync(user, "Password123!");
-
-                if (!result.Succeeded)
-                {
-                    throw new InvalidOperationException(
-                        $"Could not create {user.UserName}: " +
-                        string.Join("; ", result.Errors.Select(e => e.Description)));
-                }
-            }
+            // Users with IDs 7–12 are created by UserSeeder.
+            var extraUserIds = new[] { 7, 8, 9, 10, 11, 12 };
 
             var extraChallenges = new List<Challenge>
             {
@@ -293,14 +274,14 @@ namespace GamificationPlatform.DAL
                 now.AddDays(-6),
                 6);
 
-            for (int i = 0; i < extraUsers.Count; i++)
+            for (int i = 0; i < extraUserIds.Length; i++)
             {
                 int challengeId =
                     extraChallenges[1 + (i % 3)].ChallengeId;
 
                 AttemptSeeder.AddAttempt(
                     context,
-                    extraUsers[i].Id,
+                    extraUserIds[i],
                     challengeId,
                     i % 2 == 0 ? 1 : 0,
                     now.AddDays(-(3 + i)),
@@ -455,7 +436,7 @@ namespace GamificationPlatform.DAL
                     .Sum(q => q.Points);
             }
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

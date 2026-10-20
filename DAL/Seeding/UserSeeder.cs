@@ -11,8 +11,7 @@ namespace GamificationPlatform.DAL
             UserManager<User> userManager,
             RoleManager<IdentityRole<int>> roleManager)
         {
-            // Users
-            // --------------------------------
+            // All development test accounts.
             var users = new List<User>
             {
                 new User { Id = 1, UserName = "admin", Email = "admin@example.com" },
@@ -20,7 +19,13 @@ namespace GamificationPlatform.DAL
                 new User { Id = 3, UserName = "Bob", Email = "bob@example.com" },
                 new User { Id = 4, UserName = "Charlie", Email = "charlie@example.com" },
                 new User { Id = 5, UserName = "Emma", Email = "emma@example.com" },
-                new User { Id = 6, UserName = "David", Email = "david@example.com" }
+                new User { Id = 6, UserName = "David", Email = "david@example.com" },
+                new User { Id = 7, UserName = "Freya", Email = "freya@example.com" },
+                new User { Id = 8, UserName = "George", Email = "george@example.com" },
+                new User { Id = 9, UserName = "Hannah", Email = "hannah@example.com" },
+                new User { Id = 10, UserName = "Isaac", Email = "isaac@example.com" },
+                new User { Id = 11, UserName = "Julia", Email = "julia@example.com" },
+                new User { Id = 12, UserName = "Kevin", Email = "kevin@example.com" }
             };
 
             var roleResult = await roleManager.CreateAsync(
