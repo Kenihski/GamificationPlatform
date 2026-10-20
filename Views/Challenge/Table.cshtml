@@ -13,11 +13,13 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4 gap-3 flex-wrap">
 
+    <!-- Challenge category filters -->
     <div class="btn-group" role="group" aria-label="Filter challenges">
 
         <a asp-controller="Challenge"
            asp-action="Table"
            asp-route-filter="All"
+           asp-route-searchTerm="@Model.SearchTerm"
            class="btn @(Model.CurrentFilter == "All" ? "btn-primary" : "btn-outline-primary")">
             All
         </a>
@@ -25,6 +27,7 @@
         <a asp-controller="Challenge"
            asp-action="Table"
            asp-route-filter="Core"
+           asp-route-searchTerm="@Model.SearchTerm"
            class="btn @(Model.CurrentFilter == "Core" ? "btn-primary" : "btn-outline-primary")">
             Core
         </a>
@@ -32,17 +35,45 @@
         <a asp-controller="Challenge"
            asp-action="Table"
            asp-route-filter="Community"
+           asp-route-searchTerm="@Model.SearchTerm"
            class="btn @(Model.CurrentFilter == "Community" ? "btn-primary" : "btn-outline-primary")">
             Community
         </a>
 
     </div>
 
+    <!-- Search challenges -->
+    <form asp-controller="Challenge"
+          asp-action="Table"
+          method="get"
+          role="search"
+          class="d-flex gap-2 flex-grow-1"
+          style="max-width: 420px;">
+
+        <input type="hidden"
+               name="filter"
+               value="@Model.CurrentFilter" />
+
+        <input type="search"
+               name="searchTerm"
+               value="@Model.SearchTerm"
+               class="form-control"
+               placeholder="Search challenges..."
+               aria-label="Search challenges by title or description" />
+
+        <button type="submit" class="btn btn-outline-primary">
+            Search
+        </button>
+
+    </form>
+
+    <!-- Table and Grid view selection -->
     <div class="btn-group" role="group" aria-label="Choose challenge view">
 
         <a asp-controller="Challenge"
            asp-action="Table"
            asp-route-filter="@Model.CurrentFilter"
+           asp-route-searchTerm="@Model.SearchTerm"
            class="btn btn-primary"
            aria-current="page">
             Table
@@ -51,6 +82,7 @@
         <a asp-controller="Challenge"
            asp-action="Grid"
            asp-route-filter="@Model.CurrentFilter"
+           asp-route-searchTerm="@Model.SearchTerm"
            class="btn btn-outline-primary">
             Grid
         </a>
@@ -59,4 +91,13 @@
 
 </div>
 
-<partial name="_ChallengeTable" model="Model" />
+@if (!Model.Challenges.Any())
+{
+    <div class="alert alert-info" role="status">
+        No challenges found matching your search and filters.
+    </div>
+}
+else
+{
+    <partial name="_ChallengeTable" model="Model" />
+}

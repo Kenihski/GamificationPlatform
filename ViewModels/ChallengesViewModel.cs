@@ -1,3 +1,4 @@
+
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.ViewModels
@@ -11,6 +12,9 @@ namespace GamificationPlatform.ViewModels
         // Stores the selected challenge type filter.
         public string CurrentFilter { get; set; }
 
+        // Stores the current search text.
+        public string? SearchTerm { get; set; }
+
         // Stores the IDs of challenges completed
         // by the logged-in user.
         public HashSet<int> CompletedChallengeIds { get; set; }
@@ -19,11 +23,13 @@ namespace GamificationPlatform.ViewModels
             IEnumerable<Challenge> challenges,
             string? currentViewName,
             string currentFilter = "All",
-            IEnumerable<int>? completedChallengeIds = null)
+            IEnumerable<int>? completedChallengeIds = null,
+            string? searchTerm = null)
         {
             Challenges = challenges;
             CurrentViewName = currentViewName;
             CurrentFilter = currentFilter;
+            SearchTerm = searchTerm;
 
             CompletedChallengeIds =
                 completedChallengeIds?.ToHashSet()

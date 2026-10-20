@@ -4,20 +4,22 @@
 
 @{
     ViewData["Title"] = "User Details";
+
+    var challengeHistory = Model.ChallengeHistory.ToList();
 }
 
 <h2 class="my-4">@Model.User.UserName</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div id="successMessage" class="alert alert-success">
+    <div id="successMessage" class="alert alert-success" role="status">
         @TempData["SuccessMessage"]
     </div>
 }
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div id="errorMessage" class="alert alert-danger">
+    <div id="errorMessage" class="alert alert-danger" role="alert">
         @TempData["ErrorMessage"]
     </div>
 }
@@ -60,11 +62,11 @@ else
         <table class="table table-striped align-middle">
             <thead>
                 <tr>
-                    <th>Challenge</th>
-                    <th class="text-center">Questions</th>
-                    <th class="text-center">Max Points</th>
-                    <th class="text-center">Status</th>
-                    <th>Actions</th>
+                    <th scope="col">Challenge</th>
+                    <th scope="col" class="text-center">Questions</th>
+                    <th scope="col" class="text-center">Max Points</th>
+                    <th scope="col" class="text-center">Status</th>
+                    <th scope="col">Actions</th>
                 </tr>
             </thead>
 
@@ -161,9 +163,11 @@ else
     </div>
 }
 
-<h3 class="mt-5 mb-4">Challenge History</h3>
+<h3 id="challengeHistoryHeading" class="mt-5 mb-4">
+    Challenge History
+</h3>
 
-@if (!Model.ChallengeHistory.Any())
+@if (!challengeHistory.Any())
 {
     <div class="alert alert-info">
         This user has not completed any challenges yet.
@@ -171,15 +175,65 @@ else
 }
 else
 {
-    <div class="user-challenge-history">
-        @foreach (var challenge in Model.ChallengeHistory)
+    <nav class="user-history-navigation"
+         aria-labelledby="challengeHistoryHeading">
+
+        <div class="user-history-navigation-grid">
+            @for (var i = 0; i < challengeHistory.Count; i++)
+            {
+                var challenge = challengeHistory[i];
+
+                <button type="button"
+                        class="user-history-nav-button"
+                        data-history-index="@i"
+                        aria-controls="user-history-card-@i"
+                        aria-pressed="@(i == 0 ? "true" : "false")">
+                    @challenge.ChallengeTitle
+                </button>
+            }
+        </div>
+
+        @if (challengeHistory.Count > 12)
         {
-            <section class="user-history-card">
+            <div class="user-history-pagination">
+                <button type="button"
+                        id="historyPrevious"
+                        class="btn btn-outline-primary"
+                        disabled>
+                    Previous
+                </button>
+
+                <span id="historyPageInfo" aria-live="polite">
+                    Page 1 of @((challengeHistory.Count + 11) / 12)
+                </span>
+
+                <button type="button"
+                        id="historyNext"
+                        class="btn btn-outline-primary">
+                    Next
+                </button>
+            </div>
+        }
+    </nav>
+
+    <div class="user-challenge-history">
+        @for (var i = 0; i < challengeHistory.Count; i++)
+        {
+            var challenge = challengeHistory[i];
+            var attemptCount = challenge.Attempts.Count();
+
+            <section id="user-history-card-@i"
+                     class="user-history-card"
+                     aria-labelledby="user-history-title-@i"
+                     hidden="@(i != 0)">
+
                 <div class="user-history-card-header">
-                    <h4>@challenge.ChallengeTitle</h4>
+                    <h4 id="user-history-title-@i">
+                        @challenge.ChallengeTitle
+                    </h4>
 
                     <span class="user-history-attempt-count">
-                        @challenge.Attempts.Count() @(challenge.Attempts.Count() == 1 ? "attempt" : "attempts")
+                        @attemptCount @(attemptCount == 1 ? "attempt" : "attempts")
                     </span>
                 </div>
 
@@ -187,11 +241,11 @@ else
                     <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Status</th>
-                                <th>Attempt</th>
-                                <th>Time</th>
-                                <th>Score</th>
-                                <th>Completed</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Attempt</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">Score</th>
+                                <th scope="col">Completed</th>
                             </tr>
                         </thead>
 
@@ -249,5 +303,5 @@ else
 
 @section Scripts
 {
-    <script src="~/js/userDetails.js" defer></script>
+    <script src="~/js/userDetails.js" asp-append-version="true" defer></script>
 }
