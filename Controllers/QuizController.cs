@@ -1,7 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
@@ -14,23 +13,17 @@ namespace GamificationPlatform.Controllers
     {
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly UserManager<User> _userManager;
         private readonly IAchievementService _achievementService;
         private readonly ILogger<QuizController> _logger;
 
         public QuizController(
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
-            IUserRepository userRepository,
-            UserManager<User> userManager,
             IAchievementService achievementService,
             ILogger<QuizController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
-            _userRepository = userRepository;
-            _userManager = userManager;
             _achievementService = achievementService;
             _logger = logger;
         }
@@ -461,102 +454,14 @@ namespace GamificationPlatform.Controllers
                 return null;
             }
 
-            // Validate submitted choice answers.
-            foreach (var answer in answers)
+            if (!ValidateSubmittedAnswers(
+                challenge,
+                challengeAttemptId,
+                userId,
+                answers,
+                textAnswers))
             {
-                var question = challenge.Questions
-                    .FirstOrDefault(q =>
-                        q.QuestionId == answer.Key);
-
-                if (question == null ||
-                    question.QuestionType == "ShortAnswer")
-                {
-                    _logger.LogWarning(
-                        "User {UserId} submitted an invalid choice answer for question {QuestionId} in attempt {AttemptId}.",
-                        userId,
-                        answer.Key,
-                        challengeAttemptId);
-
-                    ModelState.AddModelError(
-                        "answers",
-                        "An answer does not belong to this challenge question.");
-
-                    return null;
-                }
-
-                var submittedOptionIds = answer.Value?
-                    .Distinct()
-                    .ToList()
-                    ?? new List<int>();
-
-                bool containsInvalidOption =
-                    submittedOptionIds.Any(optionId =>
-                        !question.Options.Any(option =>
-                            option.QuestionOptionId == optionId));
-
-                if (containsInvalidOption)
-                {
-                    _logger.LogWarning(
-                        "User {UserId} submitted an invalid option for question {QuestionId} in attempt {AttemptId}.",
-                        userId,
-                        answer.Key,
-                        challengeAttemptId);
-
-                    ModelState.AddModelError(
-                        "answers",
-                        "An answer does not belong to this challenge question.");
-
-                    return null;
-                }
-
-                if (question.QuestionType == "SingleChoice" &&
-                    submittedOptionIds.Count > 1)
-                {
-                    _logger.LogWarning(
-                        "User {UserId} submitted multiple options for single choice question {QuestionId}.",
-                        userId,
-                        question.QuestionId);
-
-                    ModelState.AddModelError(
-                        "answers",
-                        "A single choice question can only have one selected answer.");
-
-                    return null;
-                }
-            }
-
-            // Validate submitted short answers.
-            foreach (var textAnswer in textAnswers)
-            {
-                var question = challenge.Questions
-                    .FirstOrDefault(q =>
-                        q.QuestionId == textAnswer.Key);
-
-                if (question == null ||
-                    question.QuestionType != "ShortAnswer")
-                {
-                    _logger.LogWarning(
-                        "User {UserId} submitted an invalid text answer for question {QuestionId} in attempt {AttemptId}.",
-                        userId,
-                        textAnswer.Key,
-                        challengeAttemptId);
-
-                    ModelState.AddModelError(
-                        "textAnswers",
-                        "A text answer does not belong to this challenge question.");
-
-                    return null;
-                }
-
-                if (textAnswer.Value != null &&
-                    textAnswer.Value.Length > 200)
-                {
-                    ModelState.AddModelError(
-                        "textAnswers",
-                        "A short answer cannot be longer than 200 characters.");
-
-                    return null;
-                }
+                return null;
             }
 
             // Enforce the time limit on the server.
@@ -689,18 +594,7 @@ namespace GamificationPlatform.Controllers
             await _attemptRepository.SaveChangesAsync();
 
             // Recheck achievements after completion.
-            var users = await _userRepository.GetAllUsersAsync();
-
-            foreach (var user in users)
-            {
-                if (await _userManager.IsInRoleAsync(user, "Admin"))
-                {
-                    continue;
-                }
-
-                await _achievementService
-                    .CheckAchievementsAsync(user.Id);
-            }
+            await _achievementService.CheckAchievementsForAllUsersAsync();
 
             _logger.LogInformation(
                 "User {UserId} completed attempt {AttemptId} for challenge {ChallengeId} with score {Score}/{MaxScore}.",
@@ -711,6 +605,115 @@ namespace GamificationPlatform.Controllers
                 result.MaxScore);
 
             return result;
+        }
+
+        // Validates submitted answers before scoring and saving them.
+        private bool ValidateSubmittedAnswers(
+            Challenge challenge,
+            int challengeAttemptId,
+            int userId,
+            Dictionary<int, List<int>> answers,
+            Dictionary<int, string> textAnswers)
+        {
+            // Validate submitted choice answers.
+            foreach (var answer in answers)
+            {
+                var question = challenge.Questions
+                    .FirstOrDefault(q =>
+                        q.QuestionId == answer.Key);
+
+                if (question == null ||
+                    question.QuestionType == "ShortAnswer")
+                {
+                    _logger.LogWarning(
+                        "User {UserId} submitted an invalid choice answer for question {QuestionId} in attempt {AttemptId}.",
+                        userId,
+                        answer.Key,
+                        challengeAttemptId);
+
+                    ModelState.AddModelError(
+                        "answers",
+                        "An answer does not belong to this challenge question.");
+
+                    return false;
+                }
+
+                var submittedOptionIds = answer.Value?
+                    .Distinct()
+                    .ToList()
+                    ?? new List<int>();
+
+                bool containsInvalidOption =
+                    submittedOptionIds.Any(optionId =>
+                        !question.Options.Any(option =>
+                            option.QuestionOptionId == optionId));
+
+                if (containsInvalidOption)
+                {
+                    _logger.LogWarning(
+                        "User {UserId} submitted an invalid option for question {QuestionId} in attempt {AttemptId}.",
+                        userId,
+                        answer.Key,
+                        challengeAttemptId);
+
+                    ModelState.AddModelError(
+                        "answers",
+                        "An answer does not belong to this challenge question.");
+
+                    return false;
+                }
+
+                if (question.QuestionType == "SingleChoice" &&
+                    submittedOptionIds.Count > 1)
+                {
+                    _logger.LogWarning(
+                        "User {UserId} submitted multiple options for single choice question {QuestionId}.",
+                        userId,
+                        question.QuestionId);
+
+                    ModelState.AddModelError(
+                        "answers",
+                        "A single choice question can only have one selected answer.");
+
+                    return false;
+                }
+            }
+
+            // Validate submitted short answers.
+            foreach (var textAnswer in textAnswers)
+            {
+                var question = challenge.Questions
+                    .FirstOrDefault(q =>
+                        q.QuestionId == textAnswer.Key);
+
+                if (question == null ||
+                    question.QuestionType != "ShortAnswer")
+                {
+                    _logger.LogWarning(
+                        "User {UserId} submitted an invalid text answer for question {QuestionId} in attempt {AttemptId}.",
+                        userId,
+                        textAnswer.Key,
+                        challengeAttemptId);
+
+                    ModelState.AddModelError(
+                        "textAnswers",
+                        "A text answer does not belong to this challenge question.");
+
+                    return false;
+                }
+
+                if (textAnswer.Value != null &&
+                    textAnswer.Value.Length > 200)
+                {
+                    ModelState.AddModelError(
+                        "textAnswers",
+                        "A short answer cannot be longer than 200 characters.");
+
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         // Normalizes a short answer before comparison.

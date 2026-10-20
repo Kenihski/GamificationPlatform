@@ -1,5 +1,5 @@
+
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -16,20 +16,17 @@ namespace GamificationPlatform.Controllers
         private readonly IAchievementRepository _achievementRepository;
         private readonly IUserRepository _userRepository;
         private readonly IAchievementService _achievementService;
-        private readonly UserManager<User> _userManager;
         private readonly ILogger<AchievementController> _logger;
 
         public AchievementController(
             IAchievementRepository achievementRepository,
             IUserRepository userRepository,
             IAchievementService achievementService,
-            UserManager<User> userManager,
             ILogger<AchievementController> logger)
         {
             _achievementRepository = achievementRepository;
             _userRepository = userRepository;
             _achievementService = achievementService;
-            _userManager = userManager;
             _logger = logger;
         }
 
@@ -40,16 +37,17 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
+
             if (user == null)
             {
                 return NotFound();
@@ -68,20 +66,20 @@ namespace GamificationPlatform.Controllers
             int userId,
             string username)
         {
-
             // Only published achievements are shown to users.
             // Achievements are grouped by type and requirement.
             var achievements =
                 (await _achievementRepository.GetActiveAsync())
-                .OrderBy(a => GetAchievementCategoryOrder(a))
-                .ThenBy(a => a.RequirementValue)
-                .ThenBy(a => a.AchievementId)
-                .ToList();
+                    .OrderBy(a => GetAchievementCategoryOrder(a))
+                    .ThenBy(a => a.RequirementValue)
+                    .ThenBy(a => a.AchievementId)
+                    .ToList();
+
             var userAchievements =
                 (await _achievementRepository
                     .GetUserAchievementsAsync(userId))
-                .Where(ua => ua.Achievement.IsActive)
-                .ToList();
+                    .Where(ua => ua.Achievement.IsActive)
+                    .ToList();
 
             // Goals do not contribute Achievement Points.
             int totalPoints =
@@ -94,78 +92,74 @@ namespace GamificationPlatform.Controllers
                 achievements
                     .Where(a => !a.IsGoal)
                     .Sum(a => a.Points);
-            var viewModel =
-                new AchievementsViewModel
-                {
-                    Username = username,
-                    TotalPoints = totalPoints,
-                    MaxPoints = maxPoints,
-                    UnlockedCount = userAchievements.Count,
-                    TotalAchievements = achievements.Count
-                };
+
+            var viewModel = new AchievementsViewModel
+            {
+                Username = username,
+                TotalPoints = totalPoints,
+                MaxPoints = maxPoints,
+                UnlockedCount = userAchievements.Count,
+                TotalAchievements = achievements.Count
+            };
 
             // Creates one row for every published achievement.
             foreach (var achievement in achievements)
             {
                 var unlocked =
-                    userAchievements.FirstOrDefault(
-                        ua =>
-                            ua.AchievementId ==
-                            achievement.AchievementId);
+                    userAchievements.FirstOrDefault(ua =>
+                        ua.AchievementId == achievement.AchievementId);
+
                 viewModel.Achievements.Add(
                     new AchievementItemViewModel
                     {
-                        AchievementId =
-                            achievement.AchievementId,
+                        AchievementId = achievement.AchievementId,
                         Name = achievement.Name,
-                        Description =
-                            achievement.Description,
+                        Description = achievement.Description,
                         Points = achievement.Points,
                         IsGoal = achievement.IsGoal,
                         IsUnlocked = unlocked != null,
                         UnlockedAt = unlocked?.UnlockedAt
                     });
             }
+
             SetMilestone(viewModel);
+
             _logger.LogInformation(
                 "Achievements page viewed by user {UserId}.",
                 userId);
+
             return View("Index", viewModel);
         }
 
         // Shows all achievements to admins.
         private async Task<IActionResult> AdminIndex()
         {
-
             // Achievements are grouped by type and requirement.
             var achievements =
                 (await _achievementRepository.GetAllAsync())
-                .OrderBy(a => GetAchievementCategoryOrder(a))
-                .ThenBy(a => a.RequirementValue)
-                .ThenBy(a => a.AchievementId)
-                .ToList();
-            var viewModel =
-                achievements.Select(
-                    achievement =>
-                        new AchievementAdminViewModel
-                        {
-                            AchievementId =
-                                achievement.AchievementId,
-                            Name = achievement.Name,
-                            Description =
-                                achievement.Description,
-                            Points = achievement.Points,
-                            Type = achievement.Type,
-                            RequirementValue =
-                                achievement.RequirementValue,
-                            IsActive =
-                                achievement.IsActive,
-                            IsGoal =
-                                achievement.IsGoal
-                        })
+                    .OrderBy(a => GetAchievementCategoryOrder(a))
+                    .ThenBy(a => a.RequirementValue)
+                    .ThenBy(a => a.AchievementId)
                     .ToList();
+
+            var viewModel =
+                achievements.Select(achievement =>
+                    new AchievementAdminViewModel
+                    {
+                        AchievementId = achievement.AchievementId,
+                        Name = achievement.Name,
+                        Description = achievement.Description,
+                        Points = achievement.Points,
+                        Type = achievement.Type,
+                        RequirementValue = achievement.RequirementValue,
+                        IsActive = achievement.IsActive,
+                        IsGoal = achievement.IsGoal
+                    })
+                    .ToList();
+
             _logger.LogInformation(
                 "Achievement management page viewed by admin.");
+
             return View("AdminIndex", viewModel);
         }
 
@@ -175,16 +169,17 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
+
             if (user == null)
             {
                 return NotFound();
@@ -195,12 +190,12 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            var viewModel =
-                new AchievementAdminViewModel
-                {
-                    IsActive = true,
-                    Points = 5
-                };
+            var viewModel = new AchievementAdminViewModel
+            {
+                IsActive = true,
+                Points = 5
+            };
+
             return View(viewModel);
         }
 
@@ -212,16 +207,17 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
+
             if (user == null)
             {
                 return NotFound();
@@ -232,48 +228,7 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
-            // Only regular achievement types can be created by admins.
-            var validTypes = new[]
-            {
-                "ChallengesCompleted",
-                "ScorePercentage",
-                "SecondAttemptImprovement",
-                "SameChallengeAttempts",
-                "ChallengesCreated",
-                "CreatorUniqueParticipants",
-                "ChallengeLeaderboardPosition",
-                "CoreLeaderboardPosition"
-            };
-            if (!validTypes.Contains(viewModel.Type))
-            {
-                ModelState.AddModelError(
-                    nameof(viewModel.Type),
-                    "Invalid achievement type.");
-            }
-
-            // Only predefined AP values are allowed.
-            var validPoints = new[]
-            {
-                5,
-                10,
-                15,
-                20
-            };
-            if (!validPoints.Contains(viewModel.Points))
-            {
-                ModelState.AddModelError(
-                    nameof(viewModel.Points),
-                    "AP must be 5, 10, 15 or 20.");
-            }
-
-            // Percentage requirements cannot be above 100.
-            if (viewModel.Type == "ScorePercentage" &&
-                viewModel.RequirementValue > 100)
-            {
-                ModelState.AddModelError(
-                    nameof(viewModel.RequirementValue),
-                    "Percentage requirements cannot be above 100.");
-            }
+            ValidateAchievement(viewModel);
 
             // Goals are system-defined and cannot be created manually.
             if (viewModel.IsGoal)
@@ -287,20 +242,20 @@ namespace GamificationPlatform.Controllers
             {
                 return View(viewModel);
             }
-            var achievement =
-                new Achievement
-                {
-                    Name = viewModel.Name,
-                    Description = viewModel.Description,
-                    Points = viewModel.Points,
-                    Type = viewModel.Type,
-                    RequirementValue =
-                        viewModel.RequirementValue,
-                    IsActive = viewModel.IsActive,
 
-                    // Admin-created achievements are always regular.
-                    IsGoal = false
-                };
+            var achievement = new Achievement
+            {
+                Name = viewModel.Name,
+                Description = viewModel.Description,
+                Points = viewModel.Points,
+                Type = viewModel.Type,
+                RequirementValue = viewModel.RequirementValue,
+                IsActive = viewModel.IsActive,
+
+                // Admin-created achievements are always regular.
+                IsGoal = false
+            };
+
             await _achievementRepository.AddAsync(achievement);
             await _achievementRepository.SaveChangesAsync();
 
@@ -308,12 +263,15 @@ namespace GamificationPlatform.Controllers
             // when a published achievement is created.
             if (achievement.IsActive)
             {
-                await CheckAchievementsForAllUsersAsync();
+                await _achievementService
+                    .CheckAchievementsForAllUsersAsync();
             }
+
             _logger.LogInformation(
                 "Achievement {AchievementName} created by admin {UserId}.",
                 achievement.Name,
                 userId);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -323,16 +281,17 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
+
             if (user == null)
             {
                 return NotFound();
@@ -342,8 +301,10 @@ namespace GamificationPlatform.Controllers
             {
                 return Forbid();
             }
+
             var achievement =
                 await _achievementRepository.GetByIdAsync(id);
+
             if (achievement == null)
             {
                 return NotFound();
@@ -356,26 +317,18 @@ namespace GamificationPlatform.Controllers
                     "System goals cannot be edited.");
             }
 
-            var viewModel =
-                new AchievementAdminViewModel
-                {
-                    AchievementId =
-                        achievement.AchievementId,
-                    Name =
-                        achievement.Name,
-                    Description =
-                        achievement.Description,
-                    Points =
-                        achievement.Points,
-                    Type =
-                        achievement.Type,
-                    RequirementValue =
-                        achievement.RequirementValue,
-                    IsActive =
-                        achievement.IsActive,
-                    IsGoal =
-                        achievement.IsGoal
-                };
+            var viewModel = new AchievementAdminViewModel
+            {
+                AchievementId = achievement.AchievementId,
+                Name = achievement.Name,
+                Description = achievement.Description,
+                Points = achievement.Points,
+                Type = achievement.Type,
+                RequirementValue = achievement.RequirementValue,
+                IsActive = achievement.IsActive,
+                IsGoal = achievement.IsGoal
+            };
+
             return View(viewModel);
         }
 
@@ -387,16 +340,17 @@ namespace GamificationPlatform.Controllers
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (userIdString == null)
             {
                 return Unauthorized();
             }
 
-            int userId =
-                int.Parse(userIdString);
+            int userId = int.Parse(userIdString);
 
             var user =
                 await _userRepository.GetUserByIdAsync(userId);
+
             if (user == null)
             {
                 return NotFound();
@@ -406,9 +360,11 @@ namespace GamificationPlatform.Controllers
             {
                 return Forbid();
             }
+
             var achievement =
                 await _achievementRepository.GetByIdAsync(
                     viewModel.AchievementId);
+
             if (achievement == null)
             {
                 return NotFound();
@@ -420,6 +376,279 @@ namespace GamificationPlatform.Controllers
                 return BadRequest(
                     "System goals cannot be edited.");
             }
+
+            ValidateAchievement(viewModel);
+
+            if (!ModelState.IsValid)
+            {
+                // Keep database values for properties
+                // that are not editable in the form.
+                viewModel.IsActive = achievement.IsActive;
+                viewModel.IsGoal = achievement.IsGoal;
+
+                return View(viewModel);
+            }
+
+            achievement.Name = viewModel.Name;
+            achievement.Description = viewModel.Description;
+            achievement.Points = viewModel.Points;
+            achievement.Type = viewModel.Type;
+            achievement.RequirementValue =
+                viewModel.RequirementValue;
+
+            // Publishing is handled separately.
+            // Edit does not change IsActive or IsGoal.
+            _achievementRepository.Update(achievement);
+            await _achievementRepository.SaveChangesAsync();
+
+            // A changed requirement may now be satisfied
+            // by existing users.
+            if (achievement.IsActive)
+            {
+                await _achievementService
+                    .CheckAchievementsForAllUsersAsync();
+            }
+
+            _logger.LogInformation(
+                "Achievement {AchievementId} edited by admin {UserId}.",
+                achievement.AchievementId,
+                userId);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Shows the delete confirmation page.
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userIdString =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdString);
+
+            var user =
+                await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            var achievement =
+                await _achievementRepository.GetByIdAsync(id);
+
+            if (achievement == null)
+            {
+                return NotFound();
+            }
+
+            // System goals cannot be deleted.
+            if (achievement.IsGoal)
+            {
+                return BadRequest(
+                    "System goals cannot be deleted.");
+            }
+
+            var viewModel = new AchievementAdminViewModel
+            {
+                AchievementId = achievement.AchievementId,
+                Name = achievement.Name,
+                Description = achievement.Description,
+                Points = achievement.Points,
+                Type = achievement.Type,
+                RequirementValue = achievement.RequirementValue,
+                IsActive = achievement.IsActive,
+                IsGoal = achievement.IsGoal
+            };
+
+            return View(viewModel);
+        }
+
+        // Deletes an achievement after confirmation.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var userIdString =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdString);
+
+            var user =
+                await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            var achievement =
+                await _achievementRepository.GetByIdAsync(id);
+
+            if (achievement == null)
+            {
+                return NotFound();
+            }
+
+            // System goals cannot be deleted.
+            if (achievement.IsGoal)
+            {
+                return BadRequest(
+                    "System goals cannot be deleted.");
+            }
+
+            _achievementRepository.Delete(achievement);
+            await _achievementRepository.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Achievement {AchievementId} deleted by admin {UserId}.",
+                achievement.AchievementId,
+                userId);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Publishes a regular achievement so users can unlock it.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Publish(int id)
+        {
+            var userIdString =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdString);
+
+            var user =
+                await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            var achievement =
+                await _achievementRepository.GetByIdAsync(id);
+
+            if (achievement == null)
+            {
+                return NotFound();
+            }
+
+            // System goals cannot be changed by admins.
+            if (achievement.IsGoal)
+            {
+                return BadRequest(
+                    "System goals cannot be changed.");
+            }
+
+            achievement.IsActive = true;
+
+            _achievementRepository.Update(achievement);
+            await _achievementRepository.SaveChangesAsync();
+
+            // Existing normal users are checked when
+            // an achievement becomes available.
+            await _achievementService
+                .CheckAchievementsForAllUsersAsync();
+
+            _logger.LogInformation(
+                "Achievement {AchievementId} published by admin {UserId}.",
+                id,
+                userId);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Unpublishes a regular achievement.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Unpublish(int id)
+        {
+            var userIdString =
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userIdString == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdString);
+
+            var user =
+                await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            var achievement =
+                await _achievementRepository.GetByIdAsync(id);
+
+            if (achievement == null)
+            {
+                return NotFound();
+            }
+
+            // System goals cannot be changed by admins.
+            if (achievement.IsGoal)
+            {
+                return BadRequest(
+                    "System goals cannot be changed.");
+            }
+
+            achievement.IsActive = false;
+
+            _achievementRepository.Update(achievement);
+            await _achievementRepository.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Achievement {AchievementId} unpublished by admin {UserId}.",
+                id,
+                userId);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Validates the rules for regular achievements.
+        private void ValidateAchievement(
+            AchievementAdminViewModel viewModel)
+        {
             var validTypes = new[]
             {
                 "ChallengesCompleted",
@@ -431,19 +660,16 @@ namespace GamificationPlatform.Controllers
                 "ChallengeLeaderboardPosition",
                 "CoreLeaderboardPosition"
             };
+
             if (!validTypes.Contains(viewModel.Type))
             {
                 ModelState.AddModelError(
                     nameof(viewModel.Type),
                     "Invalid achievement type.");
             }
-            var validPoints = new[]
-            {
-                5,
-                10,
-                15,
-                20
-            };
+
+            var validPoints = new[] { 5, 10, 15, 20 };
+
             if (!validPoints.Contains(viewModel.Points))
             {
                 ModelState.AddModelError(
@@ -458,287 +684,18 @@ namespace GamificationPlatform.Controllers
                     nameof(viewModel.RequirementValue),
                     "Percentage requirements cannot be above 100.");
             }
-
-            if (!ModelState.IsValid)
-            {
-
-                // Keep database values for properties
-                // that are not editable in the form.
-                viewModel.IsActive =
-                    achievement.IsActive;
-                viewModel.IsGoal =
-                    achievement.IsGoal;
-                return View(viewModel);
-            }
-            achievement.Name =
-                viewModel.Name;
-            achievement.Description =
-                viewModel.Description;
-            achievement.Points =
-                viewModel.Points;
-            achievement.Type =
-                viewModel.Type;
-            achievement.RequirementValue =
-                viewModel.RequirementValue;
-
-            // Publishing is handled separately.
-            // Edit does not change IsActive or IsGoal.
-            _achievementRepository.Update(achievement);
-            await _achievementRepository.SaveChangesAsync();
-
-            // A changed requirement may now be satisfied
-            // by existing users.
-            if (achievement.IsActive)
-            {
-                await CheckAchievementsForAllUsersAsync();
-            }
-            _logger.LogInformation(
-                "Achievement {AchievementId} edited by admin {UserId}.",
-                achievement.AchievementId,
-                userId);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // Shows the delete confirmation page.
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var userIdString =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userIdString == null)
-            {
-                return Unauthorized();
-            }
-
-            int userId =
-                int.Parse(userIdString);
-
-            var user =
-                await _userRepository.GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-            var achievement =
-                await _achievementRepository.GetByIdAsync(id);
-            if (achievement == null)
-            {
-                return NotFound();
-            }
-
-            // System goals cannot be deleted.
-            if (achievement.IsGoal)
-            {
-                return BadRequest(
-                    "System goals cannot be deleted.");
-            }
-
-            var viewModel =
-                new AchievementAdminViewModel
-                {
-                    AchievementId =
-                        achievement.AchievementId,
-                    Name =
-                        achievement.Name,
-                    Description =
-                        achievement.Description,
-                    Points =
-                        achievement.Points,
-                    Type =
-                        achievement.Type,
-                    RequirementValue =
-                        achievement.RequirementValue,
-                    IsActive =
-                        achievement.IsActive,
-                    IsGoal =
-                        achievement.IsGoal
-                };
-            return View(viewModel);
-        }
-
-        // Deletes an achievement after confirmation.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var userIdString =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userIdString == null)
-            {
-                return Unauthorized();
-            }
-
-            int userId =
-                int.Parse(userIdString);
-
-            var user =
-                await _userRepository.GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-            var achievement =
-                await _achievementRepository.GetByIdAsync(id);
-            if (achievement == null)
-            {
-                return NotFound();
-            }
-
-            // System goals cannot be deleted.
-            if (achievement.IsGoal)
-            {
-                return BadRequest(
-                    "System goals cannot be deleted.");
-            }
-            _achievementRepository.Delete(achievement);
-            await _achievementRepository.SaveChangesAsync();
-            _logger.LogInformation(
-                "Achievement {AchievementId} deleted by admin {UserId}.",
-                achievement.AchievementId,
-                userId);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // Publishes a regular achievement so users can unlock it.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Publish(int id)
-        {
-            var userIdString =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userIdString == null)
-            {
-                return Unauthorized();
-            }
-
-            int userId =
-                int.Parse(userIdString);
-
-            var user =
-                await _userRepository.GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-            var achievement =
-                await _achievementRepository.GetByIdAsync(id);
-            if (achievement == null)
-            {
-                return NotFound();
-            }
-
-            // System goals cannot be changed by admins.
-            if (achievement.IsGoal)
-            {
-                return BadRequest(
-                    "System goals cannot be changed.");
-            }
-            achievement.IsActive = true;
-            _achievementRepository.Update(achievement);
-            await _achievementRepository.SaveChangesAsync();
-
-            // Existing normal users are checked when
-            // an achievement becomes available.
-            await CheckAchievementsForAllUsersAsync();
-            _logger.LogInformation(
-                "Achievement {AchievementId} published by admin {UserId}.",
-                id,
-                userId);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // Unpublishes a regular achievement.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Unpublish(int id)
-        {
-            var userIdString =
-                User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userIdString == null)
-            {
-                return Unauthorized();
-            }
-
-            int userId =
-                int.Parse(userIdString);
-
-            var user =
-                await _userRepository.GetUserByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-            var achievement =
-                await _achievementRepository.GetByIdAsync(id);
-            if (achievement == null)
-            {
-                return NotFound();
-            }
-
-            // System goals cannot be changed by admins.
-            if (achievement.IsGoal)
-            {
-                return BadRequest(
-                    "System goals cannot be changed.");
-            }
-            achievement.IsActive = false;
-            _achievementRepository.Update(achievement);
-            await _achievementRepository.SaveChangesAsync();
-            _logger.LogInformation(
-                "Achievement {AchievementId} unpublished by admin {UserId}.",
-                id,
-                userId);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // Checks achievement requirements for all normal users.
-        private async Task CheckAchievementsForAllUsersAsync()
-        {
-            var users =
-                await _userRepository.GetAllUsersAsync();
-            foreach (var user in users)
-            {
-
-                // Admins do not participate in achievements.
-                if (await _userManager.IsInRoleAsync(user, "Admin"))
-                {
-                    continue;
-                }
-                await _achievementService.CheckAchievementsAsync(
-                    user.Id);
-            }
         }
 
         // Defines the order in which achievement categories are displayed.
         private static int GetAchievementCategoryOrder(
             Achievement achievement)
         {
-
             // Milestone goals are always shown last.
             if (achievement.IsGoal)
             {
                 return 7;
             }
+
             return achievement.Type switch
             {
                 "ChallengesCompleted" => 1,
@@ -758,18 +715,14 @@ namespace GamificationPlatform.Controllers
         private static void SetMilestone(
             AchievementsViewModel viewModel)
         {
-            int maxPoints =
-                viewModel.MaxPoints;
-            int totalPoints =
-                viewModel.TotalPoints;
+            int maxPoints = viewModel.MaxPoints;
+            int totalPoints = viewModel.TotalPoints;
 
             // Handles an empty achievement catalogue.
             if (maxPoints <= 0)
             {
-                viewModel.MilestoneName =
-                    "Getting Started";
-                viewModel.MilestoneIcon =
-                    "🌱";
+                viewModel.MilestoneName = "Getting Started";
+                viewModel.MilestoneIcon = "🌱";
                 viewModel.MilestoneMessage =
                     "Every expert has to start somewhere.";
                 viewModel.ProgressPercent = 0;
@@ -777,6 +730,7 @@ namespace GamificationPlatform.Controllers
                 viewModel.NextMilestonePoints = 0;
                 return;
             }
+
             int bronze =
                 (int)Math.Ceiling(maxPoints * 0.20);
             int silver =
@@ -785,20 +739,16 @@ namespace GamificationPlatform.Controllers
                 (int)Math.Ceiling(maxPoints * 0.60);
             int diamond =
                 (int)Math.Ceiling(maxPoints * 0.80);
-            int legend =
-                maxPoints;
+            int legend = maxPoints;
+
             if (totalPoints >= legend)
             {
-                viewModel.MilestoneName =
-                    "Legend";
-                viewModel.MilestoneIcon =
-                    "👑";
+                viewModel.MilestoneName = "Legend";
+                viewModel.MilestoneIcon = "👑";
                 viewModel.MilestoneMessage =
                     "Congratulations! You have officially achieved maximum knowledge. There is clearly nothing left to learn.";
-                viewModel.CurrentMilestonePoints =
-                    legend;
-                viewModel.NextMilestonePoints =
-                    legend;
+                viewModel.CurrentMilestonePoints = legend;
+                viewModel.NextMilestonePoints = legend;
                 viewModel.ProgressPercent = 100;
                 return;
             }
@@ -850,6 +800,7 @@ namespace GamificationPlatform.Controllers
                     silver);
                 return;
             }
+
             SetMilestoneValues(
                 viewModel,
                 "Getting Started",
@@ -868,29 +819,28 @@ namespace GamificationPlatform.Controllers
             int currentMilestone,
             int nextMilestone)
         {
-            viewModel.MilestoneName =
-                name;
-            viewModel.MilestoneIcon =
-                icon;
-            viewModel.MilestoneMessage =
-                message;
-            viewModel.CurrentMilestonePoints =
-                currentMilestone;
-            viewModel.NextMilestonePoints =
-                nextMilestone;
+            viewModel.MilestoneName = name;
+            viewModel.MilestoneIcon = icon;
+            viewModel.MilestoneMessage = message;
+            viewModel.CurrentMilestonePoints = currentMilestone;
+            viewModel.NextMilestonePoints = nextMilestone;
+
             int milestoneSize =
                 nextMilestone - currentMilestone;
+
             int pointsInMilestone =
-                viewModel.TotalPoints -
-                currentMilestone;
+                viewModel.TotalPoints - currentMilestone;
+
             if (milestoneSize <= 0)
             {
                 viewModel.ProgressPercent = 100;
                 return;
             }
+
             double progress =
                 (double)pointsInMilestone /
                 milestoneSize * 100;
+
             viewModel.ProgressPercent =
                 Math.Clamp(
                     (int)Math.Round(progress),
