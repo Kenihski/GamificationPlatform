@@ -88,7 +88,7 @@
                 {
                     @if (isUnpublishedTest)
                     {
-                        <div class="alert alert-info">
+                        <div class="challenge-details-notice">
                             <strong>Unpublished Challenge</strong>
                             <div>This challenge is not published yet. You can take it to test how it works before publishing.</div>
                         </div>
@@ -96,7 +96,9 @@
                 }
                 else if (!hasQuestions && (isOwner || isAdmin))
                 {
-                    <div class="alert alert-info">Add at least one question before starting this challenge.</div>
+                    <div class="challenge-details-notice">
+                        Add at least one question before starting this challenge.
+                    </div>
                 }
             }
 
@@ -178,14 +180,18 @@
                         {
                             <form asp-controller="Challenge" asp-action="MakeCommunity"
                                   asp-route-id="@Model.Challenge.ChallengeId" method="post">
-                                <button type="submit" class="btn btn-outline-primary">Make Community</button>
+                                <button type="submit" class="btn my-challenges-type-button featured-badge-community">
+                                    Community
+                                </button>
                             </form>
                         }
                         else
                         {
                             <form asp-controller="Challenge" asp-action="MakeCore"
                                   asp-route-id="@Model.Challenge.ChallengeId" method="post">
-                                <button type="submit" class="btn btn-outline-primary">Make Core</button>
+                                <button type="submit" class="btn my-challenges-type-button featured-badge-core">
+                                    Core
+                                </button>
                             </form>
                         }
                     }
@@ -229,7 +235,9 @@
             <div class="collapse@(Model.ShowQuestions ? " show" : "")" id="questionOverview">
                 @if (!Model.Challenge.Questions.Any())
                 {
-                    <div class="alert alert-info">No questions have been added yet.</div>
+                    <div class="challenge-details-notice">
+                        No questions have been added yet.
+                    </div>
                 }
                 else
                 {

@@ -24,16 +24,18 @@
 }
 
 .challenge-details-image {
+    position: relative;
     min-width: 0;
     min-height: 420px;
     background: #0c1230;
 }
 
 .challenge-details-image img {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
-    min-height: 420px;
     object-fit: cover;
     object-position: center;
 }
@@ -137,16 +139,62 @@
     max-width: 100%;
 }
 
+/* Publish button */
+.challenge-details-panel .btn-success {
+    background: #123e31;
+    border: 1px solid #176b50;
+    border-radius: 8px;
+    color: #91efc4;
+    font-weight: 600;
+}
+
+.challenge-details-panel .btn-success:hover {
+    background: #195441;
+    border-color: #329778;
+    color: #ffffff;
+}
+
+.challenge-details-panel .btn-success:focus-visible {
+    outline: 2px solid #a7e7d8;
+    outline-offset: 3px;
+}
+
+
+/* Core and Community buttons in Challenge Details */
+.challenge-details-panel .my-challenges-type-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    border-radius: 8px;
+}
+
+/* Informational messages */
+.challenge-details-notice {
+    padding: 14px 18px;
+    border: 1px solid #465477;
+    border-left: 4px solid #7089d9;
+    border-radius: 8px;
+    background-color: #1c2745;
+    color: #dce5ff;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.challenge-details-content > .challenge-details-notice {
+    max-width: 100%;
+    margin-bottom: 16px;
+}
+
 /* Responsive layout */
 @media (max-width: 991.98px) {
     .challenge-details-overview {
         grid-template-columns: 1fr;
     }
 
-    .challenge-details-image,
-    .challenge-details-image img {
-        height: 300px;
+    .challenge-details-image {
         min-height: 0;
+        height: 300px;
     }
 }
 
@@ -155,8 +203,7 @@
         padding-top: 18px;
     }
 
-    .challenge-details-image,
-    .challenge-details-image img {
+    .challenge-details-image {
         height: 210px;
     }
 

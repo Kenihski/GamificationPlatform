@@ -77,6 +77,7 @@ builder.Services.AddScoped<IUserImageRepository, UserImageRepository>();
 
 // Register services for business logic.
 builder.Services.AddScoped<IAchievementService, AchievementService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 

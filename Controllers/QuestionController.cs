@@ -1,11 +1,11 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.ViewModels;
+using GamificationPlatform.Services;
 
 namespace GamificationPlatform.Controllers
 {
@@ -14,26 +14,20 @@ namespace GamificationPlatform.Controllers
         private readonly IQuestionRepository _questionRepository;
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
-        private readonly IUserImageRepository _userImageRepository;
-        private readonly ChallengeDbContext _context;
-        private readonly IWebHostEnvironment _environment;
+        private readonly IImageService _imageService;
         private readonly ILogger<QuestionController> _logger;
 
         public QuestionController(
             IQuestionRepository questionRepository,
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
-            IUserImageRepository userImageRepository,
-            ChallengeDbContext context,
-            IWebHostEnvironment environment,
+            IImageService imageService,
             ILogger<QuestionController> logger)
         {
             _questionRepository = questionRepository;
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
-            _userImageRepository = userImageRepository;
-            _context = context;
-            _environment = environment;
+            _imageService = imageService;
             _logger = logger;
         }
 
@@ -48,166 +42,13 @@ namespace GamificationPlatform.Controllers
         }
 
         // Loads images for the Question Create and Update forms.
-        // Topic images appear alphabetically first.
-        // Numbered Question images appear last, in numerical order.
         private async Task LoadImagesAsync(int userId)
         {
             ViewBag.MyImages =
-                await _userImageRepository.GetImagesByUserIdAsync(userId);
+                await _imageService.GetUserImagesAsync(userId);
 
-            var defaultImages = await _context.DefaultImages
-                .ToListAsync();
-
-            ViewData["DefaultImages"] = defaultImages
-                .OrderBy(image =>
-                    image.Name.StartsWith(
-                        "Question ",
-                        StringComparison.OrdinalIgnoreCase) &&
-                    int.TryParse(image.Name.Substring(9), out _)
-                        ? 1
-                        : 0)
-                .ThenBy(image =>
-                    image.Name.StartsWith(
-                        "Question ",
-                        StringComparison.OrdinalIgnoreCase) &&
-                    int.TryParse(image.Name.Substring(9), out int number)
-                        ? number
-                        : 0)
-                .ThenBy(image => image.Name)
-                .ToList();
-        }
-
-        // Checks that the selected image is available to the user.
-        private async Task<bool> IsAllowedImageAsync(
-            string? imageUrl,
-            int userId)
-        {
-            if (string.IsNullOrWhiteSpace(imageUrl))
-            {
-                return true;
-            }
-
-            bool isDefaultImage = await _context.DefaultImages
-                .AnyAsync(image => image.ImageUrl == imageUrl);
-
-            if (isDefaultImage)
-            {
-                return true;
-            }
-
-            var images =
-                await _userImageRepository.GetImagesByUserIdAsync(userId);
-
-            return images.Any(image => image.ImageUrl == imageUrl);
-        }
-
-        // Validates and saves an uploaded image to the user's library.
-        private async Task<string?> SaveImageAsync(
-            IFormFile file,
-            int userId)
-        {
-            const long maxSize = 5 * 1024 * 1024;
-
-            string extension =
-                Path.GetExtension(file.FileName).ToLowerInvariant();
-
-            if (file.Length == 0 ||
-                file.Length > maxSize ||
-                !new[] { ".jpg", ".jpeg", ".png", ".webp" }
-                    .Contains(extension))
-            {
-                ModelState.AddModelError(
-                    "imageUpload",
-                    "Choose a JPG, PNG or WebP image up to 5 MB.");
-
-                return null;
-            }
-
-            // Check the file signature.
-            byte[] header = new byte[12];
-
-            using (var stream = file.OpenReadStream())
-            {
-                int count = await stream.ReadAsync(header.AsMemory());
-
-                bool jpeg =
-                    count >= 3 &&
-                    header[0] == 0xFF &&
-                    header[1] == 0xD8 &&
-                    header[2] == 0xFF;
-
-                bool png =
-                    count >= 8 &&
-                    header.AsSpan(0, 8).SequenceEqual(
-                        new byte[]
-                        {
-                            137, 80, 78, 71, 13, 10, 26, 10
-                        });
-
-                bool webp =
-                    count >= 12 &&
-                    System.Text.Encoding.ASCII.GetString(
-                        header, 0, 4) == "RIFF" &&
-                    System.Text.Encoding.ASCII.GetString(
-                        header, 8, 4) == "WEBP";
-
-                bool valid = extension switch
-                {
-                    ".jpg" or ".jpeg" => jpeg,
-                    ".png" => png,
-                    ".webp" => webp,
-                    _ => false
-                };
-
-                if (!valid)
-                {
-                    ModelState.AddModelError(
-                        "imageUpload",
-                        "The file does not match a supported image format.");
-
-                    return null;
-                }
-            }
-
-            string fileName = $"{Guid.NewGuid():N}{extension}";
-
-            string folder = Path.Combine(
-                _environment.WebRootPath,
-                "uploads",
-                "images");
-
-            Directory.CreateDirectory(folder);
-
-            string fullPath = Path.Combine(folder, fileName);
-            string url = $"/uploads/images/{fileName}";
-
-            try
-            {
-                await using (var output =
-                    new FileStream(fullPath, FileMode.CreateNew))
-                {
-                    await file.CopyToAsync(output);
-                }
-
-                await _userImageRepository.AddImageAsync(
-                    new UserImage
-                    {
-                        UserId = userId,
-                        FileName = Path.GetFileName(file.FileName),
-                        ImageUrl = url
-                    });
-
-                return url;
-            }
-            catch
-            {
-                if (System.IO.File.Exists(fullPath))
-                {
-                    System.IO.File.Delete(fullPath);
-                }
-
-                throw;
-            }
+            ViewData["DefaultImages"] =
+                await _imageService.GetDefaultImagesAsync();
         }
 
         // Shows the Create Question form.
@@ -331,7 +172,7 @@ namespace GamificationPlatform.Controllers
                     "Choose either an existing image or an upload.");
             }
 
-            if (!await IsAllowedImageAsync(
+            if (!await _imageService.IsAllowedImageAsync(
                 model.Question.ImageUrl, userId))
             {
                 ModelState.AddModelError(
@@ -343,11 +184,18 @@ namespace GamificationPlatform.Controllers
 
             if (ModelState.IsValid && imageUpload != null)
             {
-                string? url = await SaveImageAsync(imageUpload, userId);
+                var result =
+                    await _imageService.SaveImageAsync(imageUpload, userId);
 
-                if (url != null)
+                if (result.IsSuccess)
                 {
-                    model.Question.ImageUrl = url;
+                    model.Question.ImageUrl = result.ImageUrl!;
+                }
+                else
+                {
+                    ModelState.AddModelError(
+                        "imageUpload",
+                        result.ErrorMessage!);
                 }
             }
 
@@ -569,7 +417,7 @@ namespace GamificationPlatform.Controllers
                 model.Question.ImageUrl == question.ImageUrl;
 
             if (!keepingExistingImage &&
-                !await IsAllowedImageAsync(
+                !await _imageService.IsAllowedImageAsync(
                     model.Question.ImageUrl, userId))
             {
                 ModelState.AddModelError(
@@ -581,11 +429,18 @@ namespace GamificationPlatform.Controllers
 
             if (ModelState.IsValid && imageUpload != null)
             {
-                string? url = await SaveImageAsync(imageUpload, userId);
+                var result =
+                    await _imageService.SaveImageAsync(imageUpload, userId);
 
-                if (url != null)
+                if (result.IsSuccess)
                 {
-                    model.Question.ImageUrl = url;
+                    model.Question.ImageUrl = result.ImageUrl!;
+                }
+                else
+                {
+                    ModelState.AddModelError(
+                        "imageUpload",
+                        result.ErrorMessage!);
                 }
             }
 
