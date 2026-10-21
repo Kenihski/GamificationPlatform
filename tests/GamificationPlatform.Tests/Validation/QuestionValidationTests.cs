@@ -73,7 +73,8 @@ public class QuestionValidationTests
             }));
         challengeRepository.GetChallengesByUserIdAsync(userId)
             .Returns(Task.FromResult(new List<Challenge>()));
-        imageService.IsAllowedImageAsync(string.Empty, userId)
+        // New questions have a null ImageUrl when no image is selected.
+        imageService.IsAllowedImageAsync(null, userId)
             .Returns(Task.FromResult(true));
         imageService.GetUserImagesAsync(userId)
             .Returns(Task.FromResult(new List<UserImage>()));
@@ -154,6 +155,11 @@ public class QuestionValidationTests
         Assert.False(controller.ModelState.IsValid);
         Assert.Contains(controller.ModelState, entry =>
             entry.Key == expectedErrorField &&
+            entry.Value?.Errors.Count > 0);
+
+        // Image validation must not create an unrelated error.
+        Assert.DoesNotContain(controller.ModelState, entry =>
+            entry.Key == "Question.ImageUrl" &&
             entry.Value?.Errors.Count > 0);
 
         await questionRepository.DidNotReceive()
