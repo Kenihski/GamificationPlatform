@@ -55,6 +55,9 @@ namespace GamificationPlatform.Services
                 (await _achievementRepository.GetActiveAsync())
                     .ToList();
 
+            // Only log unlocks after the corresponding database save.
+            var newlyUnlocked = new List<Achievement>();
+
             // Check regular achievements first.
             foreach (var achievement in achievements.Where(a => !a.IsGoal))
             {
@@ -113,12 +116,15 @@ namespace GamificationPlatform.Services
                     await UnlockAchievementAsync(
                         userId,
                         achievement);
+                    newlyUnlocked.Add(achievement);
                 }
             }
 
             // Save regular achievements before checking goals,
             // because milestone goals depend on the user's AP.
             await _achievementRepository.SaveChangesAsync();
+            LogUnlockedAchievements(userId, newlyUnlocked);
+            newlyUnlocked.Clear();
 
             // Check milestone goals after the AP has been updated.
             foreach (var achievement in achievements.Where(a => a.IsGoal))
@@ -140,10 +146,12 @@ namespace GamificationPlatform.Services
                     await UnlockAchievementAsync(
                         userId,
                         achievement);
+                    newlyUnlocked.Add(achievement);
                 }
             }
 
             await _achievementRepository.SaveChangesAsync();
+            LogUnlockedAchievements(userId, newlyUnlocked);
         }
 
         private async Task<bool> CheckChallengesCompletedAsync(
@@ -565,11 +573,20 @@ namespace GamificationPlatform.Services
 
             await _achievementRepository
                 .AddUserAchievementAsync(userAchievement);
+        }
 
-            _logger.LogInformation(
-                "User {UserId} unlocked achievement {AchievementName}.",
-                userId,
-                achievement.Name);
+        // Emit success events only for achievements saved to the database.
+        private void LogUnlockedAchievements(
+            int userId,
+            IEnumerable<Achievement> achievements)
+        {
+            foreach (var achievement in achievements)
+            {
+                _logger.LogInformation(
+                    "User {UserId} unlocked achievement {AchievementName}.",
+                    userId,
+                    achievement.Name);
+            }
         }
     }
 }

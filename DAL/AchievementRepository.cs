@@ -73,28 +73,16 @@ namespace GamificationPlatform.DAL
         public async Task AddAsync(Achievement achievement)
         {
             await _context.Achievements.AddAsync(achievement);
-
-            _logger.LogInformation(
-                "Achievement {AchievementName} created.",
-                achievement.Name);
         }
 
         public void Update(Achievement achievement)
         {
             _context.Achievements.Update(achievement);
-
-            _logger.LogInformation(
-                "Achievement {AchievementId} updated.",
-                achievement.AchievementId);
         }
 
         public void Delete(Achievement achievement)
         {
             _context.Achievements.Remove(achievement);
-
-            _logger.LogInformation(
-                "Achievement {AchievementId} deleted.",
-                achievement.AchievementId);
         }
 
         public async Task AddUserAchievementAsync(
@@ -102,11 +90,6 @@ namespace GamificationPlatform.DAL
         {
             await _context.UserAchievements
                 .AddAsync(userAchievement);
-
-            _logger.LogInformation(
-                "Achievement {AchievementId} unlocked by user {UserId}.",
-                userAchievement.AchievementId,
-                userAchievement.UserId);
         }
 
         // Marks a notification as seen for the correct user.
