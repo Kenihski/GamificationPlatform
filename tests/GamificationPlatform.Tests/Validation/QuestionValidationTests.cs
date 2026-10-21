@@ -3,13 +3,11 @@ using System.Security.Claims;
 using GamificationPlatform.Controllers;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
+using GamificationPlatform.Services;
 using GamificationPlatform.ViewModels;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MockQueryable.NSubstitute;
 using NSubstitute;
 using Xunit;
 
@@ -61,7 +59,7 @@ public class QuestionValidationTests
         var questionRepository = Substitute.For<IQuestionRepository>();
         var challengeRepository = Substitute.For<IChallengeRepository>();
         var attemptRepository = Substitute.For<IAttemptRepository>();
-        var imageRepository = Substitute.For<IUserImageRepository>();
+        var imageService = Substitute.For<IImageService>();
         var logger = Substitute.For<ILogger<QuestionController>>();
 
         const int userId = 7;
@@ -75,19 +73,16 @@ public class QuestionValidationTests
             }));
         challengeRepository.GetChallengesByUserIdAsync(userId)
             .Returns(Task.FromResult(new List<Challenge>()));
-        imageRepository.GetImagesByUserIdAsync(userId)
+        imageService.IsAllowedImageAsync(string.Empty, userId)
+            .Returns(Task.FromResult(true));
+        imageService.GetUserImagesAsync(userId)
             .Returns(Task.FromResult(new List<UserImage>()));
-
-        using var context = new ChallengeDbContext(
-            new DbContextOptionsBuilder<ChallengeDbContext>().Options)
-        {
-            DefaultImages = new List<DefaultImage>().BuildMockDbSet()
-        };
+        imageService.GetDefaultImagesAsync()
+            .Returns(Task.FromResult(new List<DefaultImage>()));
 
         var controller = new QuestionController(
             questionRepository, challengeRepository, attemptRepository,
-            imageRepository, context, Substitute.For<IWebHostEnvironment>(),
-            logger);
+            imageService, logger);
 
         controller.ControllerContext = new ControllerContext
         {

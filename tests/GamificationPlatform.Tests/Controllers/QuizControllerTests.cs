@@ -121,7 +121,6 @@ public class QuizControllerTests
         var controller = new QuizController(
             challengeRepository,
             attemptRepository,
-            Substitute.For<IUserRepository>(),
             Substitute.For<IAchievementService>(),
             logger);
 

@@ -33,7 +33,8 @@ public class AdditionalRepositoryTests
         using (context)
         {
             var logger = Substitute.For<ILogger<UserRepository>>();
-            var repository = new UserRepository(context, logger);
+            // SaveChangesAsync does not access the Identity user manager.
+            var repository = new UserRepository(context, null!, logger);
 
             var actual = await Assert.ThrowsAsync<DbUpdateException>(
                 () => repository.SaveChangesAsync());
