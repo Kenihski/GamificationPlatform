@@ -1,0 +1,144 @@
+# README-DOCUMENTATION-SUGGESTION — Subapp 1
+
+> **Independent documentation suggestion.** The original `README.md` is intentionally left unchanged. This file is a proposed basis for the team's final report following the official Subapp 1 documentation template; fill in marked sections before submission.
+
+## 1. Title & administrative metadata
+
+**Project:** Gamification Platform for Course Learning  
+**Module:** ITPE3200-1 26H Webapplikasjoner — Subapp 1  
+**Technology:** ASP.NET Core 10 MVC, Razor, EF Core, SQLite, ASP.NET Core Identity, Bootstrap/JavaScript  
+**Source:** https://github.com/Kenihski/GamificationPlatform/tree/Salman-branch  
+**Author/team information, IDs, submission date:** [TEAM: insert verified details]  
+**Hosted application URL:** [TEAM: provide if deployed, otherwise state locally runnable]  
+
+### Run instructions for examiners
+
+1. Extract the complete repository ZIP to a writable directory, retaining the folder structure.
+2. Install the **.NET 10 SDK** and ensure an internet connection for first package/LibMan restore. Subapp 1 is Razor MVC; React and `npm run build` are not required.
+3. Open a terminal where `GamificationPlatform.csproj` is located.
+4. Execute:
+   ```bash
+   dotnet restore
+   dotnet build GamificationPlatform.csproj --configuration Release
+   dotnet run --launch-profile http
+   ```
+5. The default HTTP launch profile listens on `http://localhost:5087`; if the terminal shows another listening URL, use that instead.
+6. Sign in with a seeded demo account or register a new user.
+
+**Demo users:** `admin`, `Alice`, `Bob`, `Charlie`, `Emma`, `David`. The documented dummy password for these development accounts is `Password123!`. Accounts and data are for demo use only. **Development startup recreates/seeds the database and can erase its previous data**; do not store data that must survive restarts. Real deployments require dedicated migrations/database configuration and safe credentials. No external API key is required for the features reviewed.
+
+### Build and test
+```bash
+dotnet test tests/GamificationPlatform.Tests/GamificationPlatform.Tests.csproj --configuration Release
+```
+GitHub Actions also builds in Release, runs `node --check` on `wwwroot/js/*.js`, and executes backend xUnit tests. **72/72 backend tests passed, with 0 compiler warnings/errors**, after the new image controller tests and JavaScript CI step.
+
+## 2. Requirements analysis & traceability matrix
+
+Legend: **Implemented** = found in the source; **CI** = confirmed by the automated workflow; **Manual** = still needs an examiner-like browser check.
+
+| Requirement | Evidence in source | Result |
+| --- | --- | --- |
+| ASP.NET 10 MVC | `Program.cs`, `Controllers/`, `Views/` | Implemented |
+| Interactive page / ≥1 CRUD | Challenge Create, Grid/Table/Details, Update, Delete | Implemented |
+| ≥3 domain entities with CRUD | `Challenge`, `Question`, `Achievement` (achievement management is admin-restricted) | Implemented |
+| At least one domain N:M | `AttemptAnswer`—`AttemptAnswerOption`—`QuestionOption` | Implemented |
+| Complex server-side domain rule | Challenge cannot publish without questions; valid quiz answers/ownership/timing; achievement unlocking | Implemented |
+| Two kinds of conditional rendering | Razor `@if` / `else` and ternary `? :` in challenge/navigation Views | Implemented |
+| Multi-parameter search/filter | `ChallengeController.Table/Grid(filter, searchTerm)`, `ChallengeRepository.SearchPublishedChallengesAsync` | Implemented |
+| DAL / repository pattern | `IChallengeRepository`, `IQuestionRepository`, `IAttemptRepository` and implementations | Implemented |
+| Async database access | EF Core `ToListAsync`, `FirstOrDefaultAsync`, `SaveChangesAsync` | Implemented |
+| Passing data with ViewModels | `ChallengesViewModel`, `QuestionFormViewModel`, `AchievementAdminViewModel`, others | Implemented |
+| Client + server validation | Razor Tag Helpers, jquery.validate/unobtrusive, question/register JavaScript; Data Annotations and ModelState | Source implemented; Manual pending |
+| Errors + ILogger | `HomeController`, Serilog, Task 5 DAL catches, `AccessDenied` HTTP 403 | Implemented + some automated tests |
+| Authentication/authorisation | ASP.NET Core Identity, `[Authorize]`, role/ownership checks, role-sensitive UI | Implemented; Manual pending |
+| ≥12 tests, ≥6 positive/6 negative | Data-driven tests across `tests/GamificationPlatform.Tests/` | 72 passed in CI, both positive/negative cases present |
+| Build with no warnings | GitHub Actions Release `dotnet build` | CI: 0 warnings, 0 errors |
+| UX/design/navigation | Bootstrap/CSS, responsive classes, sidebar, grid/table, image previews, modal flows | Source implemented; Manual pending |
+| Documentation template | This document and `docs/Task5.md` | **Team must adapt and finish** |
+| Client API service + DTOs | Only required for Subapp 2 | N/A |
+| React / API + SPA | Only required for Subapp 2 | N/A |
+
+A source review and automated build do **not** establish that all possible browser routes succeed. The personal image-library view previously missing at `Views/UserImage/Index.cshtml` has been restored.
+
+## 3. System architecture & engineering decision records
+
+```text
+Browser (Razor + CSS + JS)
+   ⇅ HTTP GET/POST, form data, antiforgery
+ASP.NET Core MVC Controllers / ViewModels
+   ↓ dependency injection
+Domain Services + Repository interfaces
+   ↓ EF Core async
+ChallengeDbContext / SQLite + Identity tables
+```
+
+**Decisions and trade-offs:**
+
+- **ASP.NET Core MVC + Razor** meets Subapp 1's explicit technology requirement; unlike an SPA it may reload full pages after form posts.
+- **Entity Framework Core + SQLite** makes a demonstrable and portable relational project; concurrency and deployment considerations differ from a production database.
+- **Repository/DAL interfaces** separate most database access from controllers and simplify test substitution. Some specialized operations directly access the scoped `ChallengeDbContext`.
+- **ASP.NET Core Identity** provides password hashing, user management, cookies and roles, adding schema/migrations and security considerations.
+- **Serilog / ILogger** provides structured request events and per-run logs. Avoid submitting generated logs with credentials or personal data.
+- **Client-side MVC validation** provides immediate feedback, while **server-side validation stays authoritative** because browser scripts can be bypassed.
+- **Development-only database seeding** provides repeatable demo users/content, at the cost of deleting previous Development data at startup.
+
+## 4. Database structure and access
+
+**Domain model:** `Challenge` has many `Question` records; each question has `QuestionOption` choice answers or `QuestionAcceptedAnswer` short answers. `UserChallenge` connects participation to a challenge, and `ChallengeAttempt` contains `AttemptAnswer` records. The explicit `AttemptAnswerOption` link joins **two non-Identity domain entities**, `AttemptAnswer` and `QuestionOption`, to implement a many-to-many selection relationship. The composite unique index in `ChallengeDbContext` prevents duplicate selections.
+
+`Achievement` has user-award records through `UserAchievement`; a unique user/achievement pair prevents double awarding. `UserImage` and `DefaultImage` support images. `ChallengeDbContext` inherits `IdentityDbContext<User, IdentityRole<int>, int>`; Identity records are not counted toward the three domain-entity CRUD requirement.
+
+Database migrations live in `Migrations/`. DAL repository methods normally use asynchronous EF Core queries and writes. Development startup calls `DBInit.SeedAsync`, which deletes/recreates the demo database; production requires deliberate provisioning. **[TEAM: Insert and discuss an ER diagram exported from the actual schema, showing FK/cardinality and the N:M join.]**
+
+## 5. Feature breakdown & traceability
+
+| Feature | UI and server evidence | Demonstration |
+| --- | --- | --- |
+| Challenge CRUD | Challenge Create/Update/Delete and Grid/Table/Details views; repository | Create draft, view, edit, delete |
+| Question CRUD | Question Create/Update/Delete/Table; validation of answer variants | Create short/choice question, edit, delete |
+| Achievement CRUD | Admin Create/Edit/Delete/Index + service rules | Admin creates/edits/deletes achievement |
+| Quiz attempt/scoring | QuizController + AttemptRepository, time/answer validation | Take a seeded quiz, view result and history |
+| Search + filter | Challenge Grid/Table with category and searchTerm | Combine category with title search |
+| Image management | UserImageController Upload/Index/Delete; restored Index.cshtml | Upload and delete a personal image |
+| Login/roles | AccountController + Identity + admin/owner checks | Register, login, verify restricted actions |
+| Dynamic content | Leaderboards, achievements, notifications and role-specific navigation | View changing results and notifications |
+| Error handling | Friendly 400/403/404/500 pages; logs/request IDs | Invalid resource/denied action with safe response |
+
+## 6. Security, resilience & testing
+
+**Server validation:** `[Required]`, `[StringLength]`, `[Range]`, custom image/time-limit validators, MVC `ModelState`, ownership/role checks and quiz/domain constraints. Incorrect submissions should not persist changes.
+
+**Client validation:** MVC jQuery Validation + Unobtrusive adapters handle supported Data Annotation rules. The custom `question-form-validation.js` checks options, duplicates, correct answers and accepted short answers. `register-validation.js` checks the registration modal/standard form's username/password and confirmation logic. The image preview checks MIME type and 5 MiB maximum. Client checks are feedback only and can be bypassed.
+
+**Error handling and security:** Identity provides login/session management; `[Authorize]` and ownership checks protect sensitive actions. `AccountController.AccessDenied` sets 403. Serilog writes structured errors and request context; repositories log database exceptions and rethrow. The former `Authentication/ValidateUserCookieEvents.cs` is **legacy and not registered** with the current Identity configuration. A Development-only cookie revalidation change was reviewed but deliberately deferred; no claim of instant cookie invalidation following reseeding is made.
+
+**Tests:** 72 automated backend cases passed with zero failed/skipped on the test commit. Positive scenarios include valid challenge title/description lengths, supported time limits, valid question points, valid login/registration, saved challenge creation, and successful personal image listing. Negative scenarios include empty/overlong fields, invalid time limits, invalid question points, invalid/duplicate answers, rejected quiz attempts, unauthorized challenge edits, missing image deletion, and repository save failures. These provide more than six examples of each kind across xUnit facts and inline-data theories.
+
+**CI:** `.github/workflows/build.yml` runs the Release build, checks JavaScript syntax with Node, and runs the xUnit project. This does **not** replace browser or full integration tests.
+
+**Manual testing still required and NOT claimed completed:** Browser smoke-test CRUD for each entity; login/roles; server rejection with client scripts bypassed; network/console and antiforgery behavior; default and personal image upload/delete; mobile layout; friendly errors; time limits; form-validation messages; error-log correlation. **[TEAM: record screenshots, environment, date, results and defects.]**
+
+## 7. AI usage and verification
+
+ChatGPT/AI assisted in reviewing requirements, auditing repository code, suggesting and implementing selected fixes, adapting tests, explaining decisions and drafting documentation. Each generated change requires independent review, build/test verification and confirmation that the resulting application behaves as intended. GitHub Actions results provide objective evidence of successful automated checks but do not prove every browser flow.
+
+**[TEAM: Add the actual members' AI-use disclosures, representative prompts, human checks, rejected suggestions and the declaration required by the official template. Do not invent this information.]**
+
+## 8. User experience & usability
+
+The MVC frontend uses Bootstrap/Razor, custom CSS, responsive grid/table challenge browsing, sidebar navigation, authentication modals, image previews, and contextual validation/error messages. New Subapp 1 changes restored personal image management and linked it in navigation; activated ordinary client-side MVC validation; and added immediate question and registration checks.
+
+**Usability verification still needed:** check keyboard/tab access, contrast, mobile breakpoints, understandable form errors, responsive grid, modal focus behavior, empty states, image upload feedback, and unauthorized navigation. **[TEAM: include authentic screenshots and tester observations.]**
+
+## 9. Conclusion & self-reflection
+
+**Code-level conclusion:** The audited Subapp 1 source provides ASP.NET Core 10 MVC, an interactive Razor frontend, three domain CRUD areas, an explicit domain many-to-many link, complex business rules, search/filtering, async EF Core access, repository/DAL, ViewModels, Identity, server/client validation, error handling/logging, and automated tests. The missing image view and client validation gap have been addressed in `Salman-branch`.
+
+**Strengths:** broad domain functionality, modular backend, seeded demo content, automated Release build/testing, friendly errors. **Limitations:** real-browser test evidence not collected in this review; users must add final report metadata, actual screenshots, ER diagram, AI disclosures, usability evidence and reflection. A hosted examiner URL is necessary only if the application is deployed.
+
+**[TEAM: Add your own honest collaboration, strengths/weaknesses, accepted trade-offs, and lessons learned.]**
+
+### Packaging checklist
+
+Provide the complete project (controllers, models, views, static files, migrations, DAL, tests), the official report with run/login instructions, the required development assets, and any necessary setup notes. Test a **fresh extracted ZIP** on a separate machine. Review for personal files, secrets, logs, and database persistence assumptions. The existing `README.md` was intentionally **not edited**.
