@@ -14,19 +14,7 @@
     </div>
 </div>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
+<partial name="_FeedbackMessages" />
 
 <!-- Image categories -->
 <ul class="nav nav-tabs mb-4" id="imageTabs" role="tablist">

@@ -117,7 +117,7 @@
             Description
         </label>
 
-        <select id="descriptionSelect"
+        <select id="descriptionSelect" data-validation-for="Question.Description"
                 class="form-control">
 
             <option value="">
@@ -155,7 +155,7 @@
             <label for="customDescription">Custom description</label>
 
             <input type="text"
-                   id="customDescription"
+                   id="customDescription" data-validation-for="Question.Description"
                    maxlength="500"
                    class="form-control"
                    placeholder="Enter description" />
@@ -211,7 +211,7 @@
             Image
         </label>
 
-        <select id="imageCategorySelect"
+        <select id="imageCategorySelect" data-validation-for="Question.ImageUrl"
                 class="form-control">
 
             <option value="none"

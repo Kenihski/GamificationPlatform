@@ -15,15 +15,7 @@
     bool isUnpublishedTest = !Model.Challenge.IsPublished && (isOwner || isAdmin);
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="successMessage" class="alert alert-success mt-4">@TempData["SuccessMessage"]</div>
-}
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div id="errorMessage" class="alert alert-danger mt-4">@TempData["ErrorMessage"]</div>
-}
+<partial name="_FeedbackMessages" />
 
 <div class="challenge-details-page">
     <a asp-controller="Challenge" asp-action="Grid" class="challenge-details-back">
@@ -362,8 +354,3 @@
         </section>
     }
 </div>
-
-@section Scripts
-{
-    <script src="~/js/challengeDetails.js" defer></script>
-}

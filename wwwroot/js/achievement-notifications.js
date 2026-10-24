@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const markSeenUrl = container.dataset.markSeenUrl;
 
-    const maxVisible = 3;
+    const maxVisible = 1;
     const timeBetweenNotifications = 2500;
     const displayTime = 8000;
     const highlightTime = 4000;
@@ -78,9 +78,17 @@ document.addEventListener("DOMContentLoaded", () => {
     function showNotification(notification) {
         visibleCount++;
 
-        // New notifications are placed at the top.
+        // Move the next queued notification into view.
         container.prepend(notification);
         notification.style.display = "flex";
+
+        const announcement = document.getElementById("achievement-announcement");
+        if (announcement) {
+            announcement.textContent = [
+                notification.querySelector(".achievement-notification-content").textContent,
+                notification.querySelector(".achievement-notification-points").textContent
+            ].join(" ").replace(/\s+/g, " ").trim();
+        }
 
         const closeButton = notification.querySelector(
             ".achievement-notification-close"
@@ -88,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let timeoutId;
         let highlightTimeoutId;
+        let returnFocus = null;
 
         function closeNotification() {
             clearTimeout(timeoutId);
@@ -103,6 +112,18 @@ document.addEventListener("DOMContentLoaded", () => {
             markNotificationSeen(notification);
 
             setTimeout(() => {
+                if (notification.contains(document.activeElement)) {
+                    const target = returnFocus?.isConnected && returnFocus.tabIndex >= 0
+                        ? returnFocus
+                        : document.querySelector("main");
+
+                    if (target) {
+                        if (target.tagName === "MAIN") {
+                            target.setAttribute("tabindex", "-1");
+                        }
+                        target.focus({ preventScroll: true });
+                    }
+                }
                 notification.style.display = "none";
                 visibleCount--;
             }, 300);
@@ -120,10 +141,28 @@ document.addEventListener("DOMContentLoaded", () => {
             notification.classList.add("expiring");
         }, highlightTime);
 
-        timeoutId = setTimeout(
-            closeNotification,
-            displayTime
-        );
+        function startCloseTimer() {
+            clearTimeout(timeoutId);
+            if (!notification.classList.contains("closing") &&
+                !notification.matches(":hover, :focus-within")) {
+                timeoutId = setTimeout(closeNotification, displayTime);
+            }
+        }
+
+        notification.addEventListener("mouseenter", () => clearTimeout(timeoutId));
+        notification.addEventListener("mouseleave", startCloseTimer);
+        notification.addEventListener("focusin", (event) => {
+            clearTimeout(timeoutId);
+            if (!notification.contains(event.relatedTarget)) {
+                returnFocus = event.relatedTarget;
+            }
+        });
+        notification.addEventListener("focusout", () => {
+            // Wait until focus has settled before checking whether it is still inside.
+            setTimeout(startCloseTimer, 0);
+        });
+
+        startCloseTimer();
     }
 
     function tryShowNextNotification() {

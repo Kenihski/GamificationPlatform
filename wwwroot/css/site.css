@@ -125,6 +125,10 @@ main h5 {
 }
 
 /* Forms */
+.validation-summary-valid {
+    display: none;
+}
+
 .form-control,
 .form-select {
     background-color: #253154;

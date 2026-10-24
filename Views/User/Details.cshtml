@@ -10,19 +10,7 @@
 
 <h2 class="my-4">@Model.User.UserName</h2>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="successMessage" class="alert alert-success" role="status">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div id="errorMessage" class="alert alert-danger" role="alert">
-        @TempData["ErrorMessage"]
-    </div>
-}
+<partial name="_FeedbackMessages" />
 
 <div class="mb-4">
     <p>

@@ -233,11 +233,14 @@
 /* Achievement notifications */
 .achievement-notification-container {
     position: fixed;
-    top: 90px;
+    bottom: 15vh;
     right: 25px;
     z-index: 1050;
     width: 420px;
     max-width: calc(100vw - 40px);
+    max-height: calc(85vh - 16px);
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -289,6 +292,8 @@
 }
 .achievement-notification-content {
     flex-grow: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
     padding-right: 15px;
 }
 .achievement-notification-heading {
@@ -444,11 +449,12 @@
     }
 
     .achievement-notification-container {
-        top: 75px;
+        bottom: 12vh;
         right: 15px;
         left: 15px;
         width: auto;
         max-width: none;
+        max-height: calc(88vh - 16px);
     }
     .achievement-notification {
         min-height: 95px;
