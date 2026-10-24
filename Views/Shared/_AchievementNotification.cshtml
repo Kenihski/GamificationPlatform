@@ -2,6 +2,9 @@
 
 @if (Model.Any())
 {
+    <div id="achievement-announcement" class="visually-hidden"
+         role="status" aria-atomic="true"></div>
+
     <div id="achievement-notification-container"
          class="achievement-notification-container"
          data-mark-seen-url="@Url.Action("MarkSeen", "AchievementNotification")">
@@ -19,7 +22,7 @@
 
                 <button type="button"
                         class="achievement-notification-close"
-                        aria-label="Close">
+                        aria-label="Close notification: @achievement.Name">
                     &times;
                 </button>
 

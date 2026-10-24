@@ -69,6 +69,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     "One or more answers may be correct.";
             }
         }
+
+        // Match the control's semantics to the number of allowed correct answers.
+        correctOptions.forEach(function (option) {
+            option.type = questionType.value === "SingleChoice"
+                ? "radio"
+                : "checkbox";
+        });
     }
 
     correctOptions.forEach(function (option) {

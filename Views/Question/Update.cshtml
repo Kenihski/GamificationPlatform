@@ -79,7 +79,7 @@
     </div>
 
     <div class="form-group mb-3">
-        <label asp-for="Question.QuestionType">
+        <label for="questionType">
             Question Type
         </label>
 
@@ -87,7 +87,7 @@
 
         <select asp-for="Question.QuestionType"
                 class="form-control"
-                id="questionType">
+                id="questionType" aria-describedby="questionTypeHelp">
 
             <option value="SingleChoice">
                 Single Choice
@@ -117,7 +117,7 @@
             Description
         </label>
 
-        <select id="descriptionSelect"
+        <select id="descriptionSelect" data-validation-for="Question.Description"
                 class="form-control">
 
             <option value="">
@@ -152,8 +152,10 @@
         <div id="customDescriptionContainer"
              class="mt-2 image-selection-hidden">
 
+            <label for="customDescription">Custom description</label>
+
             <input type="text"
-                   id="customDescription"
+                   id="customDescription" data-validation-for="Question.Description"
                    maxlength="500"
                    class="form-control"
                    placeholder="Enter description" />
@@ -209,7 +211,7 @@
             Image
         </label>
 
-        <select id="imageCategorySelect"
+        <select id="imageCategorySelect" data-validation-for="Question.ImageUrl"
                 class="form-control">
 
             <option value="none"
@@ -327,18 +329,19 @@
         <div class="mt-3">
             <img id="imagePreview"
                  src="@currentImage"
-                 alt="Selected image preview"
+                 alt=""
                  class="image-preview" />
         </div>
     </div>
 
     @* Challenge cannot be changed when editing a question. *@
     <div class="form-group mb-3">
-        <label>
+        <label for="challengeTitle">
             Challenge
         </label>
 
         <input type="text"
+               id="challengeTitle"
                class="form-control"
                value="@challenge?.Title"
                readonly />
@@ -347,8 +350,9 @@
     <hr />
 
     @* Used for Single Choice and Multiple Choice. *@
-    <div id="choiceAnswerSection">
-        <h4>Answer Options</h4>
+    <div id="choiceAnswerSection" role="group"
+         aria-labelledby="answerOptionsHeading" aria-describedby="answerOptionsHelp">
+        <h4 id="answerOptionsHeading">Answer Options</h4>
 
         <span asp-validation-for="Options"
               class="text-danger">
@@ -358,14 +362,14 @@
               class="text-danger">
         </span>
 
-        <p class="text-muted">
+        <p id="answerOptionsHelp" class="text-muted">
             Enter between 2 and 4 answer options.
         </p>
 
         @for (int i = 0; i < 4; i++)
         {
             <div class="form-group mb-3">
-                <label>
+                <label asp-for="Options[i]">
                     Option @(i + 1)
                 </label>
 
@@ -374,7 +378,7 @@
                        class="form-control" />
 
                 <div class="form-check mt-1">
-                    <input type="checkbox"
+                    <input type="@(Model.Question.QuestionType == "SingleChoice" ? "radio" : "checkbox")"
                            name="CorrectOptions"
                            value="@i"
                            class="form-check-input correct-option"
@@ -384,6 +388,7 @@
                     <label class="form-check-label"
                            for="correctOption@(i)">
                         Correct answer
+                        <span class="visually-hidden">for Option @(i + 1)</span>
                     </label>
                 </div>
             </div>
@@ -392,22 +397,23 @@
 
     @* Used for Short Answer questions. *@
     <div id="shortAnswerSection"
-         class="image-selection-hidden">
+         class="image-selection-hidden" role="group"
+         aria-labelledby="acceptedAnswersHeading" aria-describedby="acceptedAnswersHelp">
 
-        <h4>Accepted Answers</h4>
+        <h4 id="acceptedAnswersHeading">Accepted Answers</h4>
 
         <span asp-validation-for="AcceptedAnswers"
               class="text-danger">
         </span>
 
-        <p class="text-muted">
+        <p id="acceptedAnswersHelp" class="text-muted">
             Enter between 1 and 4 accepted answers.
         </p>
 
         @for (int i = 0; i < 4; i++)
         {
             <div class="form-group mb-3">
-                <label>
+                <label asp-for="AcceptedAnswers[i]">
                     Accepted Answer @(i + 1)
                 </label>
 

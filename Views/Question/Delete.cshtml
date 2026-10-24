@@ -1,6 +1,10 @@
 
 @model GamificationPlatform.Models.Question
 
+@{
+    ViewData["Title"] = "Delete Question";
+}
+
 <h2>Delete Question</h2>
 
 <div class="alert question-delete-warning mt-4">
@@ -79,7 +83,7 @@
                 <br />
 
                 <img src="@Model.ImageUrl"
-                     alt="@Model.Title"
+                     alt=""
                      class="img-fluid mt-2"
                      style="max-width: 250px;" />
             </div>

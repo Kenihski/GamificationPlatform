@@ -27,6 +27,44 @@ body:not(:has(.home-hero)) #matrixBackground {
 }
 
 /* Navbar and sidebar - dark theme */
+.matrix-control {
+    position: relative;
+}
+
+.matrix-toggle {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+}
+
+.matrix-tooltip {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1080;
+    width: max-content;
+    max-width: 240px;
+    padding: 8px 12px;
+    border: 1px solid var(--home-border);
+    border-radius: 6px;
+    background: #111833;
+    color: #ffffff;
+    font-size: 0.875rem;
+}
+
+.matrix-control:not(.tooltip-dismissed):hover .matrix-tooltip,
+.matrix-control:not(.tooltip-dismissed):focus-within .matrix-tooltip {
+    display: block;
+}
+
+@media (max-width: 575.98px) {
+    .matrix-tooltip {
+        right: auto;
+        left: 0;
+    }
+}
+
 .site-navbar {
     background: #111833;
     border-bottom: 1px solid var(--home-border) !important;

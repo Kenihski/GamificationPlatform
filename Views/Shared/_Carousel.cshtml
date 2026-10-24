@@ -8,7 +8,6 @@
     {
         <div id="featuredChallengesCarousel"
              class="carousel slide featured-carousel"
-             data-bs-ride="carousel"
              data-bs-interval="6000"
              aria-label="Featured challenges">
 
@@ -39,7 +38,7 @@
                                 @if (!string.IsNullOrWhiteSpace(challenge.ImageUrl))
                                 {
                                     <img src="@Url.Content(challenge.ImageUrl)"
-                                         alt="@challenge.Title"
+                                         alt=""
                                          loading="@(i == 0 ? "eager" : "lazy")" />
                                 }
                             </div>
@@ -71,12 +70,15 @@
                                         </svg>
                                         @(challenge.TimeLimitMinutes.HasValue ? $"{challenge.TimeLimitMinutes.Value} min" : "Unlimited time")
                                     </span>
-                                    <span>
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                            <circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" />
-                                        </svg>
-                                        Created by @featured.CreatorUsername
-                                    </span>
+                                    @if (!challenge.IsCore)
+                                    {
+                                        <span>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" />
+                                            </svg>
+                                            Created by @featured.CreatorUsername
+                                        </span>
+                                    }
                                 </div>
 
                                 <a asp-controller="Challenge"

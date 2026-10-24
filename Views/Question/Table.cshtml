@@ -105,6 +105,7 @@ else
             </h2>
 
             <span id="questionsResultCount"
+                  role="status" aria-atomic="true"
                   class="questions-result-count">
                 @questions.Count questions
             </span>
@@ -163,7 +164,7 @@ else
                                 @if (!string.IsNullOrEmpty(question.ImageUrl))
                                 {
                                     <img src="@question.ImageUrl"
-                                         alt="@question.Title"
+                                         alt=""
                                          class="question-table-image" />
                                 }
                                 else
