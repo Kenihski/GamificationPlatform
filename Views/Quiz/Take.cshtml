@@ -185,11 +185,13 @@
                     }
                     else if (question.QuestionType == "MultipleChoice")
                     {
-                        <p class="quiz-answer-instruction">
+                        <p id="answerInstruction_@question.QuestionId" class="quiz-answer-instruction">
                             Select all correct answers.
                         </p>
 
-                        <div class="quiz-answer-options">
+                        <div class="quiz-answer-options" role="group"
+                             aria-labelledby="quizQuestion_@question.QuestionId"
+                             aria-describedby="answerInstruction_@question.QuestionId">
                             @foreach (var option in question.Options)
                             {
                                 <div class="quiz-answer-option">
@@ -208,11 +210,13 @@
                     }
                     else
                     {
-                        <p class="quiz-answer-instruction">
+                        <p id="answerInstruction_@question.QuestionId" class="quiz-answer-instruction">
                             Select one answer.
                         </p>
 
-                        <div class="quiz-answer-options">
+                        <div class="quiz-answer-options" role="radiogroup"
+                             aria-labelledby="quizQuestion_@question.QuestionId"
+                             aria-describedby="answerInstruction_@question.QuestionId">
                             @foreach (var option in question.Options)
                             {
                                 <div class="quiz-answer-option">
