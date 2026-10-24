@@ -117,7 +117,7 @@
             Image
         </label>
 
-        <select id="imageCategory"
+        <select id="imageCategory" data-validation-for="ImageUrl"
                 class="form-control">
 
             @if (selectedCategory == "none")
@@ -274,7 +274,7 @@
         <div class="mt-3">
             <img id="imagePreview"
                  src="@currentImage"
-                 alt="Selected image preview"
+                 alt=""
                  class="image-preview" />
         </div>
 

@@ -1,6 +1,10 @@
 
 @model GamificationPlatform.ViewModels.LoginViewModel
 
+@{
+    ViewData["Title"] = "Login";
+}
+
 <h2>Login</h2>
 
 @if (!string.IsNullOrEmpty(Model?.ReturnUrl))
@@ -10,24 +14,11 @@
     </div>
 }
 
-@if (!ViewData.ModelState.IsValid)
-{
-    var error = ViewData.ModelState[string.Empty]
-        ?.Errors
-        .FirstOrDefault()
-        ?.ErrorMessage;
-
-    if (!string.IsNullOrEmpty(error))
-    {
-        <div class="alert alert-danger">
-            @error
-        </div>
-    }
-}
-
 <form asp-controller="Account"
       asp-action="Login"
       method="post">
+
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
     <input asp-for="ReturnUrl"
            type="hidden" />

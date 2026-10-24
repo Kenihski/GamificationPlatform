@@ -11,6 +11,11 @@
     --home-purple: #c09aff;
     --content-card-bg: #121a36;
     --content-card-border: rgba(125, 151, 230, 0.55);
+    --primary-gradient: linear-gradient(135deg, #3159cf, #6540c5);
+    --primary-gradient-hover: linear-gradient(135deg, #3d65d9, #714bd1);
+    --text-error: #ffb3bf;
+    --text-success: #91efc4;
+    --focus-ring: #b8c8ff;
 }
 
 .featured-badge {
@@ -53,6 +58,25 @@ main h5 {
 
 .text-muted {
     color: var(--home-muted) !important;
+}
+
+/* Bootstrap utility colours need lighter text on the dark theme. */
+.text-secondary {
+    color: var(--home-muted) !important;
+}
+
+.text-danger {
+    color: var(--text-error) !important;
+}
+
+.text-success {
+    color: var(--text-success) !important;
+}
+
+/* Keep keyboard focus visible even when a component replaces Bootstrap's shadow. */
+:root :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
 }
 
 .card:not(.home-ranking-card):not(.home-feature-card) {
@@ -101,6 +125,10 @@ main h5 {
 }
 
 /* Forms */
+.validation-summary-valid {
+    display: none;
+}
+
 .form-control,
 .form-select {
     background-color: #253154;
@@ -152,13 +180,13 @@ main h5 {
 
 /* Buttons */
 .btn-primary {
-    background: linear-gradient(135deg, #4777ff, #7957ed);
+    background: var(--primary-gradient);
     border-color: #6d83ff;
     color: #ffffff;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #5a87ff, #8b69ff);
+    background: var(--primary-gradient-hover);
     border-color: #9eabff;
     color: #ffffff;
 }
@@ -184,6 +212,21 @@ main h5 {
     background: rgba(77, 99, 202, 0.35);
     border-color: #b2c1ff;
     color: #ffffff;
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--text-error);
+    --bs-btn-border-color: var(--text-error);
+}
+
+.btn-outline-success {
+    --bs-btn-color: var(--text-success);
+    --bs-btn-border-color: var(--text-success);
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--home-muted);
+    --bs-btn-border-color: #91a5df;
 }
 
 /* Lists */

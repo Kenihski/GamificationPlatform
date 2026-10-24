@@ -5,13 +5,7 @@
     ViewData["Title"] = "Home Page";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="successMessage"
-         class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
+<partial name="_FeedbackMessages" />
 
 <!-- Welcome section -->
 <section class="home-hero text-center">
@@ -359,11 +353,3 @@
 
     </div>
 </section>
-
-@section Scripts
-{
-    <script src="~/js/home.js"
-            asp-append-version="true"
-            defer>
-    </script>
-}

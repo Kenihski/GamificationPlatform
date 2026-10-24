@@ -12,19 +12,7 @@
     </p>
 </div>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div id="successMessage" class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (TempData["ErrorMessage"] != null)
-{
-    <div id="errorMessage" class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
+<partial name="_FeedbackMessages" />
 
 @if (!Model.Challenges.Any())
 {
@@ -167,8 +155,3 @@ else
 <a asp-controller="Challenge" asp-action="Create" class="btn btn-primary mt-3">
     Create New Challenge
 </a>
-
-@section Scripts
-{
-    <script src="~/js/myChallenges.js" defer></script>
-}
