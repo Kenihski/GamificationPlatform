@@ -1,30 +1,39 @@
+
 @model GamificationPlatform.Models.Question
 
 <h2>Delete Question</h2>
 
+<div class="alert question-delete-warning mt-4">
+    <p class="mb-2">
+        <strong>Warning:</strong>
+        Deleting this question will reset all previous attempts
+        and scores for this challenge.
+    </p>
 
-<div class="alert alert-warning mt-4">
+    @if (Model.Challenge.IsPublished &&
+         Model.Challenge.Questions.Count == 1)
+    {
+        <p class="mb-2">
+            <strong>
+                This is the last question in this published challenge.
+            </strong>
+        </p>
 
-    <strong>Warning:</strong>
+        <p class="mb-2">
+            Deleting it will automatically unpublish the challenge.
+        </p>
+    }
 
-    Deleting this question will reset all previous attempts
-    and scores for this challenge.
-
-    <br />
-
-    Are you sure you want to delete this question?
-
+    <p class="mb-0">
+        Are you sure you want to delete this question?
+    </p>
 </div>
 
-
 <div class="card mb-4">
-
     <div class="card-body">
-
         <h4 class="card-title">
             @Model.Title
         </h4>
-
 
         @if (!string.IsNullOrWhiteSpace(
             Model.Description))
@@ -34,24 +43,37 @@
             </p>
         }
 
-
         <p>
             <strong>Challenge:</strong>
             @Model.Challenge.Title
         </p>
 
+        <p>
+            <strong>Question Type:</strong>
+
+            @if (Model.QuestionType == "MultipleChoice")
+            {
+                <span>Multiple Choice</span>
+            }
+            else if (Model.QuestionType == "ShortAnswer")
+            {
+                <span>Short Answer</span>
+            }
+            else
+            {
+                <span>Single Choice</span>
+            }
+        </p>
 
         <p>
             <strong>Points:</strong>
             @Model.Points
         </p>
 
-
         @if (!string.IsNullOrWhiteSpace(
             Model.ImageUrl))
         {
             <div class="mb-3">
-
                 <strong>Image:</strong>
 
                 <br />
@@ -60,45 +82,55 @@
                      alt="@Model.Title"
                      class="img-fluid mt-2"
                      style="max-width: 250px;" />
-
             </div>
         }
-
 
         <hr />
 
-
-        <h5>Answer Options</h5>
-
-
-        @foreach (var option in Model.Options)
+        @if (Model.QuestionType == "ShortAnswer")
         {
-            <div class="mb-1">
+            <h5>Accepted Answers</h5>
 
-                @if (option.IsCorrect)
-                {
+            @foreach (var answer in Model.AcceptedAnswers)
+            {
+                <div class="mb-1">
                     <span>
                         ✓
                         <strong>
-                            @option.Text
+                            @answer.Text
                         </strong>
-                        (Correct)
                     </span>
-                }
-                else
-                {
-                    <span>
-                        ○ @option.Text
-                    </span>
-                }
-
-            </div>
+                </div>
+            }
         }
+        else
+        {
+            <h5>Answer Options</h5>
 
+            @foreach (var option in Model.Options)
+            {
+                <div class="mb-1">
+                    @if (option.IsCorrect)
+                    {
+                        <span>
+                            ✓
+                            <strong>
+                                @option.Text
+                            </strong>
+                            (Correct)
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            ○ @option.Text
+                        </span>
+                    }
+                </div>
+            }
+        }
     </div>
-
 </div>
-
 
 <form asp-controller="Question"
       asp-action="DeleteConfirmed"
@@ -106,16 +138,14 @@
       method="post">
 
     <button type="submit"
-            class="btn btn-danger">
+            class="btn btn-outline-danger">
         Delete Question
     </button>
-
 
     <a asp-controller="Challenge"
        asp-action="Details"
        asp-route-id="@Model.ChallengeId"
-       class="btn btn-secondary">
+       class="btn btn-outline-primary">
         Cancel
     </a>
-
 </form>

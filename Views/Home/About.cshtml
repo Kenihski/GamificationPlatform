@@ -1,0 +1,460 @@
+
+@{
+    ViewData["Title"] = "About";
+}
+
+<div class="about-page">
+
+    <!-- Introduction -->
+    <section class="about-hero text-center mb-5">
+        <span class="about-eyebrow">ABOUT THE PLATFORM</span>
+
+        <h1 class="display-5 fw-bold mt-3 mb-3">
+            Learning Challenge Hub
+        </h1>
+
+        <p class="about-intro mx-auto">
+            An interactive learning platform where users can
+            create challenges, test their knowledge, earn
+            achievements and track their progress.
+        </p>
+    </section>
+
+    <!-- Overview -->
+    <section class="mb-5" aria-labelledby="how-it-works">
+        <h2 id="how-it-works" class="h3 fw-bold mb-4">
+            How It Works
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="about-card h-100">
+                    <span class="about-step">01</span>
+
+                    <h3 class="h5 fw-bold mt-3">
+                        Create & Explore
+                    </h3>
+
+                    <p>
+                        Discover challenges on different topics
+                        or create your own quizzes with questions,
+                        images and customizable settings.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="about-card h-100">
+                    <span class="about-step">02</span>
+
+                    <h3 class="h5 fw-bold mt-3">
+                        Learn & Improve
+                    </h3>
+
+                    <p>
+                        Complete challenges, receive scores
+                        and review your attempt history as
+                        you improve your knowledge.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="about-card h-100">
+                    <span class="about-step">03</span>
+
+                    <h3 class="h5 fw-bold mt-3">
+                        Earn & Compete
+                    </h3>
+
+                    <p>
+                        Unlock achievements, collect Achievement
+                        Points and compete with other learners
+                        through leaderboards.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Platform guide -->
+    <section class="mb-5" aria-labelledby="platform-guide">
+        <span class="about-eyebrow">USER GUIDE</span>
+
+        <h2 id="platform-guide" class="h3 fw-bold mt-2 mb-3">
+            Platform Guide
+        </h2>
+
+        <p class="about-section-intro mb-4">
+            Learn how challenges, achievements and rankings work,
+            and how to get the most out of the platform.
+        </p>
+
+        <nav class="about-guide-nav mb-4"
+             aria-label="Platform guide sections">
+
+            <a href="#getting-started">Getting Started</a>
+            <a href="#challenge-types">Core vs. Community</a>
+            <a href="#challenges">Challenges & Quizzes</a>
+            <a href="#scoring">Scores & Attempts</a>
+            <a href="#achievements">Achievements</a>
+            <a href="#leaderboards">Leaderboards</a>
+            <a href="#hall-of-fame">Hall of Fame</a>
+            <a href="#fair-play">Fair Play</a>
+
+        </nav>
+
+        <!-- Getting started -->
+        <article id="getting-started" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Getting Started
+            </h3>
+
+            <p>
+                You can explore published challenges without
+                creating an account. To participate, track your
+                progress and create your own challenges, register
+                an account and log in.
+            </p>
+
+            <p>
+                Once logged in, use the navigation menu to access
+                your challenges, create new ones and view your
+                achievements.
+            </p>
+        </article>
+
+        <!-- Challenge categories -->
+        <article id="challenge-types" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Core vs. Community Challenges
+            </h3>
+
+            <p>
+                Learning Challenge Hub has two categories of challenges,
+                each serving a different purpose.
+            </p>
+
+            <h4 class="h6 fw-bold mt-4 mb-2">
+                Core Challenges
+            </h4>
+
+            <p>
+                Core Challenges are part of the platform's official
+                challenge collection. They contribute to the Core
+                Leaderboard, where only the first completed attempt
+                per user and challenge counts.
+            </p>
+
+            <h4 class="h6 fw-bold mt-4 mb-2">
+                Community Challenges
+            </h4>
+
+            <p>
+                Community Challenges allow users to share knowledge
+                and challenge each other on different topics.
+                They have individual challenge leaderboards,
+                but do not contribute to the Core Leaderboard.
+            </p>
+
+            <div class="about-info-note">
+                <strong>Remember:</strong>
+                Both categories support quiz scores, attempt history
+                and learning progress. Only Core Challenges contribute
+                to the overall Core Leaderboard.
+            </div>
+        </article>
+
+        <!-- Challenges -->
+        <article id="challenges" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Challenges & Quizzes
+            </h3>
+
+            <p>
+                Challenges are quizzes created by users or
+                administrators. Each challenge contains questions
+                with assigned point values.
+            </p>
+
+            <h4 class="h6 fw-bold mt-4 mb-2">
+                Question Types
+            </h4>
+
+            <ul>
+                <li>
+                    <strong>Single Choice:</strong>
+                    Select one answer from the available options.
+                </li>
+                <li>
+                    <strong>Multiple Choice:</strong>
+                    Select the correct combination of answers.
+                </li>
+                <li>
+                    <strong>Short Answer:</strong>
+                    Enter a written answer.
+                </li>
+            </ul>
+
+            <h4 class="h6 fw-bold mt-4 mb-2">
+                Creating Challenges
+            </h4>
+
+            <p>
+                Registered users can create their own challenges,
+                add questions, assign points and choose images.
+                Challenge settings allow creators to control
+                how their quizzes are presented.
+            </p>
+
+            <h4 class="h6 fw-bold mt-4 mb-2">
+                Answer Review
+            </h4>
+
+            <p>
+                Challenge creators can decide whether participants
+                may review the correct answers after completing
+                a quiz.
+            </p>
+
+            <p>
+                When answer review is disabled, participants can
+                still see their overall score, time used and
+                points earned for each question, but the correct
+                answers and explanations remain hidden.
+            </p>
+        </article>
+
+        <!-- Scoring -->
+        <article id="scoring" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Scores & Attempts
+            </h3>
+
+            <p>
+                Each question has a point value. Your total
+                quiz score is calculated from the points
+                earned across the questions.
+            </p>
+
+            <p>
+                After completing a challenge, you can see
+                your score, the maximum available points
+                and how long the attempt took.
+            </p>
+
+            <p>
+                You can attempt a challenge multiple times.
+                Your attempt history allows you to compare
+                previous results and track your progress.
+            </p>
+
+            <div class="about-info-note">
+                <strong>Important:</strong>
+                Quiz Scores and Achievement Points are two
+                different scoring systems. Quiz Scores measure
+                performance in challenges, while Achievement
+                Points are earned by unlocking achievements.
+            </div>
+        </article>
+
+        <!-- Achievements -->
+        <article id="achievements" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Achievements
+            </h3>
+
+            <p>
+                Achievements reward users for reaching milestones
+                and completing activities on the platform.
+                Each achievement has its own requirements.
+            </p>
+
+            <p>
+                When you meet the requirements for an active
+                achievement, it can be unlocked and added to
+                your achievement collection.
+            </p>
+
+            <p>
+                Eligible achievements award
+                <strong>Achievement Points (AP)</strong>.
+                These points contribute to your position
+                in the Hall of Fame.
+            </p>
+
+            <p>
+                You can visit the Achievements page to see
+                which achievements you have unlocked and
+                which ones you can still work towards.
+            </p>
+        </article>
+
+        <!-- Leaderboards -->
+        <article id="leaderboards" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Leaderboards
+            </h3>
+
+            <p>
+                Leaderboards allow users to compare their
+                performance with other participants.
+            </p>
+
+            <h4 class="h6 fw-bold mt-4 mb-2">
+                Challenge Leaderboards
+            </h4>
+
+            <p>
+                Individual challenges have their own leaderboards.
+                Rankings are based on quiz scores, with
+                completion time used to separate users
+                who achieve the same score.
+            </p>
+
+            <h4 class="h6 fw-bold mt-4 mb-2">
+                Core Leaderboard
+            </h4>
+
+            <p>
+                The Core Leaderboard combines results from
+                challenges designated as Core Challenges.
+                These challenges contribute to an overall
+                competitive ranking.
+            </p>
+
+            <ul>
+                <li>
+                    Only Core Challenges contribute to
+                    this leaderboard.
+                </li>
+                <li>
+                    Only the first completed attempt per user
+                    and Core Challenge counts.
+                </li>
+                <li>
+                    Scores are normalized to a maximum
+                    of 100 points per challenge.
+                </li>
+                <li>
+                    Attempts with zero points do not
+                    contribute to the total.
+                </li>
+                <li>
+                    Completion time is used as a
+                    tie-breaker when applicable.
+                </li>
+            </ul>
+
+            <div class="about-info-note">
+                <strong>Example:</strong>
+                Earning 15 out of 20 points on a Core Challenge
+                contributes 75 normalized points to your
+                Core Leaderboard total.
+            </div>
+        </article>
+
+        <!-- Hall of Fame -->
+        <article id="hall-of-fame" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Hall of Fame
+            </h3>
+
+            <p>
+                The Hall of Fame recognizes users who have
+                earned Achievement Points through their
+                accomplishments on the platform.
+            </p>
+
+            <p>
+                Unlike quiz leaderboards, the Hall of Fame
+                is based on Achievement Points rather than
+                individual quiz scores.
+            </p>
+
+            <p>
+                Users with the same number of Achievement
+                Points share the same rank.
+            </p>
+        </article>
+
+        <!-- Fair play -->
+        <article id="fair-play" class="about-guide-card mb-3">
+            <h3 class="h4 fw-bold mb-3">
+                Fair Play & Rankings
+            </h3>
+
+            <p>
+                Learning Challenge Hub includes rules
+                designed to keep competitive rankings fair.
+            </p>
+
+            <ul>
+                <li>
+                    Challenge creators are excluded from
+                    the competitive rankings for their
+                    own challenges.
+                </li>
+                <li>
+                    Administrators may test challenges,
+                    but their attempts do not contribute
+                    to competitive leaderboards.
+                </li>
+                <li>
+                    Repeated attempts do not replace the
+                    first completed attempt used for
+                    Core Leaderboard scoring.
+                </li>
+                <li>
+                    Users with equivalent ranking results
+                    may share the same position.
+                </li>
+            </ul>
+        </article>
+    </section>
+
+    <!-- Project information -->
+    <section class="about-project mb-5" aria-labelledby="about-project">
+        <span class="about-eyebrow">THE PROJECT</span>
+
+        <h2 id="about-project" class="h3 fw-bold mt-2 mb-3">
+            Built as a Student Project
+        </h2>
+
+        <p>
+            Learning Challenge Hub was developed as part of
+            ITPE3200 Web Applications at OsloMet.
+        </p>
+
+        <p>
+            The project explores full-stack web development,
+            database management, authentication, authorization
+            and interactive user experiences.
+        </p>
+
+        <h3 class="h5 fw-bold mt-4 mb-3">
+            Technologies
+        </h3>
+
+        <div class="d-flex flex-wrap gap-2">
+            <span class="about-tech">ASP.NET Core MVC</span>
+            <span class="about-tech">C#</span>
+            <span class="about-tech">Entity Framework Core</span>
+            <span class="about-tech">SQLite</span>
+            <span class="about-tech">Bootstrap</span>
+            <span class="about-tech">JavaScript</span>
+        </div>
+    </section>
+
+    <!-- Explore challenges -->
+    <div class="text-center mb-4">
+        <a asp-controller="Challenge"
+           asp-action="Grid"
+           class="btn btn-primary">
+            Explore Challenges
+        </a>
+    </div>
+
+</div>

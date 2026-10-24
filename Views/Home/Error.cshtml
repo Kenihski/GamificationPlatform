@@ -1,0 +1,17 @@
+@model GamificationPlatform.ViewModels.ErrorViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="alert alert-danger mt-4" role="alert">
+    <h1 class="h3">@Model.Title</h1>
+    <p>@Model.Message</p>
+    <p class="mb-0">Reference: <code>@Model.RequestId</code></p>
+</div>
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+    Back to Home
+</a>
+<a asp-controller="Challenge" asp-action="Grid" class="btn btn-secondary">
+    View Challenges
+</a>

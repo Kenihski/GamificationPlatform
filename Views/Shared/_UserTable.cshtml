@@ -1,32 +1,34 @@
+
 @model IEnumerable<GamificationPlatform.Models.User>
+@inject Microsoft.AspNetCore.Identity.UserManager<GamificationPlatform.Models.User> UserManager
 
-<div class="container">
-    <table class="table table-striped">
-
+<div class="table-responsive">
+    <table class="table table-striped align-middle users-table">
         <thead>
             <tr>
-                <th>Id</th>
+                <th class="text-center">Id</th>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Role</th>
-                <th>Challenges Created</th>
+                <th class="text-center">Role</th>
+                <th class="text-center">Challenges Created</th>
             </tr>
         </thead>
 
         <tbody>
-
             @foreach (var user in Model)
             {
-                <tr>
-                    <td>
-                        @user.UserId
+                <tr class="users-table-row"
+                    data-user-search="@($"{user.UserName} {user.Email}")">
+
+                    <td class="text-center">
+                        @user.Id
                     </td>
 
                     <td>
                         <a asp-controller="User"
                            asp-action="Details"
-                           asp-route-id="@user.UserId">
-                            @user.Username
+                           asp-route-id="@user.Id">
+                            @user.UserName
                         </a>
                     </td>
 
@@ -34,27 +36,26 @@
                         @user.Email
                     </td>
 
-                    <td>
-                        @if (user.IsAdmin)
+                    <td class="text-center">
+                        @if (await UserManager.IsInRoleAsync(user, "Admin"))
                         {
-                            <span class="badge bg-danger">
+                            <span class="user-role-badge user-role-admin">
                                 Admin
                             </span>
                         }
                         else
                         {
-                            <span class="badge bg-secondary">
+                            <span class="user-role-badge user-role-member">
                                 User
                             </span>
                         }
                     </td>
 
-                    <td>
+                    <td class="text-center">
                         @user.CreatedChallenges.Count
                     </td>
                 </tr>
             }
-
         </tbody>
     </table>
 </div>

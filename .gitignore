@@ -1,1 +1,16 @@
+# .NET build files
+bin/
+obj/
+
+# Node.js
+node_modules/
+
+# Library Manager
 **/wwwroot/lib/
+
+# Serilog log files
+Logs/
+
+# Temporary SQLite files
+*.db-shm
+*.db-wal

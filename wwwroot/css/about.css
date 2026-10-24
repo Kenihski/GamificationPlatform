@@ -1,0 +1,154 @@
+
+/* About page */
+
+.about-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 0 4rem;
+}
+
+.about-hero {
+    padding: 2rem 1rem 3rem;
+}
+
+.about-eyebrow {
+    color: #98b4ff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.about-intro {
+    max-width: 680px;
+    color: #c5cde2;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.about-card,
+.about-project {
+    background: #121a35;
+    border: 1px solid #465b94;
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.about-card p,
+.about-project p {
+    color: #c5cde2;
+    line-height: 1.7;
+}
+
+.about-step {
+    color: #a78bfa;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.about-tech {
+    background: #1c274b;
+    border: 1px solid #465b94;
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    color: #dbe5ff;
+    font-size: 0.85rem;
+}
+
+
+/* About page - Platform Guide */
+
+.about-section-intro {
+    color: #c5cde2;
+    line-height: 1.7;
+}
+
+/* Equal-width navigation links */
+.about-guide-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.about-guide-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.65rem 0.75rem;
+    color: #dbe5ff;
+    background: #1c274b;
+    border: 1px solid #465b94;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.about-guide-nav a:hover,
+.about-guide-nav a:focus-visible {
+    color: #fff;
+    background: #293b6d;
+    border-color: #829cff;
+}
+
+.about-guide-card {
+    padding: 2rem;
+    background: #121a35;
+    border: 1px solid #465b94;
+    border-radius: 16px;
+    scroll-margin-top: 2rem;
+}
+
+.about-guide-card p,
+.about-guide-card li {
+    color: #c5cde2;
+    line-height: 1.8;
+}
+
+.about-guide-card ul {
+    padding-left: 1.5rem;
+}
+
+.about-guide-card li {
+    margin-bottom: 0.5rem;
+}
+
+.about-guide-card strong {
+    color: #f0f3ff;
+}
+
+.about-info-note {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #1c274b;
+    border-left: 3px solid #a78bfa;
+    border-radius: 8px;
+    color: #dbe5ff;
+    line-height: 1.7;
+}
+
+/* Responsive About page */
+
+@media (max-width: 767px) {
+    .about-page {
+        padding: 1.5rem 0 3rem;
+    }
+
+    .about-hero {
+        padding: 1rem 0 2rem;
+    }
+
+    .about-guide-card {
+        padding: 1.5rem;
+    }
+
+    .about-guide-nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+
+    .about-guide-nav a {
+        font-size: 0.85rem;
+    }
+}

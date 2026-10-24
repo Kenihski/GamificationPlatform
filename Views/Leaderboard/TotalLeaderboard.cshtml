@@ -1,0 +1,127 @@
+
+@model GamificationPlatform.ViewModels.TotalLeaderboardViewModel
+
+@{
+    ViewData["Title"] = "Core Leaderboard";
+}
+
+<div class="container mt-4 leaderboard-page">
+
+    <div class="leaderboard-page-header">
+
+        <p class="leaderboard-page-label">
+            COMPETE & IMPROVE
+        </p>
+
+        <h1>
+            ⭐ Core Leaderboard
+        </h1>
+
+        <p class="leaderboard-page-description">
+            Rankings are based on your first completed attempt
+            in each Core Challenge.
+        </p>
+
+    </div>
+
+    @if (Model.Entries.Any())
+    {
+        <div class="leaderboard-table-container">
+
+            <div class="table-responsive">
+
+                <table class="table leaderboard-table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Total Points</th>
+                            <th>Core Completed</th>
+                            <th>Total Time</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var entry in Model.Entries)
+                        {
+                            <tr>
+
+                                <td>
+                                    <div class="leaderboard-rank">
+
+                                        <span class="leaderboard-rank-number">
+                                            @entry.Rank
+                                        </span>
+
+                                        @if (entry.Rank == 1)
+                                        {
+                                            <span class="leaderboard-medal" title="Gold">
+                                                🥇
+                                            </span>
+                                        }
+                                        else if (entry.Rank == 2)
+                                        {
+                                            <span class="leaderboard-medal" title="Silver">
+                                                🥈
+                                            </span>
+                                        }
+                                        else if (entry.Rank == 3)
+                                        {
+                                            <span class="leaderboard-medal" title="Bronze">
+                                                🥉
+                                            </span>
+                                        }
+
+                                    </div>
+                                </td>
+
+                                <td class="leaderboard-username">
+                                    @entry.Username
+                                </td>
+
+                                <td class="leaderboard-points">
+                                    @entry.TotalPoints.ToString("0.#")
+                                </td>
+
+                                <td>
+                                    @entry.CoreChallengesCompleted
+                                </td>
+
+                                <td>
+                                    @if (entry.TotalTime.TotalHours >= 1)
+                                    {
+                                        @($"{(int)entry.TotalTime.TotalHours}h {entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
+                                    }
+                                    else
+                                    {
+                                        @($"{entry.TotalTime.Minutes}m {entry.TotalTime.Seconds}s")
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No leaderboard results yet.
+        </div>
+    }
+
+    <a asp-controller="Challenge"
+       asp-action="Grid"
+       class="btn btn-outline-primary leaderboard-back-button mt-4">
+        Back to Challenges
+    </a>
+
+</div>

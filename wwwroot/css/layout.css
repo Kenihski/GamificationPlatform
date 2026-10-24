@@ -1,0 +1,136 @@
+
+body {
+    min-height: 100vh;
+    background: var(--home-bg);
+    color: var(--home-text);
+}
+
+/* Matrix background */
+#matrixBackground {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.45;
+}
+
+header,
+main,
+footer {
+    position: relative;
+}
+
+body:not(:has(.home-hero)) #matrixBackground {
+    opacity: 0.18;
+}
+
+/* Navbar and sidebar - dark theme */
+.site-navbar {
+    background: #111833;
+    border-bottom: 1px solid var(--home-border) !important;
+}
+
+.site-navbar .navbar-brand {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.site-navbar .navbar-brand:hover,
+.site-navbar .navbar-brand:focus {
+    color: var(--home-blue);
+}
+
+.site-navbar .nav-link {
+    color: #edf1ff;
+}
+
+.site-navbar .nav-link:hover,
+.site-navbar .nav-link:focus {
+    color: var(--home-blue);
+}
+
+.site-navbar .navbar-toggler {
+    border-color: rgba(145, 169, 255, 0.45);
+}
+
+.site-navbar .navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(111, 132, 255, 0.2);
+}
+
+.site-sidebar {
+    background: #121a36;
+    color: #edf1ff;
+    border-right: 1px solid var(--home-border);
+}
+
+.site-sidebar .offcanvas-header {
+    border-bottom: 1px solid var(--home-border) !important;
+}
+
+.site-sidebar .offcanvas-title {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.site-sidebar .offcanvas-body h6 {
+    color: #8fa5df !important;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.site-sidebar .nav-link {
+    margin: 3px 0;
+    padding: 11px 16px;
+    border-radius: 9px;
+    color: #edf1ff;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.site-sidebar .nav-link:hover,
+.site-sidebar .nav-link:focus {
+    background: rgba(91, 110, 220, 0.22);
+    color: #ffffff;
+}
+
+.site-sidebar .nav-link.active {
+    background: rgba(91, 110, 220, 0.3);
+    color: #b8c8ff;
+    font-weight: 700;
+}
+
+.site-sidebar hr {
+    border-color: var(--home-border);
+    opacity: 1;
+}
+
+.site-sidebar .btn-close {
+    opacity: 0.8;
+}
+
+.site-sidebar .btn-close:hover {
+    opacity: 1;
+}
+
+/* Sidebar footer */
+
+.site-sidebar-footer {
+    margin-top: auto;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.site-sidebar-footer .nav-link {
+    color: #aab8d6;
+    font-size: 0.9rem;
+    border-radius: 8px;
+}
+
+.site-sidebar-footer .nav-link:hover,
+.site-sidebar-footer .nav-link:focus-visible {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+}

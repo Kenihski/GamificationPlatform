@@ -1,0 +1,193 @@
+
+@model IEnumerable<GamificationPlatform.ViewModels.AchievementAdminViewModel>
+
+@{
+    ViewData["Title"] = "Achievement Management";
+}
+
+<link rel="stylesheet"
+      href="~/css/achievements.css"
+      asp-append-version="true" />
+
+<div class="container mt-4 mb-5">
+
+    <div class="achievement-header mb-4">
+        <div class="achievement-header-top">
+            <div>
+                <h1 class="mb-2">Achievement Management</h1>
+
+                <p class="mb-0 text-muted">
+                    Create and manage achievements available to users.
+                </p>
+            </div>
+
+            <div>
+                <a asp-controller="Achievement"
+                   asp-action="Create"
+                   class="btn btn-primary">
+                    Create Achievement
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="achievement-list achievement-admin-list">
+
+        @foreach (var achievement in Model)
+        {
+            var rowClass = achievement.IsActive
+                ? achievement.IsGoal
+                    ? "achievement-goal"
+                    : "achievement-unlocked"
+                : "achievement-locked";
+
+            <div class="achievement-row @rowClass">
+
+                <div class="achievement-icon">
+                    @if (!achievement.IsActive)
+                    {
+                        <span>🔒</span>
+                    }
+                    else if (achievement.IsGoal)
+                    {
+                        <span>⭐</span>
+                    }
+                    else
+                    {
+                        <span>🏆</span>
+                    }
+                </div>
+
+                <div class="achievement-content">
+
+                    <div class="achievement-name">
+                        @achievement.Name
+                    </div>
+
+                    <div class="achievement-description">
+                        @achievement.Description
+                    </div>
+
+                    <div class="achievement-admin-badges mt-2">
+
+                        @if (achievement.IsGoal)
+                        {
+                            <span class="achievement-admin-badge achievement-admin-badge-goal">
+                                System Goal
+                            </span>
+
+                            <span class="achievement-admin-badge achievement-admin-badge-requirement">
+                                Requirement: @achievement.RequirementValue
+                            </span>
+                        }
+                        else
+                        {
+                            @if (achievement.IsActive)
+                            {
+                                <span class="achievement-admin-badge achievement-admin-badge-published">
+                                    Published
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="achievement-admin-badge achievement-admin-badge-unpublished">
+                                    Unpublished
+                                </span>
+                            }
+
+                            <span class="achievement-admin-badge achievement-admin-badge-type">
+                                @achievement.Type
+                            </span>
+
+                            <span class="achievement-admin-badge achievement-admin-badge-requirement">
+                                Requirement: @achievement.RequirementValue
+                            </span>
+                        }
+
+                    </div>
+                </div>
+
+                <div class="achievement-admin-actions">
+
+                    @if (achievement.IsGoal)
+                    {
+                        <div class="achievement-system-locked">
+                            <span>🔒</span>
+                            <span>SYSTEM</span>
+                            <span>LOCKED</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Achievement"
+                           asp-action="Edit"
+                           asp-route-id="@achievement.AchievementId"
+                           class="btn btn-outline-warning btn-sm">
+                            Edit
+                        </a>
+
+                        @if (achievement.IsActive)
+                        {
+                            <form asp-controller="Achievement"
+                                  asp-action="Unpublish"
+                                  asp-route-id="@achievement.AchievementId"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-outline-secondary btn-sm">
+                                    Unpublish
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="Achievement"
+                                  asp-action="Publish"
+                                  asp-route-id="@achievement.AchievementId"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-outline-success btn-sm">
+                                    Publish
+                                </button>
+                            </form>
+                        }
+
+                        <a asp-controller="Achievement"
+                           asp-action="Delete"
+                           asp-route-id="@achievement.AchievementId"
+                           class="btn btn-outline-danger btn-sm">
+                            Delete
+                        </a>
+                    }
+                </div>
+
+                <div class="achievement-points">
+
+                    @if (achievement.IsGoal)
+                    {
+                        <span class="achievement-goal-label">
+                            GOAL
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="achievement-points-number">
+                            @achievement.Points
+                        </span>
+
+                        <span class="achievement-points-label">
+                            AP
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+        }
+    </div>
+</div>

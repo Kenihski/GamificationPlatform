@@ -1,104 +1,258 @@
+
 @model GamificationPlatform.ViewModels.TakeChallengeViewModel
 
-<h1>@Model.Challenge.Title</h1>
+@{
+    ViewData["Title"] = Model.Challenge.Title;
 
-<p>@Model.Challenge.Description</p>
-
-@if (Model.Challenge.TimeLimitMinutes.HasValue)
-{
-    <div class="alert alert-warning">
-        <strong>Time Remaining:</strong>
-        <span id="timeRemaining"></span>
-    </div>
-}
-else
-{
-    <div class="alert alert-info">
-        <strong>Time Limit:</strong>
-        Unlimited
-    </div>
+    int questionNumber = 0;
+    int totalQuestions = Model.Challenge.Questions.Count;
+    int totalPoints = Model.Challenge.Questions.Sum(q => q.Points);
 }
 
-<hr />
+<div class="quiz-take-page">
 
-@if (!Model.Challenge.Questions.Any())
-{
-    <p>This challenge has no questions yet.</p>
-}
-else
-{
-    <form asp-controller="Quiz"
-          asp-action="Submit"
-          method="post"
-          id="challengeForm"
-          data-started-at="@Model.StartedAt.ToString("o")"
-          data-time-limit="@Model.Challenge.TimeLimitMinutes">
+    <!-- Challenge overview -->
+    <section class="quiz-take-header">
 
-        <input type="hidden"
-               name="challengeId"
-               value="@Model.Challenge.ChallengeId" />
+        <div class="quiz-take-header-top">
+            @if (Model.Challenge.IsCore)
+            {
+                <span class="featured-badge featured-badge-core">
+                    CORE CHALLENGE
+                </span>
+            }
+            else
+            {
+                <span class="featured-badge featured-badge-community">
+                    COMMUNITY CHALLENGE
+                </span>
+            }
+        </div>
 
-        <input type="hidden"
-               name="challengeAttemptId"
-               value="@Model.ChallengeAttemptId" />
+        <h1>@Model.Challenge.Title</h1>
 
-        @foreach (var question in Model.Challenge.Questions)
+        @if (!string.IsNullOrWhiteSpace(Model.Challenge.Description))
         {
-            <div class="card mb-4 question-card">
-                <div class="card-body">
+            <p class="quiz-take-description">
+                @Model.Challenge.Description
+            </p>
+        }
 
-                    <h4>@question.Title</h4>
+        <div class="quiz-take-stats">
 
-                    <p>@question.Description</p>
+            <span>
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     aria-hidden="true">
+                    <path d="M8 21h8" />
+                    <path d="M12 17v4" />
+                    <path d="M7 4h10v6a5 5 0 0 1-10 0V4Z" />
+                    <path d="M7 6H4v3a4 4 0 0 0 4 4" />
+                    <path d="M17 6h3v3a4 4 0 0 1-4 4" />
+                </svg>
+                @totalPoints points
+            </span>
+
+            <span>
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                </svg>
+                @totalQuestions questions
+            </span>
+
+        </div>
+
+        @if (Model.Challenge.TimeLimitMinutes.HasValue)
+        {
+            <div class="quiz-take-timer"
+                 role="timer"
+                 aria-label="Time remaining">
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                </svg>
+
+                <strong>Time Remaining:</strong>
+                <span id="timeRemaining"></span>
+            </div>
+        }
+        else
+        {
+            <div class="quiz-take-timer quiz-take-timer-unlimited">
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                </svg>
+
+                <strong>Time Limit:</strong>
+                <span>Unlimited</span>
+            </div>
+        }
+
+    </section>
+
+    @if (!Model.Challenge.Questions.Any())
+    {
+        <div class="alert alert-info">
+            This challenge has no questions yet.
+        </div>
+    }
+    else
+    {
+        <form asp-controller="Quiz"
+              asp-action="Submit"
+              method="post"
+              id="challengeForm"
+              data-started-at="@Model.StartedAt.ToString("o")"
+              data-time-limit="@Model.Challenge.TimeLimitMinutes">
+
+            <input type="hidden"
+                   name="challengeId"
+                   value="@Model.Challenge.ChallengeId" />
+
+            <input type="hidden"
+                   name="challengeAttemptId"
+                   value="@Model.ChallengeAttemptId" />
+
+            @foreach (var question in Model.Challenge.Questions)
+            {
+                questionNumber++;
+
+                <section class="quiz-question-card"
+                         aria-labelledby="quizQuestion_@question.QuestionId">
+
+                    <div class="quiz-question-heading">
+
+                        <span class="quiz-question-number">
+                            QUESTION @questionNumber OF @totalQuestions
+                        </span>
+
+                        <span class="quiz-question-points">
+                            @question.Points points
+                        </span>
+
+                    </div>
+
+                    <h2 id="quizQuestion_@question.QuestionId"
+                        class="quiz-question-title">
+                        @question.Title
+                    </h2>
+
+                    @if (!string.IsNullOrWhiteSpace(question.Description))
+                    {
+                        <p class="quiz-question-description">
+                            @question.Description
+                        </p>
+                    }
 
                     @if (!string.IsNullOrEmpty(question.ImageUrl))
                     {
                         <img src="@question.ImageUrl"
                              alt="@question.Title"
-                             style="width: 300px; height: 180px; object-fit: contain;"
-                             class="mb-3" />
+                             class="quiz-question-image" />
                     }
 
-                    <p>
-                        <strong>@question.Points points</strong>
-                    </p>
-
-                    @foreach (var option in question.Options)
+                    @if (question.QuestionType == "ShortAnswer")
                     {
-                        <div class="form-check mb-2">
-
-                            <input class="form-check-input"
-                                   type="radio"
-                                   name="answers[@question.QuestionId]"
-                                   value="@option.QuestionOptionId"
-                                   id="option_@option.QuestionOptionId" />
-
-                            <label class="form-check-label"
-                                   for="option_@option.QuestionOptionId">
-                                @option.Text
+                        <div class="quiz-short-answer">
+                            <label for="textAnswer_@question.QuestionId"
+                                   class="form-label">
+                                Your Answer
                             </label>
 
+                            <input type="text"
+                                   name="textAnswers[@question.QuestionId]"
+                                   id="textAnswer_@question.QuestionId"
+                                   maxlength="200"
+                                   class="form-control short-answer"
+                                   autocomplete="off" />
+                        </div>
+                    }
+                    else if (question.QuestionType == "MultipleChoice")
+                    {
+                        <p class="quiz-answer-instruction">
+                            Select all correct answers.
+                        </p>
+
+                        <div class="quiz-answer-options">
+                            @foreach (var option in question.Options)
+                            {
+                                <div class="quiz-answer-option">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="answers[@question.QuestionId]"
+                                           value="@option.QuestionOptionId"
+                                           id="option_@option.QuestionOptionId" />
+
+                                    <label for="option_@option.QuestionOptionId">
+                                        @option.Text
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="quiz-answer-instruction">
+                            Select one answer.
+                        </p>
+
+                        <div class="quiz-answer-options">
+                            @foreach (var option in question.Options)
+                            {
+                                <div class="quiz-answer-option">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="answers[@question.QuestionId]"
+                                           value="@option.QuestionOptionId"
+                                           id="option_@option.QuestionOptionId" />
+
+                                    <label for="option_@option.QuestionOptionId">
+                                        @option.Text
+                                    </label>
+                                </div>
+                            }
                         </div>
                     }
 
-                </div>
+                </section>
+            }
+
+            <div class="quiz-take-actions">
+
+                <button type="submit"
+                        class="btn btn-primary quiz-submit-button">
+                    Submit Answers
+                </button>
+
+                <button type="submit"
+                        id="exitChallengeButton"
+                        formaction="@Url.Action("Exit", "Quiz")"
+                        class="btn btn-outline-secondary quiz-exit-button">
+                    Exit Challenge
+                </button>
+
             </div>
-        }
 
-        <button type="submit"
-                class="btn btn-primary">
-            Submit Answers
-        </button>
+        </form>
+    }
 
-        <a asp-controller="Challenge"
-           asp-action="Details"
-           asp-route-id="@Model.Challenge.ChallengeId"
-           class="btn btn-secondary">
-            Back to Challenge
-        </a>
-
-    </form>
-}
+</div>
 
 @section Scripts
 {

@@ -1,13 +1,25 @@
+
 @model Challenge
 
-<div class="col">
+@{
+    bool isCompleted =
+        ViewData["IsCompleted"] as bool? ?? false;
+}
 
+<div class="col">
     <a asp-controller="Challenge"
        asp-action="Details"
        asp-route-id="@Model.ChallengeId"
-       class="text-decoration-none text-dark">
+       class="challenge-card-link">
 
-        <div class="card h-100 challenge-card">
+        <div class="card h-100 challenge-card position-relative">
+
+            @if (isCompleted)
+            {
+                <div class="completed-corner">
+                    <span>✓</span>
+                </div>
+            }
 
             <div class="challenge-image-container">
                 <img src="@Model.ImageUrl"
@@ -15,49 +27,77 @@
                      alt="@Model.Title">
             </div>
 
-            <div class="card-body">
+            <div class="card-body challenge-card-body">
 
-                <div class="d-flex justify-content-between mt-2">
+                <div class="challenge-card-main">
 
-                    <h5 class="text-start">
-                        @Model.Title
-                    </h5>
+                    <div class="challenge-card-info">
 
-                    <div class="text-end text-nowrap">
+                        @if (Model.IsCore)
+                        {
+                            <span class="featured-badge featured-badge-core">
+                                CORE
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="featured-badge featured-badge-community">
+                                COMMUNITY
+                            </span>
+                        }
 
-                        <strong>
+                        <h5 class="challenge-card-title">
+                            @Model.Title
+                        </h5>
+
+                    </div>
+
+                    <div class="challenge-card-stats">
+
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="m8 12 3 3 5-6" />
+                            </svg>
+
                             @Model.MaxPoints points
-                        </strong>
+                        </span>
 
-                        <div class="small text-muted">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 2" />
+                            </svg>
 
-                            @if (Model.TimeLimitMinutes.HasValue)
-                            {
-                                <span>
-                                    @Model.TimeLimitMinutes min
-                                </span>
-                            }
-                            else
-                            {
-                                <span>
-                                    Unlimited
-                                </span>
-                            }
-
-                        </div>
+                            @(Model.TimeLimitMinutes.HasValue
+                                ? $"{Model.TimeLimitMinutes} min"
+                                : "Unlimited")
+                        </span>
 
                     </div>
 
                 </div>
 
-                <p class="card-text">
+                <p class="card-text challenge-card-description">
                     @Model.Description
                 </p>
 
             </div>
 
         </div>
-
     </a>
-
 </div>

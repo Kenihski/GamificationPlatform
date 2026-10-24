@@ -1,3 +1,4 @@
+
 using GamificationPlatform.Models;
 
 namespace GamificationPlatform.ViewModels
@@ -15,6 +16,11 @@ namespace GamificationPlatform.ViewModels
         // The total time used to complete the challenge.
         public TimeSpan TimeUsed { get; set; }
 
+        public DateTime? CompletedAt { get; set; }
+
+        // Controls whether answers and explanations are visible.
+        public bool ShowAnswers { get; set; }
+
         public List<QuestionResultViewModel> QuestionResults { get; set; }
             = new List<QuestionResultViewModel>();
     }
@@ -23,8 +29,16 @@ namespace GamificationPlatform.ViewModels
     {
         public Question Question { get; set; } = default!;
 
-        public int? SelectedOptionId { get; set; }
+        // Stores all selected option IDs for choice questions.
+        public List<int> SelectedOptionIds { get; set; }
+            = new List<int>();
+
+        // Stores the submitted answer for Short Answer questions.
+        public string? TextAnswer { get; set; }
 
         public bool IsCorrect { get; set; }
+
+        // Points earned for this question.
+        public int PointsEarned { get; set; }
     }
 }

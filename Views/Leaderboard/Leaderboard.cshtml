@@ -1,86 +1,139 @@
+
 @model GamificationPlatform.ViewModels.LeaderboardViewModel
 
-<h2 class="mb-4">
-    Leaderboard
-</h2>
+@{
+    ViewData["Title"] = "Leaderboard";
+}
 
-<h4 class="mb-4">
-    @Model.Challenge.Title
-</h4>
+<div class="container mt-4 leaderboard-page">
 
-@if (!Model.Entries.Any())
-{
-    <div class="alert alert-info">
-        No scores yet.
+    <div class="leaderboard-page-header">
+
+        <p class="leaderboard-page-label">
+            COMPETE & IMPROVE
+        </p>
+
+        <h1>
+            🏆 Leaderboard
+        </h1>
+
+        <h4 class="mb-3">
+            @Model.Challenge.Title
+        </h4>
+
+        <p class="leaderboard-page-description">
+            Rankings are based on each user's first completed attempt
+            in this challenge.
+        </p>
+
     </div>
-}
-else
-{
-    <table class="table table-striped">
 
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>User</th>
-                <th>Score</th>
-                <th>Time</th>
-                <th>Completed</th>
-            </tr>
-        </thead>
+    @if (Model.Entries.Any())
+    {
+        <div class="leaderboard-table-container">
 
-        <tbody>
+            <div class="table-responsive">
 
-            @foreach (var entry in Model.Entries)
-            {
-                <tr>
-                    <td>
-                        <strong>
-                            @entry.Rank
-                        </strong>
-                    </td>
+                <table class="table leaderboard-table align-middle">
 
-                    <td>
-                        @entry.Username
-                    </td>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Score</th>
+                            <th>Time</th>
+                            <th>Completed</th>
+                        </tr>
+                    </thead>
 
-                    <td>
-                        <strong>
-                            @entry.Score / @Model.MaxPoints
-                        </strong>
-                    </td>
+                    <tbody>
 
-                    <td>
-                        @if (entry.TimeUsed.HasValue)
+                        @foreach (var entry in Model.Entries)
                         {
-                            if (entry.TimeUsed.Value.TotalMinutes >= 1)
-                            {
-                                <span>
-                                    @Math.Round(entry.TimeUsed.Value.TotalMinutes) min
-                                </span>
-                            }
-                            else
-                            {
-                                <span>
-                                    @Math.Round(entry.TimeUsed.Value.TotalSeconds) sec
-                                </span>
-                            }
+                            <tr>
+
+                                <td>
+                                    <div class="leaderboard-rank">
+
+                                        <span class="leaderboard-rank-number">
+                                            @entry.Rank
+                                        </span>
+
+                                        @if (entry.Rank == 1)
+                                        {
+                                            <span class="leaderboard-medal" title="Gold">
+                                                🥇
+                                            </span>
+                                        }
+                                        else if (entry.Rank == 2)
+                                        {
+                                            <span class="leaderboard-medal" title="Silver">
+                                                🥈
+                                            </span>
+                                        }
+                                        else if (entry.Rank == 3)
+                                        {
+                                            <span class="leaderboard-medal" title="Bronze">
+                                                🥉
+                                            </span>
+                                        }
+
+                                    </div>
+                                </td>
+
+                                <td class="leaderboard-username">
+                                    @entry.Username
+                                </td>
+
+                                <td class="leaderboard-points">
+                                    @entry.Score / @Model.MaxPoints
+                                </td>
+
+                                <td>
+                                    @if (entry.TimeUsed.HasValue)
+                                    {
+                                        if (entry.TimeUsed.Value.TotalMinutes >= 1)
+                                        {
+                                            <span>
+                                                @Math.Round(entry.TimeUsed.Value.TotalMinutes) min
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @Math.Round(entry.TimeUsed.Value.TotalSeconds) sec
+                                            </span>
+                                        }
+                                    }
+                                </td>
+
+                                <td>
+                                    @entry.CompletedAt?.ToString("dd.MM.yyyy HH:mm")
+                                </td>
+
+                            </tr>
                         }
-                    </td>
 
-                    <td>
-                        @entry.CompletedAt?.ToString("dd.MM.yyyy HH:mm")
-                    </td>
-                </tr>
-            }
+                    </tbody>
 
-        </tbody>
+                </table>
 
-    </table>
-}
+            </div>
 
-<a asp-controller="Challenge"
-   asp-action="Details"
-   asp-route-id="@Model.Challenge.ChallengeId"
-   class="btn btn-secondary">
-    Back to Challenge
-</a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No scores yet.
+        </div>
+    }
+
+    <a asp-controller="Challenge"
+       asp-action="Details"
+       asp-route-id="@Model.Challenge.ChallengeId"
+       class="btn btn-outline-primary leaderboard-back-button mt-4">
+        Back to Challenge
+    </a>
+
+</div>

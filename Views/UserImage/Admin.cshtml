@@ -1,0 +1,391 @@
+
+@model GamificationPlatform.ViewModels.ManageImagesViewModel
+
+@{
+    ViewData["Title"] = "Manage Images";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manage Images</h2>
+        <p class="text-muted mb-0">
+            View and manage uploaded and default images.
+        </p>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<!-- Image categories -->
+<ul class="nav nav-tabs mb-4" id="imageTabs" role="tablist">
+
+    <li class="nav-item" role="presentation">
+        <button class="nav-link"
+                id="user-images-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#user-images"
+                type="button"
+                role="tab"
+                aria-controls="user-images"
+                aria-selected="false">
+            User Images (@Model.UserImages.Count)
+        </button>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active"
+                id="default-images-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#default-images"
+                type="button"
+                role="tab"
+                aria-controls="default-images"
+                aria-selected="true">
+            Default Images (@Model.DefaultImages.Count)
+        </button>
+    </li>
+
+</ul>
+
+<div class="tab-content" id="imageTabsContent">
+
+    <!-- User Images -->
+    <div class="tab-pane fade"
+         id="user-images"
+         role="tabpanel"
+         aria-labelledby="user-images-tab">
+
+        @if (!Model.UserImages.Any())
+        {
+            <div class="text-center py-5 border rounded bg-light">
+                <h5>No uploaded images</h5>
+                <p class="text-muted mb-0">
+                    Images uploaded by users will appear here.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3">
+
+                @foreach (var image in Model.UserImages)
+                {
+                    <div class="col">
+
+                        <div class="card shadow-sm position-relative">
+
+                            <!-- Uploaded image -->
+                            <div class="ratio ratio-4x3 bg-light rounded overflow-hidden">
+                                <img src="@image.ImageUrl"
+                                     alt="@image.FileName"
+                                     class="w-100 h-100 object-fit-cover" />
+                            </div>
+
+                            <!-- Image options -->
+                            <div class="dropdown position-absolute top-0 end-0 m-2 image-options-dropdown">
+
+                                <button class="btn btn-light btn-sm shadow-sm"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        aria-label="Image options">
+                                    &#8942;
+                                </button>
+
+                                <div class="dropdown-menu dropdown-menu-end p-3 image-options-menu">
+
+                                    <div class="small text-muted mb-1">
+                                        File name
+                                    </div>
+
+                                    <div class="fw-semibold text-break mb-3">
+                                        @image.FileName
+                                    </div>
+
+                                    <div class="small text-muted mb-1">
+                                        Uploaded by
+                                    </div>
+
+                                    <div class="fw-semibold mb-3">
+                                        @(image.User?.UserName ?? $"User #{image.UserId}")
+                                    </div>
+
+                                    <hr class="dropdown-divider" />
+
+                                    <form asp-controller="UserImage"
+                                          asp-action="Delete"
+                                          method="post"
+                                          class="delete-image-form">
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@image.UserImageId" />
+
+                                        <input type="hidden"
+                                               name="returnUrl"
+                                               value="@Url.Action("Admin", "UserImage")" />
+
+                                        <button type="submit"
+                                                class="btn btn-outline-danger btn-sm w-100">
+                                            Delete Image
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+    <!-- Default Images -->
+    <div class="tab-pane fade show active"
+         id="default-images"
+         role="tabpanel"
+         aria-labelledby="default-images-tab">
+
+        <!-- Add default image -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="text-muted mb-0">
+                Images available to all users.
+            </p>
+
+            <button type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addDefaultImageModal">
+                + Add Image
+            </button>
+        </div>
+
+        @if (!Model.DefaultImages.Any())
+        {
+            <div class="text-center py-5 border rounded bg-light">
+                <h5>No default images</h5>
+                <p class="text-muted mb-0">
+                    Add a default image to make it available to all users.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3">
+
+                @foreach (var image in Model.DefaultImages)
+                {
+                    <div class="col">
+
+                        <div class="card shadow-sm position-relative">
+
+                            <!-- Default image -->
+                            <div class="ratio ratio-4x3 bg-light rounded overflow-hidden">
+                                <img src="@image.ImageUrl"
+                                     alt="@image.Name"
+                                     class="w-100 h-100 object-fit-cover" />
+                            </div>
+
+                            <!-- Image options -->
+                            <div class="dropdown position-absolute top-0 end-0 m-2 image-options-dropdown">
+
+                                <button class="btn btn-light btn-sm shadow-sm"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        aria-label="Image options">
+                                    &#8942;
+                                </button>
+
+                                <div class="dropdown-menu dropdown-menu-end p-3 image-options-menu">
+
+                                    <div class="small text-muted mb-1">
+                                        Image name
+                                    </div>
+
+                                    <div class="fw-semibold text-break mb-3">
+                                        @image.Name
+                                    </div>
+
+                                    <div class="small text-muted mb-1">
+                                        File name
+                                    </div>
+
+                                    <div class="fw-semibold text-break mb-3">
+                                        @image.FileName
+                                    </div>
+
+                                    <hr class="dropdown-divider" />
+
+                                    <!-- Rename image -->
+                                    <form asp-controller="UserImage"
+                                          asp-action="RenameDefaultImage"
+                                          method="post"
+                                          class="mb-2">
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@image.DefaultImageId" />
+
+                                        <label class="form-label small"
+                                               for="image-name-@image.DefaultImageId">
+                                            Rename image
+                                        </label>
+
+                                        <input type="text"
+                                               id="image-name-@image.DefaultImageId"
+                                               name="name"
+                                               value="@image.Name"
+                                               class="form-control form-control-sm mb-2"
+                                               maxlength="100"
+                                               required />
+
+                                        <button type="submit"
+                                                class="btn btn-outline-primary btn-sm w-100">
+                                            Save Name
+                                        </button>
+
+                                    </form>
+
+                                    <hr class="dropdown-divider" />
+
+                                    <!-- Delete image -->
+                                    <form asp-controller="UserImage"
+                                          asp-action="DeleteDefaultImage"
+                                          method="post"
+                                          class="delete-image-form">
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@image.DefaultImageId" />
+
+                                        <button type="submit"
+                                                class="btn btn-outline-danger btn-sm w-100">
+                                            Delete Image
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<!-- Add Default Image Modal -->
+<div class="modal fade"
+     id="addDefaultImageModal"
+     tabindex="-1"
+     aria-labelledby="addDefaultImageModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form asp-controller="UserImage"
+                  asp-action="UploadDefaultImage"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="addDefaultImageModalLabel">
+                        Add Default Image
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="defaultImageName"
+                               class="form-label">
+                            Image Name
+                        </label>
+
+                        <input type="text"
+                               id="defaultImageName"
+                               name="name"
+                               class="form-control"
+                               placeholder="e.g. Programming"
+                               maxlength="100"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="defaultImageFile"
+                               class="form-label">
+                            Choose Image
+                        </label>
+
+                        <input type="file"
+                               id="defaultImageFile"
+                               name="file"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp"
+                               required />
+
+                        <div class="form-text">
+                            JPG, PNG or WebP. Maximum 5 MB.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Add Image
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/admin-images.js"
+            asp-append-version="true"></script>
+}

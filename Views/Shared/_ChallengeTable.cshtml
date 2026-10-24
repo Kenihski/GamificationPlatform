@@ -1,19 +1,36 @@
-@model IEnumerable<Challenge>
 
-<div class="container">
-    <table class="table table-striped">
+@model ChallengesViewModel
+
+<table class="table table-striped align-middle">
+
+    <thead>
         <tr>
             <th>Id</th>
             <th>Title</th>
+            <th>Type</th>
             <th>Description</th>
             <th>Max Points</th>
             <th>Time Limit</th>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <th>Completed</th>
+            }
+
             <th>Image</th>
         </tr>
+    </thead>
 
-        @foreach (var challenge in Model)
+    <tbody>
+
+        @foreach (var challenge in Model.Challenges)
         {
+            bool isCompleted =
+                Model.CompletedChallengeIds.Contains(
+                    challenge.ChallengeId);
+
             <tr>
+
                 <td>
                     @challenge.ChallengeId
                 </td>
@@ -27,6 +44,21 @@
                 </td>
 
                 <td>
+                    @if (challenge.IsCore)
+                    {
+                        <span class="featured-badge featured-badge-core challenge-table-badge">
+                            CORE
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="featured-badge featured-badge-community challenge-table-badge">
+                            COMMUNITY
+                        </span>
+                    }
+                </td>
+
+                <td>
                     @challenge.Description
                 </td>
 
@@ -34,7 +66,7 @@
                     @challenge.MaxPoints
                 </td>
 
-                <td>
+                <td class="text-nowrap">
                     @if (challenge.TimeLimitMinutes.HasValue)
                     {
                         <span>
@@ -49,12 +81,36 @@
                     }
                 </td>
 
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <td class="text-center">
+
+                        @if (isCompleted)
+                        {
+                            <span class="text-success fw-bold fs-4"
+                                  title="Completed">
+                                ✓
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">
+                                —
+                            </span>
+                        }
+
+                    </td>
+                }
+
                 <td>
                     <img src="@challenge.ImageUrl"
-                         alt="Challenge Image"
+                         alt="@challenge.Title"
                          style="max-width: 80px; max-height: 80px" />
                 </td>
+
             </tr>
         }
-    </table>
-</div>
+
+    </tbody>
+
+</table>

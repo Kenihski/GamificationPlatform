@@ -1,126 +1,296 @@
-/* Adds a subtle purple background across all pages */
-body {
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff 0%,
-            #f2edff 50%,
-            #ffffff 100%
-        );
 
-    min-height: 100vh;
+/* Global styles */
+:root {
+    --home-bg: #080b1c;
+    --home-panel: rgba(11, 16, 36, 0.98);
+    --home-panel-light: rgba(17, 24, 51, 0.98);
+    --home-border: rgba(111, 132, 255, 0.35);
+    --home-text: #ffffff;
+    --home-muted: #d1d9ee;
+    --home-blue: #91adff;
+    --home-purple: #c09aff;
+    --content-card-bg: #121a36;
+    --content-card-border: rgba(125, 151, 230, 0.55);
 }
 
-/* Carousel */
-
-#carouselImages .carousel-item {
-    height: clamp(240px, 40vh, 400px);
-}
-
-#carouselImages .carousel-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-}
-
-
-/* Challenge images */
-
-.challenge-image-container {
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-}
-
-.challenge-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-
-/* Home page */
-
-.home-hero {
-    padding-top: 20px;
-}
-
-.home-subtitle {
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 3px;
-    color: #6c757d;
-    margin-bottom: 10px;
-}
-
-.home-carousel {
-    max-width: 750px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.home-feature-card {
-    border: none;
-    border-radius: 14px;
-    transition: transform 0.2s ease,
-                box-shadow 0.2s ease;
-}
-
-.home-feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
-
-.home-feature-icon {
-    width: 55px;
-    height: 55px;
-    margin: 0 auto 15px auto;
-
-    display: flex;
+.featured-badge {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-    background-color: #0d6efd;
-    color: white;
-
-    font-size: 1.7rem;
-    font-weight: bold;
+    padding: 7px 13px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
 }
 
-/* Challenge of the Day and Leaderboard */
-
-.home-daily-card {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.10);
+.featured-badge-core {
+    border-color: rgba(145, 173, 255, 0.55);
+    background: rgba(67, 106, 230, 0.25);
+    color: #c8d6ff;
 }
 
-.home-daily-title {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #6c757d;
-    margin-bottom: 12px;
+.featured-badge-community {
+    border-color: rgba(192, 154, 255, 0.55);
+    background: rgba(123, 78, 201, 0.25);
+    color: #e0c8ff;
 }
 
-.home-daily-points {
-    font-size: 1.35rem;
-    font-weight: 700;
+.featured-badge-popular {
+    border-color: rgba(255, 204, 108, 0.55);
+    background: rgba(175, 121, 28, 0.2);
+    color: #ffe2a0;
 }
 
-/* Makes the entire challenge card feel clickable */
-
-.challenge-card {
-    cursor: pointer;
-    transition: transform 0.2s ease,
-                box-shadow 0.2s ease;
+/* Shared dark theme */
+main h1,
+main h2,
+main h3,
+main h4,
+main h5 {
+    color: #ffffff;
 }
 
-.challenge-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+.text-muted {
+    color: var(--home-muted) !important;
+}
+
+.card:not(.home-ranking-card):not(.home-feature-card) {
+    background: var(--content-card-bg);
+    color: var(--home-text);
+    border: 1px solid var(--content-card-border);
+    border-radius: 14px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+}
+
+.card-header,
+.card-footer {
+    background: rgba(60, 75, 145, 0.15);
+    color: var(--home-text);
+    border-color: var(--home-border);
+}
+
+.card-title {
+    color: #ffffff;
+}
+
+.card-text {
+    color: var(--home-muted);
+}
+
+/* Tables */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #f5f7ff;
+    --bs-table-border-color: rgba(124, 139, 196, 0.25);
+    --bs-table-striped-bg: rgba(80, 99, 190, 0.09);
+    --bs-table-striped-color: #f5f7ff;
+    --bs-table-hover-bg: rgba(80, 99, 190, 0.18);
+    --bs-table-hover-color: #ffffff;
+}
+
+.table thead th {
+    background: rgba(60, 75, 145, 0.2);
+    color: var(--home-blue);
+    border-bottom-color: var(--home-border);
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+/* Forms */
+.form-control,
+.form-select {
+    background-color: #253154;
+    color: #ffffff;
+    border: 1px solid rgba(137, 160, 255, 0.65);
+    border-radius: 9px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #2d3c65;
+    color: #ffffff;
+    border-color: #91adff;
+    box-shadow: 0 0 0 0.2rem rgba(111, 132, 255, 0.2);
+}
+
+.form-control::placeholder {
+    color: #a9b4d2;
+}
+
+.form-control:disabled,
+.form-select:disabled,
+.form-control[readonly] {
+    background-color: #202741;
+    color: #b9c4df;
+}
+
+.form-label,
+.form-check-label {
+    color: #edf1ff;
+}
+
+/* Dropdowns */
+.dropdown-menu {
+    background: #111833;
+    border: 1px solid var(--home-border);
+    border-radius: 10px;
+}
+
+.dropdown-item {
+    color: #edf1ff;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: rgba(80, 99, 190, 0.25);
+    color: #ffffff;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #4777ff, #7957ed);
+    border-color: #6d83ff;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a87ff, #8b69ff);
+    border-color: #9eabff;
+    color: #ffffff;
+}
+
+.btn-secondary {
+    background: #303b65;
+    border-color: #56669b;
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background: #425184;
+    border-color: #7185c3;
+    color: #ffffff;
+}
+
+.btn-outline-primary {
+    border-color: #91adff;
+    color: #b8c8ff;
+}
+
+.btn-outline-primary:hover {
+    background: rgba(77, 99, 202, 0.35);
+    border-color: #b2c1ff;
+    color: #ffffff;
+}
+
+/* Lists */
+.list-group-item {
+    background: var(--home-panel-light);
+    color: var(--home-text);
+    border-color: var(--home-border);
+}
+
+/* Links */
+main a:not(.btn):not(.home-feature-link):not(.dropdown-item) {
+    color: #a9bfff;
+}
+
+main a:not(.btn):not(.home-feature-link):not(.dropdown-item):hover {
+    color: #d0dcff;
+}
+
+/* Modals */
+.modal-content {
+    background: #111833;
+    color: #ffffff;
+    border: 1px solid var(--home-border);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--home-border);
+}
+
+/* Pagination */
+.page-link {
+    background: #111833;
+    color: #b8c8ff;
+    border-color: var(--home-border);
+}
+
+.page-link:hover {
+    background: #263465;
+    color: #ffffff;
+    border-color: #91adff;
+}
+
+.active > .page-link {
+    background: #5069dc;
+    border-color: #5069dc;
+}
+
+/* Status alerts */
+.alert-success {
+    background: #163d32;
+    border-color: #278b68;
+    color: #d5f9e9;
+}
+
+.alert-warning {
+    background: #453717;
+    border-color: #c49a32;
+    color: #fff0bd;
+}
+
+.alert-danger {
+    background: #4a222b;
+    border-color: #c35b69;
+    color: #ffe1e5;
+}
+
+.alert-info {
+    background: #192744;
+    border-color: #5978b8;
+    color: #dce7ff;
+}
+
+.alert-success a,
+.alert-warning a,
+.alert-danger a,
+.alert-info a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* Login and registration form fields */
+.modal-content .form-control,
+.modal-content .form-select {
+    background-color: #253154;
+    border-color: rgba(137, 160, 255, 0.65);
+    color: #ffffff;
+}
+
+.modal-content .form-control:focus,
+.modal-content .form-select:focus {
+    background-color: #2d3c65;
+    border-color: #a5b8ff;
+    color: #ffffff;
+}
+
+.modal-content .form-control::placeholder {
+    color: #c0cbe4;
+}
+
+/* Shared reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .challenge-card {
+        transition: none;
+    }
+
+    .challenge-card:hover {
+        transform: none;
+    }
 }

@@ -14,9 +14,11 @@ namespace GamificationPlatform.Models
         public virtual Question Question { get; set; }
             = default!;
 
-        // Null means the question was not answered
-        public int? SelectedOptionId { get; set; }
+        // Stores the selected options for choice questions.
+        public virtual List<AttemptAnswerOption> SelectedOptions { get; set; }
+            = new List<AttemptAnswerOption>();
 
-        public virtual QuestionOption? SelectedOption { get; set; }
+        // Used for short-answer questions.
+        public string? TextAnswer { get; set; }
     }
 }
