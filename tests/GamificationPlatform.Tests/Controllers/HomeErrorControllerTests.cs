@@ -70,6 +70,7 @@ public class HomeErrorControllerTests
             Substitute.For<IChallengeRepository>(),
             Substitute.For<IAttemptRepository>(),
             Substitute.For<IUserRepository>(),
+            null!, // UserManager is unused by the error actions.
             Substitute.For<IAchievementRepository>(),
             logger);
         controller.ControllerContext = new ControllerContext

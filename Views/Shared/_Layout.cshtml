@@ -11,9 +11,13 @@
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     <script src="~/lib/jquery/dist/jquery.min.js" defer></script>
+    <!-- Client-side validation for MVC Data Annotations. Keep script order. -->
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js" defer></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js" defer></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="~/js/achievement-notifications.js" asp-append-version="true" defer></script>
     <script src="~/js/auth-modal.js" asp-append-version="true" defer></script>
+    <script src="~/js/register-validation.js" asp-append-version="true" defer></script>
 
     <!-- Matrix background animation -->
     <script src="~/js/matrix-background.js"
@@ -213,6 +217,13 @@
                            asp-controller="Challenge"
                            asp-action="Create">
                             Create Challenge
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-controller="UserImage"
+                           asp-action="Index">
+                            My Images
                         </a>
                     </li>
 
@@ -448,7 +459,7 @@
                                        name="Username"
                                        type="text"
                                        class="form-control"
-                                       autocomplete="username"
+                                       autocomplete="username" minlength="3" maxlength="50"
                                        required />
                             </div>
 
@@ -462,7 +473,7 @@
                                        name="Email"
                                        type="email"
                                        class="form-control"
-                                       autocomplete="email"
+                                       autocomplete="email" maxlength="100"
                                        required />
                             </div>
 
@@ -476,7 +487,7 @@
                                        name="Password"
                                        type="password"
                                        class="form-control"
-                                       autocomplete="new-password"
+                                       autocomplete="new-password" minlength="6" maxlength="100"
                                        required />
                             </div>
 
