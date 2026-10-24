@@ -194,6 +194,11 @@
     border-color: #626b80;
 }
 /* Achievement administration */
+.achievement-admin-list .achievement-content {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .achievement-admin-actions {
     width: 100px;
     min-width: 100px;
@@ -409,6 +414,35 @@
         height: 60px;
         font-size: 0.6rem;
     }
+
+    /* Administration cards: content first, then actions and points on a new row. */
+    .achievement-admin-list .achievement-row {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .achievement-admin-list .achievement-content {
+        flex: 1 1 calc(100% - 45px - 12px);
+        padding: 0;
+    }
+
+    .achievement-admin-list .achievement-admin-badge {
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .achievement-admin-list .achievement-admin-actions {
+        flex: 1 1 calc(100% - 60px - 12px);
+        min-width: 0;
+        margin-right: 0;
+        align-items: stretch;
+    }
+
+    .achievement-admin-list .achievement-points {
+        flex: 0 0 60px;
+    }
+
     .achievement-notification-container {
         top: 75px;
         right: 15px;
