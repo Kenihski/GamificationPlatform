@@ -1,6 +1,10 @@
 
 @model GamificationPlatform.ViewModels.LoginViewModel
 
+@{
+    ViewData["Title"] = "Login";
+}
+
 <h2>Login</h2>
 
 @if (!string.IsNullOrEmpty(Model?.ReturnUrl))
