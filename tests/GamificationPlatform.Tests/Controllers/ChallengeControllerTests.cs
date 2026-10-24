@@ -3,12 +3,9 @@ using GamificationPlatform.Controllers;
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
 using GamificationPlatform.Services;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MockQueryable.NSubstitute;
 using NSubstitute;
 using Xunit;
 
@@ -26,11 +23,8 @@ public class ChallengeControllerTests
         var attemptRepository =
             Substitute.For<IAttemptRepository>();
 
-        var userImageRepository =
-            Substitute.For<IUserImageRepository>();
-
-        var environment =
-            Substitute.For<IWebHostEnvironment>();
+        var imageService =
+            Substitute.For<IImageService>();
 
         var achievementService =
             Substitute.For<IAchievementService>();
@@ -40,26 +34,20 @@ public class ChallengeControllerTests
 
         const int userId = 7;
 
-        userImageRepository
-            .GetImagesByUserIdAsync(userId)
+        imageService
+            .IsAllowedImageAsync(string.Empty, userId)
+            .Returns(Task.FromResult(true));
+        imageService
+            .GetUserImagesAsync(userId)
             .Returns(Task.FromResult(new List<UserImage>()));
-
-        // Substitute the default-image query with an empty collection.
-        // No database provider or connection is configured.
-        var options =
-            new DbContextOptionsBuilder<ChallengeDbContext>().Options;
-
-        using var context = new ChallengeDbContext(options)
-        {
-            DefaultImages = new List<DefaultImage>().BuildMockDbSet()
-        };
+        imageService
+            .GetDefaultImagesAsync()
+            .Returns(Task.FromResult(new List<DefaultImage>()));
 
         var controller = new ChallengeController(
             challengeRepository,
             attemptRepository,
-            userImageRepository,
-            context,
-            environment,
+            imageService,
             achievementService,
             logger);
 
@@ -135,14 +123,11 @@ public class ChallengeControllerTests
         var repository = Substitute.For<IChallengeRepository>();
         var logger = Substitute.For<ILogger<ChallengeController>>();
 
-        using var context = new ChallengeDbContext(
-            new DbContextOptionsBuilder<ChallengeDbContext>().Options);
-
         repository.GetChallengeByIdAsync(99)
             .Returns(Task.FromResult<Challenge?>(null));
 
         var controller = CreateUpdateController(
-            repository, context, logger, userId: 7);
+            repository, logger, userId: 7);
 
         var submittedChallenge = new Challenge
         {
@@ -167,9 +152,6 @@ public class ChallengeControllerTests
         var repository = Substitute.For<IChallengeRepository>();
         var logger = Substitute.For<ILogger<ChallengeController>>();
 
-        using var context = new ChallengeDbContext(
-            new DbContextOptionsBuilder<ChallengeDbContext>().Options);
-
         var storedChallenge = new Challenge
         {
             ChallengeId = 10,
@@ -183,7 +165,7 @@ public class ChallengeControllerTests
 
         // User 7 is signed in; user 8 owns the challenge.
         var controller = CreateUpdateController(
-            repository, context, logger, userId: 7);
+            repository, logger, userId: 7);
 
         var submittedChallenge = new Challenge
         {
@@ -218,19 +200,16 @@ public class ChallengeControllerTests
     }
 
     // Shared setup for these two tests.
-    // Both error paths return before querying images or the DbContext.
+    // Both error paths return before querying the image service.
     private static ChallengeController CreateUpdateController(
         IChallengeRepository repository,
-        ChallengeDbContext context,
         ILogger<ChallengeController> logger,
         int userId)
     {
         var controller = new ChallengeController(
             repository,
             Substitute.For<IAttemptRepository>(),
-            Substitute.For<IUserImageRepository>(),
-            context,
-            Substitute.For<IWebHostEnvironment>(),
+            Substitute.For<IImageService>(),
             Substitute.For<IAchievementService>(),
             logger);
 
@@ -262,8 +241,9 @@ public class ChallengeControllerTests
         var logger = Substitute.For<ILogger<ChallengeController>>();
         var achievementService = Substitute.For<IAchievementService>();
 
-        using var context = new ChallengeDbContext(
-            new DbContextOptionsBuilder<ChallengeDbContext>().Options);
+        var imageService = Substitute.For<IImageService>();
+        imageService.IsAllowedImageAsync(string.Empty, 7)
+            .Returns(Task.FromResult(true));
 
         Challenge? savedChallenge = null;
 
@@ -283,9 +263,7 @@ public class ChallengeControllerTests
         var controller = new ChallengeController(
             repository,
             Substitute.For<IAttemptRepository>(),
-            Substitute.For<IUserImageRepository>(),
-            context,
-            Substitute.For<IWebHostEnvironment>(),
+            imageService,
             achievementService,
             logger);
 

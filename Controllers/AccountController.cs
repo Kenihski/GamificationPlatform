@@ -251,6 +251,7 @@ namespace GamificationPlatform.Controllers
         [HttpGet]
         public IActionResult AccessDenied()
         {
+            Response.StatusCode = StatusCodes.Status403Forbidden;
             return View();
         }
 
