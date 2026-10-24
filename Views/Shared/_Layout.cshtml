@@ -1,4 +1,9 @@
 
+@{
+    var isTakingChallenge = ViewContext.RouteData.Values["controller"]?.ToString() == "Quiz"
+        && ViewContext.RouteData.Values["action"]?.ToString() == "Take";
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +20,7 @@
     <script src="~/js/achievement-notifications.js" asp-append-version="true" defer></script>
     <script src="~/js/auth-modal.js" asp-append-version="true" defer></script>
     <script src="~/js/form-feedback.js" asp-append-version="true" defer></script>
+    <script src="~/js/featured-carousel.js" asp-append-version="true" defer></script>
 
     <!-- Matrix background animation -->
     <script src="~/js/matrix-background.js"
@@ -41,7 +47,8 @@
 <body>
 
     <!-- Animated Matrix background -->
-    <canvas id="matrixBackground" aria-hidden="true"></canvas>
+    <canvas id="matrixBackground" aria-hidden="true"
+            data-default-off="@isTakingChallenge.ToString().ToLowerInvariant()"></canvas>
 
     <header>
         <nav class="navbar navbar-dark site-navbar border-bottom box-shadow mb-3">
@@ -69,6 +76,22 @@
 
                 <!-- Right side -->
                 <ul class="navbar-nav flex-row align-items-center gap-3">
+
+                    <li class="nav-item matrix-control">
+                        <button id="matrixToggle" type="button"
+                                class="btn btn-outline-secondary matrix-toggle"
+                                aria-label="Enable background animation"
+                                aria-controls="matrixBackground"
+                                hidden>
+                            <svg width="20" height="20" viewBox="0 0 24 24"
+                                 fill="currentColor" aria-hidden="true" focusable="false">
+                                <path id="matrixIcon" d="M8 5v14l11-7z" />
+                            </svg>
+                        </button>
+                        <span id="matrixTooltip" class="matrix-tooltip" aria-hidden="true">
+                            Enable background animation
+                        </span>
+                    </li>
 
                     @if (User.Identity?.IsAuthenticated == true)
                     {
