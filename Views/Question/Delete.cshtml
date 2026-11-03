@@ -5,152 +5,159 @@
     ViewData["Title"] = "Delete Question";
 }
 
-<h2>Delete Question</h2>
+<div class="management-page my-4">
+    <h1 class="mb-4">Delete Question</h1>
+    <p class="text-muted">Review the details and consequences before confirming deletion.</p>
 
-<div class="alert question-delete-warning mt-4">
-    <p class="mb-2">
-        <strong>Warning:</strong>
-        This question will be permanently deleted.
-        Deleting this question will reset all previous attempts
-        and scores for this challenge.
-    </p>
+    <div class="card border-danger">
+        <div class="card-body">
 
-    @if (Model.Challenge.IsPublished &&
-         Model.Challenge.Questions.Count == 1)
-    {
-        <p class="mb-2">
-            <strong>
-                This is the last question in this published challenge.
-            </strong>
-        </p>
+            <div class="mb-4">
+                <div>
+                    <h2 class="h4 card-title">
+                        @Model.Title
+                    </h2>
 
-        <p class="mb-2">
-            Deleting it will automatically unpublish the challenge.
-        </p>
-    }
-
-    <p class="mb-0">
-        Are you sure you want to delete this question?
-    </p>
-</div>
-
-<div class="card mb-4">
-    <div class="card-body">
-        <h4 class="card-title">
-            @Model.Title
-        </h4>
-
-        @if (!string.IsNullOrWhiteSpace(
-            Model.Description))
-        {
-            <p class="card-text">
-                @Model.Description
-            </p>
-        }
-
-        <p>
-            <strong>Challenge:</strong>
-            @Model.Challenge.Title
-        </p>
-
-        <p>
-            <strong>Question Type:</strong>
-
-            @if (Model.QuestionType == "MultipleChoice")
-            {
-                <span>Multiple Choice</span>
-            }
-            else if (Model.QuestionType == "ShortAnswer")
-            {
-                <span>Short Answer</span>
-            }
-            else
-            {
-                <span>Single Choice</span>
-            }
-        </p>
-
-        <p>
-            <strong>Points:</strong>
-            @Model.Points
-        </p>
-
-        @if (!string.IsNullOrWhiteSpace(
-            Model.ImageUrl))
-        {
-            <div class="mb-3">
-                <strong>Image:</strong>
-
-                <br />
-
-                <img src="@Model.ImageUrl"
-                     alt=""
-                     class="img-fluid mt-2"
-                     style="max-width: 250px;" />
-            </div>
-        }
-
-        <hr />
-
-        @if (Model.QuestionType == "ShortAnswer")
-        {
-            <h5>Accepted Answers</h5>
-
-            @foreach (var answer in Model.AcceptedAnswers)
-            {
-                <div class="mb-1">
-                    <span>
-                        ✓
-                        <strong>
-                            @answer.Text
-                        </strong>
-                    </span>
-                </div>
-            }
-        }
-        else
-        {
-            <h5>Answer Options</h5>
-
-            @foreach (var option in Model.Options)
-            {
-                <div class="mb-1">
-                    @if (option.IsCorrect)
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.Description))
                     {
-                        <span>
-                            ✓
-                            <strong>
-                                @option.Text
-                            </strong>
-                            (Correct)
-                        </span>
+                        <p class="card-text">
+                            @Model.Description
+                        </p>
+                    }
+
+                    <p>
+                        <strong>Challenge:</strong>
+                        @Model.Challenge.Title
+                    </p>
+
+                    <p>
+                        <strong>Question Type:</strong>
+
+                        @if (Model.QuestionType == "MultipleChoice")
+                        {
+                            <span>Multiple Choice</span>
+                        }
+                        else if (Model.QuestionType == "ShortAnswer")
+                        {
+                            <span>Short Answer</span>
+                        }
+                        else
+                        {
+                            <span>Single Choice</span>
+                        }
+                    </p>
+
+                    <p>
+                        <strong>Points:</strong>
+                        @Model.Points
+                    </p>
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.ImageUrl))
+                    {
+                        <div class="mb-3">
+                            <strong>Image:</strong>
+
+                            <br />
+
+                            <img src="@Model.ImageUrl"
+                                 alt=""
+                                 class="img-fluid mt-2"
+                                 style="max-width: 250px;" />
+                        </div>
+                    }
+
+                    <hr />
+
+                    @if (Model.QuestionType == "ShortAnswer")
+                    {
+                        <h3 class="h5">Accepted Answers</h3>
+
+                        @foreach (var answer in Model.AcceptedAnswers)
+                        {
+                            <div class="mb-1">
+                                <span>
+                                    ✓
+                                    <strong>
+                                        @answer.Text
+                                    </strong>
+                                </span>
+                            </div>
+                        }
                     }
                     else
                     {
-                        <span>
-                            ○ @option.Text
-                        </span>
+                        <h5>Answer Options</h5>
+
+                        @foreach (var option in Model.Options)
+                        {
+                            <div class="mb-1">
+                                @if (option.IsCorrect)
+                                {
+                                    <span>
+                                        ✓
+                                        <strong>
+                                            @option.Text
+                                        </strong>
+                                        (Correct)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        ○ @option.Text
+                                    </span>
+                                }
+                            </div>
+                        }
                     }
                 </div>
-            }
-        }
+            </div>
+
+            <div class="alert alert-danger">
+                <p class="mb-2">
+                    <strong>Warning:</strong>
+                    This question will be permanently deleted.
+                    All attempts, submitted answers and scores for the entire challenge will also be permanently deleted, removing those results from the leaderboards.
+                </p>
+
+                @if (Model.Challenge.IsPublished &&
+                     Model.Challenge.Questions.Count == 1)
+                {
+                    <p class="mb-2">
+                        <strong>
+                            This is the last question in this published challenge.
+                        </strong>
+                    </p>
+
+                    <p class="mb-2">
+                        Deleting it will automatically unpublish the challenge.
+                    </p>
+                }
+
+                <p class="mb-0">
+                    Are you sure you want to delete this question?
+                </p>
+            </div>
+
+            <form asp-controller="Question"
+                  asp-action="DeleteConfirmed"
+                  asp-route-id="@Model.QuestionId"
+                  method="post">
+
+                <button type="submit"
+                        class="btn btn-outline-danger">
+                    Confirm deletion
+                </button>
+
+                <a asp-controller="Challenge"
+                   asp-action="Details"
+                   asp-route-id="@Model.ChallengeId"
+                   class="btn btn-outline-primary">
+                    Cancel
+                </a>
+            </form>
+        </div>
     </div>
 </div>
-
-<form asp-controller="Question"
-      asp-action="DeleteConfirmed"
-      asp-route-id="@Model.QuestionId"
-      method="post">
-
-    <button type="submit"
-            class="btn btn-outline-danger">
-        Confirm deletion
-    </button>
-
-    <a asp-controller="Challenge"
-       asp-action="Details"
-       asp-route-id="@Model.ChallengeId"
-       class="btn btn-outline-primary">
-        Cancel
-    </a>
-</form>

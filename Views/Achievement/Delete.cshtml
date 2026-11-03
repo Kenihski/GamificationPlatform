@@ -5,7 +5,7 @@
     ViewData["Title"] = "Delete Achievement";
 }
 
-<div class="container mt-4 mb-5">
+<div class="management-page my-4">
 
     <div class="mb-4">
         <h1>Delete Achievement</h1>
@@ -18,9 +18,9 @@
     <div class="card border-danger">
         <div class="card-body">
 
-            <h4 class="card-title">
+            <h2 class="h4 card-title">
                 @Model.Name
-            </h4>
+            </h2>
 
             <p class="card-text">
                 @Model.Description
@@ -43,7 +43,8 @@
             <div class="alert alert-danger">
                 This achievement will be permanently deleted.
                 Deleting this achievement will also remove it
-                from users who have already unlocked it.
+                from users who have already unlocked it. Its Achievement Points will no longer
+                count toward their totals, which may affect Hall of Fame rankings.
             </div>
 
             <form asp-controller="Achievement"
