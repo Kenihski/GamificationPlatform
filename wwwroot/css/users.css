@@ -15,9 +15,9 @@
 }
 
 .user-role-admin {
-    color: #ff9da8;
-    background: rgba(220, 53, 69, 0.15);
-    border-color: rgba(220, 53, 69, 0.5);
+    color: var(--text-error);
+    background: rgba(185, 28, 28, 0.15);
+    border-color: var(--danger-border);
 }
 
 .user-role-member {

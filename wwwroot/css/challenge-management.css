@@ -92,7 +92,7 @@
     overflow-wrap: anywhere;
 }
 .management-page .border-danger {
-    border-color: #e08b96 !important;
+    border-color: var(--danger-border) !important;
 }
 .management-page .border-warning {
     border-color: #d4a72c !important;

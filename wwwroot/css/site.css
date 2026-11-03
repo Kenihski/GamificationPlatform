@@ -13,7 +13,11 @@
     --content-card-border: rgba(125, 151, 230, 0.55);
     --primary-gradient: linear-gradient(135deg, #3159cf, #6540c5);
     --primary-gradient-hover: linear-gradient(135deg, #3d65d9, #714bd1);
-    --text-error: #ffb3bf;
+    --text-error: #ff756b;
+    --danger-border: #ff756b;
+    --danger-button-text: #ffb0a8;
+    --danger-hover-bg: #a51515;
+    --danger-active-bg: #8f1111;
     --text-success: #91efc4;
     --focus-ring: #b8c8ff;
 }
@@ -149,6 +153,11 @@ main h5 {
     color: #a9b4d2;
 }
 
+/* Bootstrap's default select arrow is too dark for these form fields. */
+.form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23edf1ff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
 .form-control:disabled,
 .form-select:disabled,
 .form-control[readonly] {
@@ -215,8 +224,19 @@ main h5 {
 }
 
 .btn-outline-danger {
-    --bs-btn-color: var(--text-error);
-    --bs-btn-border-color: var(--text-error);
+    /* Keep the outline design; lighter red text remains readable on gradient cards. */
+    --bs-btn-color: var(--danger-button-text);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: var(--danger-border);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: var(--danger-hover-bg);
+    --bs-btn-hover-border-color: var(--danger-border);
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: var(--danger-active-bg);
+    --bs-btn-active-border-color: var(--danger-border);
+    --bs-btn-disabled-color: var(--danger-button-text);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--danger-border);
 }
 
 .btn-outline-success {
@@ -257,6 +277,14 @@ main a:not(.btn):not(.home-feature-link):not(.dropdown-item):hover {
     border-color: var(--home-border);
 }
 
+/* All dialogs use dark surfaces, so their close icons must be light. */
+.btn-close {
+    --bs-btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 0 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+    --bs-btn-close-white-filter: none;
+    --bs-btn-close-opacity: 0.8;
+    --bs-btn-close-hover-opacity: 1;
+}
+
 /* Pagination */
 .page-link {
     background: #111833;
@@ -289,9 +317,9 @@ main a:not(.btn):not(.home-feature-link):not(.dropdown-item):hover {
 }
 
 .alert-danger {
-    background: #4a222b;
-    border-color: #c35b69;
-    color: #ffe1e5;
+    background: #421b1b;
+    border-color: var(--danger-border);
+    color: #fff1ef;
 }
 
 .alert-info {

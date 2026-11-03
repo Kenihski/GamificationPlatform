@@ -94,7 +94,7 @@
     background: linear-gradient(110deg, #252b3d, #303244);
     border-color: #555d76;
     color: #a1a9bd;
-    opacity: 0.62;
+    opacity: 1;
     box-shadow: none;
 }
 /* Achievement content */
@@ -125,11 +125,11 @@
 }
 /* Locked achievement text */
 .achievement-locked .achievement-name {
-    color: #aab2c5;
+    color: #ccd4e7;
 }
 .achievement-locked .achievement-description,
 .achievement-locked .achievement-date {
-    color: #929bb0;
+    color: #aeb8cf;
 }
 /* AP and GOAL boxes */
 .achievement-points {
@@ -155,7 +155,7 @@
 .achievement-locked .achievement-points {
     border-color: #626b80;
     background-color: rgba(105, 115, 140, 0.15);
-    color: #a1a9bd;
+    color: #c0cbe0;
 }
 .achievement-points-number {
     display: block;
@@ -175,7 +175,7 @@
     letter-spacing: 0.05rem;
 }
 .achievement-locked .achievement-goal-label {
-    color: #929bb0;
+    color: #aeb8cf;
 }
 /* Achievement Management - readable AP boxes */
 .achievement-row:not(.achievement-locked) .achievement-points {
@@ -190,7 +190,7 @@
 }
 .achievement-row.achievement-locked .achievement-points {
     background-color: #303648;
-    color: #a1a9bd;
+    color: #c0cbe0;
     border-color: #626b80;
 }
 /* Achievement administration */
