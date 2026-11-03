@@ -267,76 +267,6 @@ namespace GamificationPlatform.Controllers
             return RedirectToAction(nameof(MyChallenges));
         }
 
-        // Marks a challenge as Core.
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MakeCore(
-            int id,
-            string? returnUrl)
-        {
-            var challenge =
-                await _challengeRepository.GetChallengeByIdAsync(id);
-
-            if (challenge == null)
-            {
-                return NotFound();
-            }
-
-            challenge.IsCore = true;
-
-            await _challengeRepository.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "Challenge {ChallengeId} was marked as Core.",
-                id);
-
-            TempData["SuccessMessage"] = "Challenge marked as Core.";
-
-            if (!string.IsNullOrEmpty(returnUrl) &&
-                Url.IsLocalUrl(returnUrl))
-            {
-                return LocalRedirect(returnUrl);
-            }
-
-            return RedirectToAction(nameof(Details), new { id });
-        }
-
-        // Marks a challenge as Community.
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MakeCommunity(
-            int id,
-            string? returnUrl)
-        {
-            var challenge =
-                await _challengeRepository.GetChallengeByIdAsync(id);
-
-            if (challenge == null)
-            {
-                return NotFound();
-            }
-
-            challenge.IsCore = false;
-
-            await _challengeRepository.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "Challenge {ChallengeId} was marked as Community.",
-                id);
-
-            TempData["SuccessMessage"] = "Challenge marked as Community.";
-
-            if (!string.IsNullOrEmpty(returnUrl) &&
-                Url.IsLocalUrl(returnUrl))
-            {
-                return LocalRedirect(returnUrl);
-            }
-
-            return RedirectToAction(nameof(Details), new { id });
-        }
-
         // Shows challenge details and attempt history.
         public async Task<IActionResult> Details(
             int id,
@@ -505,8 +435,9 @@ namespace GamificationPlatform.Controllers
             // New challenges start as drafts.
             challenge.IsPublished = false;
 
-            // New challenges are Community by default.
-            challenge.IsCore = false;
+            // Only administrators may create Core challenges.
+            // A challenge's category is immutable after creation.
+            challenge.IsCore = User.IsInRole("Admin") && challenge.IsCore;
 
             // Navigation property is not received from the form.
             ModelState.Remove("CreatedByUser");
@@ -563,7 +494,7 @@ namespace GamificationPlatform.Controllers
                     ShowAnswersAfterCompletion = challenge.ShowAnswersAfterCompletion,
                     CreatedByUserId = userId,
                     IsPublished = false,
-                    IsCore = false
+                    IsCore = challenge.IsCore
                 };
 
                 await _challengeRepository
@@ -737,7 +668,7 @@ namespace GamificationPlatform.Controllers
 
                 // CreatedByUserId is not changed.
                 // The original owner stays the owner.
-                // IsCore is only changed by admin actions.
+                // IsCore is immutable after creation, including for admins.
 
                 await _challengeRepository.SaveChangesAsync();
 
