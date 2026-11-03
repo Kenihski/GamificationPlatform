@@ -13,6 +13,62 @@ namespace GamificationPlatform.Tests.Controllers;
 
 public class ChallengeControllerTests
 {
+    // Run the same check with no image and with an explicitly selected image.
+    [Theory]
+    [InlineData("")]
+    [InlineData("/images/another.png")]
+    public async Task Create_UsesDefaultOnlyWhenNoImageWasSelected(string selectedImage)
+    {
+        // Arrange: substitute the controller's dependencies.
+        var repository = Substitute.For<IChallengeRepository>();
+        var images = Substitute.For<IImageService>();
+
+        // Supply Question 1 as the available default and allow the selected image.
+        // These URLs are test data; no image files or database are accessed.
+        const string defaultUrl = "/images/question1.png";
+        images.GetDefaultImagesAsync().Returns(new List<DefaultImage>
+        {
+            new() { Name = "Question 1", ImageUrl = defaultUrl }
+        });
+        images.IsAllowedImageAsync(Arg.Any<string>(), 7).Returns(true);
+        var controller = new ChallengeController(
+            repository, Substitute.For<IAttemptRepository>(), images,
+            Substitute.For<IAchievementService>(),
+            Substitute.For<ILogger<ChallengeController>>());
+
+        // Supply the signed-in user read by the controller.
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "7")
+                }, "Test"))
+            }
+        };
+
+        var challenge = new Challenge
+        {
+            Title = "Test challenge",
+            Description = "Test description",
+            ImageUrl = selectedImage
+        };
+
+        // Act: submit the challenge without an uploaded image.
+        var result = await controller.Create(
+            challenge,
+            imageUpload: null);
+
+        // Assert: successful creation redirects to the challenge details.
+        Assert.IsType<RedirectToActionResult>(result);
+
+        // Save Question 1 for an empty selection, otherwise preserve the user's choice.
+        var expectedImage = selectedImage == "" ? defaultUrl : selectedImage;
+        await repository.Received(1).CreateChallengeAsync(
+            Arg.Is<Challenge>(challenge => challenge.ImageUrl == expectedImage));
+    }
+
     [Fact]
     public async Task Create_WhenModelStateIsInvalid_ReturnsFormWithoutSavingAndLogsWarning()
     {
@@ -242,7 +298,14 @@ public class ChallengeControllerTests
         var achievementService = Substitute.For<IAchievementService>();
 
         var imageService = Substitute.For<IImageService>();
-        imageService.IsAllowedImageAsync(string.Empty, 7)
+        // An empty selection resolves to default image before validation.
+        const string defaultImageUrl = "/images/Question_1.png";
+        imageService.GetDefaultImagesAsync()
+            .Returns(Task.FromResult(new List<DefaultImage>
+            {
+                new() { Name = "Question 1", ImageUrl = defaultImageUrl }
+            }));
+        imageService.IsAllowedImageAsync(defaultImageUrl, 7)
             .Returns(Task.FromResult(true));
 
         Challenge? savedChallenge = null;
@@ -296,7 +359,7 @@ public class ChallengeControllerTests
             MaxPoints = 999
         };
 
-        // Act: an empty image selection is allowed; no upload is supplied.
+        // Act: submit an empty selection to use the default image, with no upload.
         var result = await controller.Create(
             submittedChallenge,
             imageUpload: null);
@@ -313,6 +376,7 @@ public class ChallengeControllerTests
             savedChallenge.Description);
 
         Assert.Equal(10, savedChallenge.TimeLimitMinutes);
+        Assert.Equal(defaultImageUrl, savedChallenge.ImageUrl);
         Assert.Equal(7, savedChallenge.CreatedByUserId);
         Assert.False(savedChallenge.IsPublished);
         Assert.False(savedChallenge.IsCore);

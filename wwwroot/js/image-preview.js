@@ -38,8 +38,19 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    // Only Create Challenge opts into a fallback image.
+    const fallbackImageUrl = imageSelect.dataset.defaultImage || "";
+    const imageSelectionStatus = document.getElementById("imageSelectionStatus");
+
     // Updates the image preview.
     function updateImagePreview(imageUrl) {
+
+        imageUrl = imageUrl || fallbackImageUrl;
+        if (imageSelectionStatus) {
+            imageSelectionStatus.textContent = imageUrl === fallbackImageUrl
+                ? "Selected image: Question 1 (default)."
+                : "A custom image is selected. You can change it using the image controls above.";
+        }
 
         if (imageUrl) {
             imagePreview.src = imageUrl;
