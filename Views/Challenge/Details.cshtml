@@ -168,29 +168,6 @@
                 </div>
 
                 <div class="d-flex gap-2 flex-wrap">
-                    @* Only admins can change whether a challenge is Core or Community. *@
-                    @if (User.IsInRole("Admin"))
-                    {
-                        @if (Model.Challenge.IsCore)
-                        {
-                            <form asp-controller="Challenge" asp-action="MakeCommunity"
-                                  asp-route-id="@Model.Challenge.ChallengeId" method="post">
-                                <button type="submit" class="btn my-challenges-type-button featured-badge-community">
-                                    Community
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-controller="Challenge" asp-action="MakeCore"
-                                  asp-route-id="@Model.Challenge.ChallengeId" method="post">
-                                <button type="submit" class="btn my-challenges-type-button featured-badge-core">
-                                    Core
-                                </button>
-                            </form>
-                        }
-                    }
-
                     @if (Model.Challenge.IsPublished)
                     {
                         <form asp-controller="Challenge" asp-action="Unpublish"
