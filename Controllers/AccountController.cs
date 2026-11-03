@@ -117,13 +117,30 @@ namespace GamificationPlatform.Controllers
                 });
             }
 
-            // Registration does not automatically log in.
+            // Show success feedback before offering the login action.
+            // TempData survives this redirect but prevents a stale success page.
+            TempData["RegistrationCompleted"] = true;
             return RedirectToAction(
-                nameof(Login),
-                new
-                {
-                    returnUrl
-                });
+                nameof(RegistrationSuccess),
+                new { returnUrl });
+        }
+
+        // Confirms a completed registration without logging the user in.
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegistrationSuccess(string? returnUrl)
+        {
+            if (!(TempData["RegistrationCompleted"] is bool completed &&
+                  completed))
+            {
+                return RedirectToAction(nameof(Register));
+            }
+
+            ViewBag.ReturnUrl = returnUrl != null && Url.IsLocalUrl(returnUrl)
+                ? returnUrl
+                : null;
+
+            return View();
         }
 
         // Shows the login form.
