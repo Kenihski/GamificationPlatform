@@ -1,9 +1,4 @@
 
-@{
-    var isTakingChallenge = ViewContext.RouteData.Values["controller"]?.ToString() == "Quiz"
-        && ViewContext.RouteData.Values["action"]?.ToString() == "Take";
-}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,8 +46,7 @@
 <body>
 
     <!-- Animated Matrix background -->
-    <canvas id="matrixBackground" aria-hidden="true"
-            data-default-off="@isTakingChallenge.ToString().ToLowerInvariant()"></canvas>
+    <canvas id="matrixBackground" aria-hidden="true"></canvas>
 
     <header>
         <nav class="navbar navbar-dark site-navbar border-bottom box-shadow mb-3">

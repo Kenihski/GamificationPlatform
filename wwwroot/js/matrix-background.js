@@ -18,20 +18,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const toggle = document.getElementById("matrixToggle");
     const icon = document.getElementById("matrixIcon");
     const tooltip = document.getElementById("matrixTooltip");
-    const defaultOff = canvas.dataset.defaultOff === "true";
-    const storageKey = defaultOff
-        ? "matrix-challenge-animation-enabled"
-        : "matrix-animation-enabled";
+    // One preference applies to every page.
+    const cookieName = "matrix-animation-enabled";
     let savedPreference = null;
 
     try {
-        savedPreference = localStorage.getItem(storageKey);
+        savedPreference = document.cookie.split(";")
+            .map(cookie => cookie.trim())
+            .find(cookie => cookie.startsWith(cookieName + "="))
+            ?.slice(cookieName.length + 1) ?? null;
     } catch {
         // The control still works when browser storage is unavailable.
     }
 
     let enabled = savedPreference === "true" ||
-        (savedPreference !== "false" && !defaultOff && !reducedMotion.matches);
+        (savedPreference !== "false" && !reducedMotion.matches);
 
     const characters = "01{}[]();<>/=#@$";
     const fontSize = 16;
@@ -135,7 +136,10 @@ document.addEventListener("DOMContentLoaded", function () {
         savedPreference = String(enabled);
 
         try {
-            localStorage.setItem(storageKey, savedPreference);
+            // Remember the explicit choice for 90 days across the entire site.
+            // Secure is used on HTTPS; localhost HTTP remains usable for development.
+            const secure = window.location.protocol === "https:" ? "; Secure" : "";
+            document.cookie = `${cookieName}=${savedPreference}; Path=/; Max-Age=7776000; SameSite=Lax${secure}`;
         } catch {
             // Keep the current page usable even without persistent storage.
         }
@@ -164,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     reducedMotion.addEventListener("change", function () {
         if (savedPreference !== "true" && savedPreference !== "false") {
-            enabled = !defaultOff && !reducedMotion.matches;
+            enabled = !reducedMotion.matches;
             startAnimation();
         }
     });
