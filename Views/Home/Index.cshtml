@@ -190,10 +190,11 @@
 
     <div class="row g-4">
 
-        <!-- Core Challenges -->
+        <!-- Challenges -->
         <div class="col-md-6">
             <a asp-controller="Challenge"
                asp-action="Grid"
+               asp-route-filter="All"
                class="home-feature-link">
                 <div class="card home-feature-card h-100">
                     <div class="card-body">
@@ -216,23 +217,23 @@
                         </div>
 
                         <h3 class="card-title">
-                            Core Challenges
+                            Challenges
                         </h3>
 
                         <p class="card-text">
-                            Official challenges with individual leaderboards.
-                            Your first completed attempt also counts toward
-                            the overall Core Leaderboard.
+                            Explore official Core Challenges and challenges
+                            created by the community. Choose a topic, test
+                            your knowledge and track your progress.
                         </p>
                     </div>
                 </div>
             </a>
         </div>
 
-        <!-- Community Challenges -->
+        <!-- About -->
         <div class="col-md-6">
-            <a asp-controller="Challenge"
-               asp-action="Grid"
+            <a asp-controller="Home"
+               asp-action="About"
                class="home-feature-link">
                 <div class="card home-feature-card h-100">
                     <div class="card-body">
@@ -248,21 +249,21 @@
                                      stroke-linecap="round"
                                      stroke-linejoin="round"
                                      aria-hidden="true">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 11v6" />
+                                    <path d="M12 7h.01" />
                                 </svg>
                             </div>
                         </div>
 
                         <h3 class="card-title">
-                            Community Challenges
+                            About
                         </h3>
 
                         <p class="card-text">
-                            User-created challenges with individual leaderboards.
-                            Results do not affect the overall Core Leaderboard.
+                            Learn how the Challenge Hub works. Find out how
+                            challenges, scoring, leaderboards and achievements
+                            fit together.
                         </p>
                     </div>
                 </div>
