@@ -18,13 +18,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const markSeenUrl = container.dataset.markSeenUrl;
 
-    const maxVisible = 1;
+    // Keep this breakpoint in sync with achievements.css.
+    const desktopLayout = window.matchMedia("(min-width: 992px)");
+    let maxVisible = desktopLayout.matches ? 3 : 1;
     const timeBetweenNotifications = 2500;
     const displayTime = 8000;
     const highlightTime = 4000;
 
-    let nextIndex = 0;
-    let visibleCount = 0;
+    const pendingNotifications = [...notifications];
+    const activeNotifications = new Map();
+
+    // Follow the actual navbar height, including wrapped or enlarged text.
+    const navbar = document.querySelector(".site-navbar");
+    if (navbar) {
+        const updateNavbarOffset = () => container.style.setProperty(
+            "--notification-top", `${navbar.getBoundingClientRect().height + 12}px`
+        );
+        new ResizeObserver(updateNavbarOffset).observe(navbar);
+        updateNavbarOffset();
+    }
 
     async function markNotificationSeen(notification) {
         const userAchievementId =
@@ -76,8 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function showNotification(notification) {
-        visibleCount++;
-
         // Move the next queued notification into view.
         container.prepend(notification);
         notification.style.display = "flex";
@@ -97,6 +107,18 @@ document.addEventListener("DOMContentLoaded", () => {
         let timeoutId;
         let highlightTimeoutId;
         let returnFocus = null;
+        const events = new AbortController();
+
+        // Requeue extra cards when switching to a smaller screen.
+        // They are not marked as read until they actually close.
+        activeNotifications.set(notification, () => {
+            clearTimeout(timeoutId);
+            clearTimeout(highlightTimeoutId);
+            events.abort();
+            notification.style.display = "none";
+            notification.classList.remove("expiring");
+            activeNotifications.delete(notification);
+        });
 
         function closeNotification() {
             clearTimeout(timeoutId);
@@ -107,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             notification.classList.add("closing");
+            events.abort();
 
             // Marks the notification as seen when it is closed.
             markNotificationSeen(notification);
@@ -125,14 +148,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
                 notification.style.display = "none";
-                visibleCount--;
+                activeNotifications.delete(notification);
+                applyNotificationLimit();
             }, 300);
         }
 
         if (closeButton) {
             closeButton.addEventListener(
                 "click",
-                closeNotification
+                closeNotification,
+                { signal: events.signal }
             );
         }
 
@@ -143,41 +168,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function startCloseTimer() {
             clearTimeout(timeoutId);
-            if (!notification.classList.contains("closing") &&
+            if (activeNotifications.has(notification) &&
+                !notification.classList.contains("closing") &&
                 !notification.matches(":hover, :focus-within")) {
                 timeoutId = setTimeout(closeNotification, displayTime);
             }
         }
 
-        notification.addEventListener("mouseenter", () => clearTimeout(timeoutId));
-        notification.addEventListener("mouseleave", startCloseTimer);
+        notification.addEventListener("mouseenter", () => clearTimeout(timeoutId), { signal: events.signal });
+        notification.addEventListener("mouseleave", startCloseTimer, { signal: events.signal });
         notification.addEventListener("focusin", (event) => {
             clearTimeout(timeoutId);
             if (!notification.contains(event.relatedTarget)) {
                 returnFocus = event.relatedTarget;
             }
-        });
+        }, { signal: events.signal });
         notification.addEventListener("focusout", () => {
             // Wait until focus has settled before checking whether it is still inside.
             setTimeout(startCloseTimer, 0);
-        });
+        }, { signal: events.signal });
 
         startCloseTimer();
     }
 
     function tryShowNextNotification() {
         if (
-            nextIndex >= notifications.length ||
-            visibleCount >= maxVisible
+            pendingNotifications.length === 0 ||
+            activeNotifications.size >= maxVisible
         ) {
             return;
         }
 
-        const notification = notifications[nextIndex];
-        nextIndex++;
+        const notification = pendingNotifications.shift();
 
         showNotification(notification);
     }
+
+    function applyNotificationLimit() {
+        maxVisible = desktopLayout.matches ? 3 : 1;
+        // Preserve the card being used with the keyboard when the window shrinks.
+        const active = [...activeNotifications.keys()].sort((a, b) =>
+            Number(b.contains(document.activeElement)) - Number(a.contains(document.activeElement))
+        );
+        for (const notification of active.slice(maxVisible)) {
+            if (!notification.classList.contains("closing")) {
+                activeNotifications.get(notification)();
+                pendingNotifications.unshift(notification);
+            }
+        }
+    }
+
+    desktopLayout.addEventListener("change", applyNotificationLimit);
 
     // Shows the first notification immediately.
     tryShowNextNotification();
@@ -185,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Uses one fixed interval so new notifications
     // always appear at a consistent pace.
     const notificationInterval = setInterval(() => {
-        if (nextIndex >= notifications.length) {
+        if (pendingNotifications.length === 0 && activeNotifications.size === 0) {
             clearInterval(notificationInterval);
             return;
         }
