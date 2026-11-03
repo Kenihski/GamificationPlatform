@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Registration Successful";
+}
+
+<section class="container py-4" aria-labelledby="registrationSuccessTitle">
+    <div class="card mx-auto" style="max-width: 36rem;">
+        <div class="card-body p-4">
+            <h1 id="registrationSuccessTitle" class="h3 text-success">
+                Registration successful!
+            </h1>
+            <p role="status">
+                Your account has been created successfully. You can now log in using your credentials.
+            </p>
+            <a asp-controller="Account"
+               asp-action="Login"
+               asp-route-returnUrl="@ViewBag.ReturnUrl"
+               class="btn btn-primary">
+                Log In
+            </a>
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-outline-secondary ms-2">
+                Stay on Site
+            </a>
+        </div>
+    </div>
+</section>
