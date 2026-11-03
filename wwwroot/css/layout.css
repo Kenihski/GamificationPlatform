@@ -172,3 +172,22 @@ body:not(:has(.home-hero)) #matrixBackground {
     color: #fff;
     background: rgba(255, 255, 255, 0.06);
 }
+
+/* Show the main links in the navbar at 1200px and above, and in the sidebar on smaller screens. */
+.desktop-navigation {
+    display: none;
+}
+@media (min-width: 1200px) {
+    .desktop-navigation {
+        display: flex;
+        justify-content: center;
+        flex: 1;
+    }
+    .desktop-navigation .nav-link {
+        white-space: nowrap;
+        padding: 10px 8px;
+    }
+    .sidebar-main-link {
+        display: none;
+    }
+}

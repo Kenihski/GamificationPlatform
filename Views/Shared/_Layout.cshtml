@@ -78,6 +78,20 @@
                     Learning Challenge Hub
                 </a>
 
+                <!-- Main links move into the sidebar below the desktop breakpoint. -->
+                <ul class="navbar-nav desktop-navigation flex-row align-items-center gap-3 mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Challenge" asp-action="Grid"
+                           asp-route-filter="All">Challenges</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="HallOfFame" asp-action="Index">Hall of Fame</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Leaderboard" asp-action="TotalLeaderboard">Core Leaderboard</a>
+                    </li>
+                </ul>
+
                 <!-- Right side -->
                 <ul class="navbar-nav flex-row align-items-center gap-3">
 
@@ -191,7 +205,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item sidebar-main-link">
                     <a class="nav-link"
                        asp-controller="Challenge"
                        asp-action="Grid">
@@ -199,7 +213,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item sidebar-main-link">
                     <a class="nav-link"
                        asp-controller="HallOfFame"
                        asp-action="Index">
@@ -207,7 +221,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item sidebar-main-link">
                     <a class="nav-link"
                        asp-controller="Leaderboard"
                        asp-action="TotalLeaderboard">
