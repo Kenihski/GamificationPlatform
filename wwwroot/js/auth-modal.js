@@ -79,27 +79,50 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Clear the registration form.
                     registerForm.reset();
 
-                    // Close Register before opening Login.
+                    // Keep registration feedback visible until the user chooses to log in.
                     const registerModal =
                         document.getElementById("registerModal");
-
                     const loginModal =
                         document.getElementById("loginModal");
 
-                    if (registerModal && loginModal) {
-                        registerModal.addEventListener(
-                            "hidden.bs.modal",
-                            function () {
-                                bootstrap.Modal
-                                    .getOrCreateInstance(loginModal)
-                                    .show();
-                            },
-                            { once: true }
-                        );
+                    const successMessage = document.createElement("div");
+                    successMessage.className = "alert alert-success";
+                    successMessage.setAttribute("role", "status");
+                    successMessage.textContent =
+                        "Registration successful! Your account has been created. You can now log in.";
 
-                        bootstrap.Modal
-                            .getOrCreateInstance(registerModal)
-                            .hide();
+                    const loginButton = document.createElement("button");
+                    loginButton.type = "button";
+                    loginButton.className = "btn btn-primary mt-2";
+                    loginButton.textContent = "Log In";
+                    loginButton.addEventListener("click", function () {
+                        if (registerModal && loginModal) {
+                            registerModal.addEventListener(
+                                "hidden.bs.modal",
+                                function () {
+                                    successMessage.remove();
+                                    registerForm.classList.remove("d-none");
+                                    bootstrap.Modal
+                                        .getOrCreateInstance(loginModal)
+                                        .show();
+                                },
+                                { once: true }
+                            );
+                            bootstrap.Modal
+                                .getOrCreateInstance(registerModal)
+                                .hide();
+                        }
+                    });
+                    successMessage.appendChild(document.createElement("br"));
+                    successMessage.appendChild(loginButton);
+                    registerForm.before(successMessage);
+                    registerForm.classList.add("d-none");
+
+                    if (registerModal) {
+                        registerModal.addEventListener("hidden.bs.modal", function () {
+                            successMessage.remove();
+                            registerForm.classList.remove("d-none");
+                        }, { once: true });
                     }
                 } else {
                     // Show validation errors inside the Register modal.
