@@ -460,7 +460,7 @@ public class ChallengeControllerTests
             CreatedByUserId = 8,
             IsCore = false
         };
-        repository.GetChallengeByIdAsync(12).Returns(challenge);
+        repository.GetChallengeByIdAsync(12).Returns(Task.FromResult<Challenge?>(challenge));
 
         var controller = CreateAdminChallengeController(repository, 7);
 
@@ -484,7 +484,7 @@ public class ChallengeControllerTests
             CreatedByUserId = 7,
             IsCore = initialCore
         };
-        repository.GetChallengeByIdAsync(12).Returns(challenge);
+        repository.GetChallengeByIdAsync(12).Returns(Task.FromResult<Challenge?>(challenge));
 
         var controller = CreateAdminChallengeController(repository, 7);
         controller.TempData = new TempDataDictionary(
