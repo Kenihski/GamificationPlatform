@@ -65,41 +65,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const result = await response.json();
 
                 if (result.success) {
-                    // Fill in the username in the Login modal.
-                    const registerUsername =
-                        document.getElementById("modalRegisterUsername");
-
-                    const loginUsername =
-                        document.getElementById("modalLoginUsername");
-
-                    if (registerUsername && loginUsername) {
-                        loginUsername.value = registerUsername.value.trim();
-                    }
-
-                    // Clear the registration form.
-                    registerForm.reset();
-
-                    // Close Register before opening Login.
-                    const registerModal =
-                        document.getElementById("registerModal");
-
-                    const loginModal =
-                        document.getElementById("loginModal");
-
-                    if (registerModal && loginModal) {
-                        registerModal.addEventListener(
-                            "hidden.bs.modal",
-                            function () {
-                                bootstrap.Modal
-                                    .getOrCreateInstance(loginModal)
-                                    .show();
-                            },
-                            { once: true }
-                        );
-
-                        bootstrap.Modal
-                            .getOrCreateInstance(registerModal)
-                            .hide();
+                    // The server has stored the success notification for the login page.
+                    // Use the application's generated URL, preserving returnUrl.
+                    if (result.loginUrl) {
+                        window.location.assign(result.loginUrl);
+                    } else {
+                        registerError.textContent =
+                            "Registration succeeded, but the login page could not be opened.";
+                        registerError.classList.remove("d-none");
                     }
                 } else {
                     // Show validation errors inside the Register modal.
