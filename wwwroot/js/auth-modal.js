@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Login modal
     if (loginForm && loginError) {
+        // Allow server errors to receive focus without adding a normal Tab stop.
+        loginError.setAttribute("tabindex", "-1");
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
 
@@ -34,18 +36,22 @@ document.addEventListener("DOMContentLoaded", function () {
                         result.message || "Login failed.";
 
                     loginError.classList.remove("d-none");
+                    loginError.focus();
                 }
             } catch (error) {
                 loginError.textContent =
                     "Something went wrong. Please try again.";
 
                 loginError.classList.remove("d-none");
+                loginError.focus();
             }
         });
     }
 
     // Register modal
     if (registerForm && registerError) {
+        // Match the focus behaviour of errors returned on the full page.
+        registerError.setAttribute("tabindex", "-1");
         registerForm.addEventListener("submit", async function (event) {
             event.preventDefault();
 
@@ -107,12 +113,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         result.message || "Registration failed.";
 
                     registerError.classList.remove("d-none");
+                    registerError.focus();
                 }
             } catch (error) {
                 registerError.textContent =
                     "Something went wrong. Please try again.";
 
                 registerError.classList.remove("d-none");
+                registerError.focus();
             }
         });
     }
