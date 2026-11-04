@@ -28,6 +28,24 @@
          class="text-danger mb-3">
     </div>
 
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="form-group mb-3">
+            <label asp-for="IsCore" class="form-label">Challenge Type</label>
+            <select asp-for="IsCore" class="form-control">
+                <option value="false">Community</option>
+                <option value="true">Core</option>
+            </select>
+            <small class="text-muted">
+                You can change the type later for challenges you created.
+            </small>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">Your challenge will be created as a Community challenge.</p>
+    }
+
     <div class="form-group mb-3">
         <label asp-for="Title">
             Title
