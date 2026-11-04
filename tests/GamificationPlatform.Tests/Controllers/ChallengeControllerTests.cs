@@ -5,6 +5,7 @@ using GamificationPlatform.Models;
 using GamificationPlatform.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
@@ -402,4 +403,122 @@ public class ChallengeControllerTests
             "was created by user",
             informationLog.GetArguments()[2]?.ToString() ?? "");
     }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    public async Task Create_OnlyAdminsCanCreateCoreChallenges(bool isAdmin, bool expectedCore)
+    {
+        var repository = Substitute.For<IChallengeRepository>();
+        var images = Substitute.For<IImageService>();
+        var achievements = Substitute.For<IAchievementService>();
+        const string imageUrl = "/images/question1.png";
+
+        images.GetDefaultImagesAsync().Returns(new List<DefaultImage>
+        {
+            new() { Name = "Question 1", ImageUrl = imageUrl }
+        });
+        images.IsAllowedImageAsync(imageUrl, 7).Returns(true);
+
+        var controller = new ChallengeController(
+            repository, Substitute.For<IAttemptRepository>(), images,
+            achievements, Substitute.For<ILogger<ChallengeController>>());
+
+        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, "7") };
+        if (isAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        }
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Test"))
+            }
+        };
+
+        await controller.Create(new Challenge
+        {
+            Title = "Created challenge",
+            Description = "A challenge description",
+            IsCore = true,
+            ImageUrl = ""
+        }, imageUpload: null);
+
+        await repository.Received(1).CreateChallengeAsync(
+            Arg.Is<Challenge>(created => created.IsCore == expectedCore));
+    }
+
+    [Fact]
+    public async Task ChangeType_AdminWhoDoesNotOwnChallenge_IsForbidden()
+    {
+        var repository = Substitute.For<IChallengeRepository>();
+        var challenge = new Challenge
+        {
+            ChallengeId = 12,
+            CreatedByUserId = 8,
+            IsCore = false
+        };
+        repository.GetChallengeByIdAsync(12).Returns(challenge);
+
+        var controller = CreateAdminChallengeController(repository, 7);
+
+        var result = await controller.ChangeType(12, null);
+
+        Assert.IsType<ForbidResult>(result);
+        Assert.False(challenge.IsCore);
+        await repository.DidNotReceive().SaveChangesAsync();
+    }
+
+    [Theory]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    public async Task ChangeType_AdminOwner_CanSwitchBetweenTypes(
+        bool initialCore, bool expectedCore)
+    {
+        var repository = Substitute.For<IChallengeRepository>();
+        var challenge = new Challenge
+        {
+            ChallengeId = 12,
+            CreatedByUserId = 7,
+            IsCore = initialCore
+        };
+        repository.GetChallengeByIdAsync(12).Returns(challenge);
+
+        var controller = CreateAdminChallengeController(repository, 7);
+        controller.TempData = new TempDataDictionary(
+            controller.HttpContext, Substitute.For<ITempDataProvider>());
+
+        var result = await controller.ChangeType(12, null);
+
+        Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(expectedCore, challenge.IsCore);
+        await repository.Received(1).SaveChangesAsync();
+    }
+
+    private static ChallengeController CreateAdminChallengeController(
+        IChallengeRepository repository, int userId)
+    {
+        var controller = new ChallengeController(
+            repository,
+            Substitute.For<IAttemptRepository>(),
+            Substitute.For<IImageService>(),
+            Substitute.For<IAchievementService>(),
+            Substitute.For<ILogger<ChallengeController>>());
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                    new Claim(ClaimTypes.Role, "Admin")
+                }, "Test"))
+            }
+        };
+        return controller;
+    }
+
 }
