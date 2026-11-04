@@ -108,12 +108,17 @@ namespace GamificationPlatform.Controllers
                 "User {UserId} registered successfully.",
                 user.Id);
 
-            // The popup will open the Login modal.
+            // Show this message once after redirecting to the login page.
+            TempData["SuccessMessage"] =
+                "Registration successful! Your account has been created. You can now log in.";
+
+            // Both modal and full-page registration lead to the login page.
             if (isModal)
             {
                 return Json(new
                 {
-                    success = true
+                    success = true,
+                    loginUrl = Url.Action(nameof(Login), "Account", new { returnUrl })
                 });
             }
 
