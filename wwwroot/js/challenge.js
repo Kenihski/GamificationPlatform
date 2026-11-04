@@ -231,8 +231,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        // Each question uses the quiz-question-card class in Take.cshtml.
         const questions =
-            form.querySelectorAll(".question-card");
+            form.querySelectorAll(".quiz-question-card");
 
         let unanswered = 0;
 
@@ -265,12 +266,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (unanswered > 0) {
-            const confirmed = confirm(
-                "You have " + unanswered +
-                " unanswered question(s).\n\n" +
-                "Unanswered questions will receive 0 points.\n\n" +
-                "Do you still want to submit?"
-            );
+            const total = questions.length;
+            const message = unanswered === total
+                ? "You haven't answered any of the " + total +
+                  " questions. Are you sure you want to submit? " +
+                  "Unanswered questions will receive 0 points."
+                : "You have left " + unanswered + " out of " +
+                  total + " questions unanswered. " +
+                  "Are you sure you want to submit? " +
+                  "Unanswered questions will receive 0 points.";
+
+            const confirmed = confirm(message);
 
             if (!confirmed) {
                 event.preventDefault();
