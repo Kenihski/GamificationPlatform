@@ -473,6 +473,8 @@
                               asp-action="Register"
                               method="post">
 
+                            <p class="text-muted">All fields are required.</p>
+
                             <input type="hidden"
                                    name="isModal"
                                    value="true" />
@@ -491,8 +493,15 @@
                                        name="Username"
                                        type="text"
                                        class="form-control"
-                                       autocomplete="username" minlength="3" maxlength="50"
+                                       autocomplete="username"
+                                       aria-describedby="modalRegisterUsernameHelp"
+                                       minlength="3"
+                                       maxlength="50"
                                        required />
+
+                                <div id="modalRegisterUsernameHelp" class="form-text text-muted">
+                                    Use 3 to 50 characters.
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -505,8 +514,14 @@
                                        name="Email"
                                        type="email"
                                        class="form-control"
-                                       autocomplete="email" maxlength="100"
+                                       autocomplete="email"
+                                       aria-describedby="modalRegisterEmailHelp"
+                                       maxlength="100"
                                        required />
+
+                                <div id="modalRegisterEmailHelp" class="form-text text-muted">
+                                    Enter your email address (up to 100 characters).
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -519,8 +534,16 @@
                                        name="Password"
                                        type="password"
                                        class="form-control"
-                                       autocomplete="new-password" minlength="6" maxlength="100"
+                                       autocomplete="new-password"
+                                       aria-describedby="modalRegisterPasswordHelp"
+                                       minlength="6"
+                                       maxlength="100"
                                        required />
+
+                                <div id="modalRegisterPasswordHelp" class="form-text text-muted">
+                                    Use 6 to 100 characters, including at least one lowercase letter and one number.
+                                    Your password must be different from your username.
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -534,7 +557,12 @@
                                        type="password"
                                        class="form-control"
                                        autocomplete="new-password"
+                                       aria-describedby="modalRegisterConfirmPasswordHelp"
                                        required />
+
+                                <div id="modalRegisterConfirmPasswordHelp" class="form-text text-muted">
+                                    Enter the same password again.
+                                </div>
                             </div>
 
                             <button type="submit"
