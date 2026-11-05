@@ -7,7 +7,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="mb-1">Manage Images</h2>
+        <h1 class="h2 mb-1">Manage Images</h1>
         <p class="text-muted mb-0">
             View and manage uploaded and default images.
         </p>
@@ -58,7 +58,7 @@
         @if (!Model.UserImages.Any())
         {
             <div class="text-center py-5 border rounded bg-light">
-                <h5>No uploaded images</h5>
+                <h2 class="h5">No uploaded images</h2>
                 <p class="text-muted mb-0">
                     Images uploaded by users will appear here.
                 </p>
@@ -173,7 +173,7 @@
         @if (!Model.DefaultImages.Any())
         {
             <div class="text-center py-5 border rounded bg-light">
-                <h5>No default images</h5>
+                <h2 class="h5">No default images</h2>
                 <p class="text-muted mb-0">
                     Add a default image to make it available to all users.
                 </p>

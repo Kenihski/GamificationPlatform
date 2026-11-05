@@ -44,6 +44,7 @@
 </head>
 
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 
     <!-- Animated Matrix background -->
     <canvas id="matrixBackground" aria-hidden="true"></canvas>
@@ -590,7 +591,7 @@
     }
 
     <div class="container">
-        <main role="main" class="pb-3">
+        <main id="main-content" role="main" class="pb-3" tabindex="-1">
             @RenderBody()
         </main>
     </div>

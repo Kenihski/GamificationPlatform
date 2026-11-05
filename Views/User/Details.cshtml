@@ -8,7 +8,7 @@
     var challengeHistory = Model.ChallengeHistory.ToList();
 }
 
-<h2 class="my-4">@Model.User.UserName</h2>
+<h1 class="h2 my-4">@Model.User.UserName</h1>
 
 <partial name="_FeedbackMessages" />
 
@@ -36,7 +36,7 @@
     </p>
 </div>
 
-<h3 class="mt-4">Created Challenges</h3>
+<h2 class="h3 mt-4">Created Challenges</h2>
 
 @if (!Model.CreatedChallenges.Any())
 {
@@ -151,9 +151,9 @@ else
     </div>
 }
 
-<h3 id="challengeHistoryHeading" class="mt-5 mb-4">
+<h2 id="challengeHistoryHeading" class="h3 mt-5 mb-4">
     Challenge History
-</h3>
+</h2>
 
 @if (!challengeHistory.Any())
 {
@@ -216,9 +216,9 @@ else
                      hidden="@(i != 0)">
 
                 <div class="user-history-card-header">
-                    <h4 id="user-history-title-@i">
+                    <h3 id="user-history-title-@i" class="h4">
                         @challenge.ChallengeTitle
-                    </h4>
+                    </h3>
 
                     <span class="user-history-attempt-count">
                         @attemptCount @(attemptCount == 1 ? "attempt" : "attempts")
