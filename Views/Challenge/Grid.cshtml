@@ -25,7 +25,8 @@
            asp-action="Grid"
            asp-route-filter="All"
            asp-route-searchTerm="@Model.SearchTerm"
-           class="btn @(Model.CurrentFilter == "All" ? "btn-primary" : "btn-outline-primary")">
+           class="btn @(Model.CurrentFilter == "All" ? "btn-primary" : "btn-outline-primary")"
+           aria-current="@(Model.CurrentFilter == "All" ? "true" : null)">
             All
         </a>
 
@@ -33,7 +34,8 @@
            asp-action="Grid"
            asp-route-filter="Core"
            asp-route-searchTerm="@Model.SearchTerm"
-           class="btn @(Model.CurrentFilter == "Core" ? "btn-primary" : "btn-outline-primary")">
+           class="btn @(Model.CurrentFilter == "Core" ? "btn-primary" : "btn-outline-primary")"
+           aria-current="@(Model.CurrentFilter == "Core" ? "true" : null)">
             Core
         </a>
 
@@ -41,7 +43,8 @@
            asp-action="Grid"
            asp-route-filter="Community"
            asp-route-searchTerm="@Model.SearchTerm"
-           class="btn @(Model.CurrentFilter == "Community" ? "btn-primary" : "btn-outline-primary")">
+           class="btn @(Model.CurrentFilter == "Community" ? "btn-primary" : "btn-outline-primary")"
+           aria-current="@(Model.CurrentFilter == "Community" ? "true" : null)">
             Community
         </a>
 
