@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Deletes a personal image after confirmation.
+    // Deletes the library image and replaces its references with the default image.
     if (removeImageButton && myImageSelect) {
 
         removeImageButton.addEventListener("click", async function () {
@@ -271,7 +271,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const confirmed = confirm(
-                "Are you sure you want to permanently delete this image?"
+                "Permanently delete this image from your library? " +
+                "Every challenge and question using it will use the Question 1 default image instead. " +
+                "This cannot be undone. The page will reload and any unsaved changes " +
+                "in this form will be lost."
             );
 
             if (!confirmed) {
