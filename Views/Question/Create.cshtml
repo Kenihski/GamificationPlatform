@@ -13,7 +13,7 @@
         ?? new List<GamificationPlatform.Models.DefaultImage>();
 }
 
-<h2>Create New Question</h2>
+<h1 class="h2">Create New Question</h1>
 
 <div class="alert alert-warning">
     <strong>Note:</strong>
@@ -248,8 +248,8 @@
 
             <button type="button"
                     id="removeImageButton"
-                    class="btn btn-link btn-sm text-secondary text-decoration-none image-selection-hidden">
-                Remove image
+                    class="btn btn-outline-danger btn-sm image-selection-hidden">
+                Delete image from library
             </button>
         </div>
 
@@ -315,7 +315,7 @@
     @* Used for Single Choice and Multiple Choice. *@
     <div id="choiceAnswerSection" role="group"
          aria-labelledby="answerOptionsHeading" aria-describedby="answerOptionsHelp">
-        <h4 id="answerOptionsHeading">Answer Options</h4>
+        <h2 id="answerOptionsHeading" class="h4">Answer Options</h2>
 
         <span asp-validation-for="Options"
               class="text-danger">
@@ -363,7 +363,7 @@
          class="image-selection-hidden" role="group"
          aria-labelledby="acceptedAnswersHeading" aria-describedby="acceptedAnswersHelp">
 
-        <h4 id="acceptedAnswersHeading">Accepted Answers</h4>
+        <h2 id="acceptedAnswersHeading" class="h4">Accepted Answers</h2>
 
         <span asp-validation-for="AcceptedAnswers"
               class="text-danger">

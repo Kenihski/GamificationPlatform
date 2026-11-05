@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Login modal
     if (loginForm && loginError) {
+        loginError.setAttribute("tabindex", "-1");
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
 
@@ -34,18 +35,21 @@ document.addEventListener("DOMContentLoaded", function () {
                         result.message || "Login failed.";
 
                     loginError.classList.remove("d-none");
+                loginError.focus();
                 }
             } catch (error) {
                 loginError.textContent =
                     "Something went wrong. Please try again.";
 
                 loginError.classList.remove("d-none");
+                loginError.focus();
             }
         });
     }
 
     // Register modal
     if (registerForm && registerError) {
+        registerError.setAttribute("tabindex", "-1");
         registerForm.addEventListener("submit", async function (event) {
             event.preventDefault();
 
@@ -73,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         registerError.textContent =
                             "Registration succeeded, but the login page could not be opened.";
                         registerError.classList.remove("d-none");
+                    registerError.focus();
                     }
                 } else {
                     // Show validation errors inside the Register modal.
@@ -80,12 +85,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         result.message || "Registration failed.";
 
                     registerError.classList.remove("d-none");
+                    registerError.focus();
                 }
             } catch (error) {
                 registerError.textContent =
                     "Something went wrong. Please try again.";
 
                 registerError.classList.remove("d-none");
+                    registerError.focus();
             }
         });
     }

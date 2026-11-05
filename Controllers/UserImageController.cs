@@ -170,6 +170,14 @@ namespace GamificationPlatform.Controllers
 
             try
             {
+                var fallbackImage = await GetFallbackImageAsync();
+                if (fallbackImage == null)
+                {
+                    TempData["ErrorMessage"] =
+                        "The image cannot be deleted because the Question 1 default image is unavailable.";
+                    return RedirectAfterDelete(returnUrl);
+                }
+
                 var challenges = await _context.Challenges
                     .Where(c => c.ImageUrl == image.ImageUrl)
                     .ToListAsync();
@@ -180,12 +188,12 @@ namespace GamificationPlatform.Controllers
 
                 foreach (var challenge in challenges)
                 {
-                    challenge.ImageUrl = "";
+                    challenge.ImageUrl = fallbackImage.ImageUrl;
                 }
 
                 foreach (var question in questions)
                 {
-                    question.ImageUrl = "";
+                    question.ImageUrl = fallbackImage.ImageUrl;
                 }
 
                 await _context.SaveChangesAsync();
@@ -438,7 +446,8 @@ namespace GamificationPlatform.Controllers
             return RedirectToAction(nameof(Admin));
         }
 
-        // Deletes a default image and clears its references.
+        // Deletes an image from the shared library.
+        // Challenges and questions using it receive Question 1 as a fallback.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -453,6 +462,23 @@ namespace GamificationPlatform.Controllers
 
             try
             {
+                var fallbackImage = await GetFallbackImageAsync();
+                if (fallbackImage == null)
+                {
+                    TempData["ErrorMessage"] =
+                        "The image cannot be deleted because the Question 1 default image is unavailable.";
+                    return RedirectToAction(nameof(Admin));
+                }
+
+                // Keep the fallback available for future image deletions and new challenges.
+                if (image.ImageUrl == fallbackImage.ImageUrl ||
+                    image.ImageUrl == "/images/Question_1.png")
+                {
+                    TempData["ErrorMessage"] =
+                        "Question 1 is the fallback image and cannot be deleted.";
+                    return RedirectToAction(nameof(Admin));
+                }
+
                 var challenges = await _context.Challenges
                     .Where(c => c.ImageUrl == image.ImageUrl)
                     .ToListAsync();
@@ -463,12 +489,12 @@ namespace GamificationPlatform.Controllers
 
                 foreach (var challenge in challenges)
                 {
-                    challenge.ImageUrl = "";
+                    challenge.ImageUrl = fallbackImage.ImageUrl;
                 }
 
                 foreach (var question in questions)
                 {
-                    question.ImageUrl = "";
+                    question.ImageUrl = fallbackImage.ImageUrl;
                 }
 
                 _context.DefaultImages.Remove(image);
@@ -504,6 +530,26 @@ namespace GamificationPlatform.Controllers
             }
 
             return RedirectToAction(nameof(Admin));
+        }
+
+        // Prefer the configured Question 1 image; the bundled path also works after a rename.
+        private async Task<DefaultImage?> GetFallbackImageAsync()
+        {
+            var image = await _context.DefaultImages
+                .Where(image => image.Name == "Question 1" ||
+                                image.ImageUrl == "/images/Question_1.png")
+                .OrderByDescending(image => image.Name == "Question 1")
+                .ThenBy(image => image.DefaultImageId)
+                .FirstOrDefaultAsync();
+
+            if (image == null || string.IsNullOrWhiteSpace(image.ImageUrl))
+            {
+                return null;
+            }
+
+            var filePath = Path.Combine(
+                _environment.WebRootPath, image.ImageUrl.TrimStart('/'));
+            return System.IO.File.Exists(filePath) ? image : null;
         }
 
         // Registers bundled Question images if the table is empty.

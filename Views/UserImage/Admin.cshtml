@@ -7,7 +7,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="mb-1">Manage Images</h2>
+        <h1 class="h2 mb-1">Manage Images</h1>
         <p class="text-muted mb-0">
             View and manage uploaded and default images.
         </p>
@@ -58,7 +58,7 @@
         @if (!Model.UserImages.Any())
         {
             <div class="text-center py-5 border rounded bg-light">
-                <h5>No uploaded images</h5>
+                <h2 class="h5">No uploaded images</h2>
                 <p class="text-muted mb-0">
                     Images uploaded by users will appear here.
                 </p>
@@ -81,6 +81,10 @@
                                      class="w-100 h-100 object-fit-cover" />
                             </div>
 
+                            <div class="card-body">
+                                <p class="card-text text-break mb-0">@image.FileName</p>
+                            </div>
+
                             <!-- Image options -->
                             <div class="dropdown position-absolute top-0 end-0 m-2 image-options-dropdown">
 
@@ -88,7 +92,7 @@
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
-                                        aria-label="Image options">
+                                        aria-label="Options for @image.FileName">
                                     &#8942;
                                 </button>
 
@@ -169,7 +173,7 @@
         @if (!Model.DefaultImages.Any())
         {
             <div class="text-center py-5 border rounded bg-light">
-                <h5>No default images</h5>
+                <h2 class="h5">No default images</h2>
                 <p class="text-muted mb-0">
                     Add a default image to make it available to all users.
                 </p>
@@ -192,6 +196,10 @@
                                      class="w-100 h-100 object-fit-cover" />
                             </div>
 
+                            <div class="card-body">
+                                <p class="card-text text-break mb-0">@image.Name</p>
+                            </div>
+
                             <!-- Image options -->
                             <div class="dropdown position-absolute top-0 end-0 m-2 image-options-dropdown">
 
@@ -199,7 +207,7 @@
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
-                                        aria-label="Image options">
+                                        aria-label="Options for @image.Name">
                                     &#8942;
                                 </button>
 

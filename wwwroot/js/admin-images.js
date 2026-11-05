@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
         form.addEventListener("submit", function (event) {
             const confirmed = confirm(
                 "Are you sure you want to permanently delete this image? " +
-                "It will also be removed from any challenges or questions that use it."
+                "Every challenge and question using it will use the Question 1 default image instead."
             );
 
             if (!confirmed) {

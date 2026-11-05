@@ -34,6 +34,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         const summary = form.querySelector("[data-valmsg-summary]");
+        if (summary) {
+            // Let jQuery finish displaying client errors before focusing the summary.
+            jQuery(form).on("invalid-form", function () {
+                setTimeout(function () {
+                    if (summary.textContent.trim()) {
+                        summary.classList.add("alert", "alert-danger");
+                        summary.setAttribute("tabindex", "-1");
+                        summary.focus();
+                    }
+                }, 0);
+            });
+        }
         if (summary && summary.textContent.trim()) {
             summary.classList.add("alert", "alert-danger");
             summary.setAttribute("tabindex", "-1");
