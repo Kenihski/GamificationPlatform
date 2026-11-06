@@ -318,8 +318,10 @@ namespace GamificationPlatform.Controllers
             int id,
             bool showQuestions = false)
         {
+            // The owner/admin question overview needs both choice options
+            // and the accepted text answers used by Short Answer questions.
             var challenge =
-                await _challengeRepository.GetChallengeWithQuestionsAsync(id);
+                await _challengeRepository.GetChallengeWithQuestionsAndOptionsAsync(id);
 
             if (challenge == null)
             {
