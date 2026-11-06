@@ -78,85 +78,77 @@ document.addEventListener("DOMContentLoaded", function () {
       errors.push("Please select a valid question type.");
     }
 
-    message.textContent = errors.join(" ");
-    message.classList.toggle("d-none", errors.length === 0);
-    return errors.length === 0;
+    return errors;
   }
 
-  // Validate before sending; preserve all existing server checks.
-  form.addEventListener("submit", function (event) {
-    if (!checkAnswers()) {
-      event.preventDefault();
-      message.scrollIntoView({ behavior: "smooth", block: "center" });
+  // Keep validation messages in the same order as the form:
+  // Title, Points, then answer configuration. Do not invoke jQuery's
+  // validator.element()/form.valid() on every keystroke (it steals focus).
+  form.noValidate = true;
+  const clientSummary = document.createElement("div");
+  clientSummary.className = "alert alert-danger d-none";
+  clientSummary.setAttribute("role", "alert");
+  clientSummary.tabIndex = -1;
+  clientSummary.id = "questionFormValidationSummary";
+  form.prepend(clientSummary);
+
+  let attemptedSubmit = false;
+
+  function validateForm() {
+    const errors = [];
+    const title = form.querySelector('[name="Question.Title"]');
+    const points = form.querySelector('[name="Question.Points"]');
+    if (!title?.value.trim()) {
+      errors.push("Question title is required.");
     }
-  });
-  function refreshFieldValidation(event) {
-    const field = event.target;
-
-    if (!field.matches("input, select, textarea")) {
-      return;
+    if (
+      !points?.value.trim() ||
+      !Number.isInteger(Number(points.value)) ||
+      Number(points.value) < 1 ||
+      Number(points.value) > 100
+    ) {
+      errors.push("Points must be between 1 and 100.");
     }
-
-    const $ = window.jQuery;
-
-    if (!$ || !$.validator) {
-      return;
-    }
-
-    const validator = $(form).data("validator");
-
-    if (validator && field.name) {
-      validator.element(field);
-    }
+    errors.push(...checkAnswers());
+    return errors;
   }
-  function clearStaleValidationSummary() {
-    const $ = window.jQuery;
 
-    if (!$ || !$.validator) {
-      return;
-    }
-
-    const validator = $(form).data("validator");
-
-    if (!validator) {
-      return;
-    }
-
-    const summary = form.querySelector('[data-valmsg-summary="true"]');
-
-    if (!summary) {
-      return;
-    }
-
-    // Only clear the summary when jQuery reports
-    // that the entire form is valid.
-    if ($(form).valid()) {
-      const list = summary.querySelector("ul");
-
-      if (list) {
-        list.replaceChildren();
+  function showErrors(errors) {
+    clientSummary.replaceChildren();
+    if (errors.length) {
+      const heading = document.createElement("strong");
+      heading.textContent = "Please correct the following errors:";
+      const list = document.createElement("ul");
+      list.className = "mb-0 mt-2";
+      for (const error of errors) {
+        const item = document.createElement("li");
+        item.textContent = error;
+        list.append(item);
       }
-
-      summary.classList.remove("validation-summary-errors");
-
-      summary.classList.add("validation-summary-valid");
+      clientSummary.append(heading, list);
     }
+    clientSummary.classList.toggle("d-none", errors.length === 0);
+    // The separate answer alert is replaced by the ordered summary.
+    message.classList.add("d-none");
+    message.textContent = "";
   }
-  form.addEventListener("input", function (event) {
-    refreshFieldValidation(event);
-    clearStaleValidationSummary();
 
-    if (!message.classList.contains("d-none")) {
-      checkAnswers();
+  form.addEventListener("submit", function (event) {
+    attemptedSubmit = true;
+    const errors = validateForm();
+    showErrors(errors);
+    if (errors.length) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      clientSummary.focus({ preventScroll: true });
+      clientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  });
+  }, true);
 
-  form.addEventListener("change", function (event) {
-    refreshFieldValidation(event);
-    clearStaleValidationSummary();
+  function updateSummary() {
+    if (attemptedSubmit) showErrors(validateForm());
+  }
 
-    if (!message.classList.contains("d-none")) {
-      checkAnswers();
-    }
-  });
+  form.addEventListener("input", updateSummary);
+  form.addEventListener("change", updateSummary);
 });
