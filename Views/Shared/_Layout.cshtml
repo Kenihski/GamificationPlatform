@@ -1,3 +1,12 @@
+@{
+    // Use the route so filters do not affect the current-page marker.
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    bool IsCurrentPage(string controller, params string[] actions) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) &&
+        actions.Any(action => string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase));
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +82,7 @@
                     Learning Challenge Hub
                 </a>
 
-                <!-- Main links move into the sidebar below the desktop breakpoint. -->
+                <!-- Main links are also available in the sidebar at every screen size. -->
                 <ul class="navbar-nav desktop-navigation flex-row align-items-center gap-3 mx-auto">
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Challenge" asp-action="Grid"
@@ -193,31 +202,35 @@
             <ul class="nav flex-column">
 
                 <li class="nav-item">
-                    <a class="nav-link"
+                    <a class="nav-link @(IsCurrentPage("Home", "Index") ? "active" : null)"
+                       aria-current="@(IsCurrentPage("Home", "Index") ? "page" : null)"
                        asp-controller="Home"
                        asp-action="Index">
                         Home
                     </a>
                 </li>
 
-                <li class="nav-item sidebar-main-link">
-                    <a class="nav-link"
+                <li class="nav-item">
+                    <a class="nav-link @(IsCurrentPage("Challenge", "Grid", "Table") ? "active" : null)"
+                       aria-current="@(IsCurrentPage("Challenge", "Grid", "Table") ? "page" : null)"
                        asp-controller="Challenge"
                        asp-action="Grid">
                         Challenges
                     </a>
                 </li>
 
-                <li class="nav-item sidebar-main-link">
-                    <a class="nav-link"
+                <li class="nav-item">
+                    <a class="nav-link @(IsCurrentPage("HallOfFame", "Index") ? "active" : null)"
+                       aria-current="@(IsCurrentPage("HallOfFame", "Index") ? "page" : null)"
                        asp-controller="HallOfFame"
                        asp-action="Index">
                         Hall of Fame
                     </a>
                 </li>
 
-                <li class="nav-item sidebar-main-link">
-                    <a class="nav-link"
+                <li class="nav-item">
+                    <a class="nav-link @(IsCurrentPage("Leaderboard", "TotalLeaderboard") ? "active" : null)"
+                       aria-current="@(IsCurrentPage("Leaderboard", "TotalLeaderboard") ? "page" : null)"
                        asp-controller="Leaderboard"
                        asp-action="TotalLeaderboard">
                         Core Leaderboard
@@ -238,7 +251,8 @@
                 <ul class="nav flex-column">
 
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link @(IsCurrentPage("Challenge", "MyChallenges") ? "active" : null)"
+                           aria-current="@(IsCurrentPage("Challenge", "MyChallenges") ? "page" : null)"
                            asp-controller="Challenge"
                            asp-action="MyChallenges">
                             My Challenges
@@ -246,14 +260,16 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link @(IsCurrentPage("Challenge", "Create") ? "active" : null)"
+                           aria-current="@(IsCurrentPage("Challenge", "Create") ? "page" : null)"
                            asp-controller="Challenge"
                            asp-action="Create">
                             Create Challenge
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link @(IsCurrentPage("UserImage", "Index") ? "active" : null)"
+                           aria-current="@(IsCurrentPage("UserImage", "Index") ? "page" : null)"
                            asp-controller="UserImage"
                            asp-action="Index">
                             My Images
@@ -263,7 +279,8 @@
                     @if (!User.IsInRole("Admin"))
                     {
                         <li class="nav-item">
-                            <a class="nav-link"
+                            <a class="nav-link @(IsCurrentPage("Achievement", "Index") ? "active" : null)"
+                               aria-current="@(IsCurrentPage("Achievement", "Index") ? "page" : null)"
                                asp-controller="Achievement"
                                asp-action="Index">
                                 Achievements
@@ -287,7 +304,8 @@
                 <ul class="nav flex-column">
 
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link @(IsCurrentPage("User", "Table") ? "active" : null)"
+                           aria-current="@(IsCurrentPage("User", "Table") ? "page" : null)"
                            asp-controller="User"
                            asp-action="Table">
                             Users
@@ -295,7 +313,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link @(IsCurrentPage("Question", "Table") ? "active" : null)"
+                           aria-current="@(IsCurrentPage("Question", "Table") ? "page" : null)"
                            asp-controller="Question"
                            asp-action="Table">
                             Questions
@@ -303,7 +322,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link @(IsCurrentPage("Achievement", "Index") ? "active" : null)"
+                           aria-current="@(IsCurrentPage("Achievement", "Index") ? "page" : null)"
                            asp-controller="Achievement"
                            asp-action="Index">
                             Achievements
@@ -312,7 +332,8 @@
 
                     <!-- Manage uploaded user images -->
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link @(IsCurrentPage("UserImage", "Admin") ? "active" : null)"
+                           aria-current="@(IsCurrentPage("UserImage", "Admin") ? "page" : null)"
                            asp-controller="UserImage"
                            asp-action="Admin">
                             Images
@@ -326,7 +347,8 @@
 
         <!-- Sidebar footer -->
         <div class="site-sidebar-footer">
-            <a class="nav-link d-flex align-items-center gap-2"
+            <a class="nav-link d-flex align-items-center gap-2 @(IsCurrentPage("Home", "About") ? "active" : null)"
+               aria-current="@(IsCurrentPage("Home", "About") ? "page" : null)"
                asp-controller="Home"
                asp-action="About">
 

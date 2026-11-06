@@ -18,8 +18,8 @@
 <partial name="_FeedbackMessages" />
 
 <div class="challenge-details-page">
-    <a asp-controller="Challenge" asp-action="Grid" class="challenge-details-back">
-        <span aria-hidden="true">←</span> Back to Challenges
+    <a asp-controller="Challenge" asp-action="@(Model.FromMyChallenges ? "MyChallenges" : "Grid")" class="challenge-details-back">
+        <span aria-hidden="true">←</span> @(Model.FromMyChallenges ? "Back to My Challenges" : "Back to Challenges")
     </a>
 
     <section class="challenge-details-overview" aria-labelledby="challengeDetailsTitle">

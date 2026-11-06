@@ -9,19 +9,19 @@
 {
     <div id="errorMessage" class="alert alert-danger" role="alert">
         @errorMessage
-        @if (TempData["ImageUsageChallenges"] is string imageUsageJson)
+        @if (TempData["ImageUsageQuestions"] is string imageUsageJson)
         {
-            var challenges = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(imageUsageJson);
-            if (challenges != null && challenges.Count > 0)
+            var questions = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(imageUsageJson);
+            if (questions != null && questions.Count > 0)
             {
                 <p class="mt-2 mb-1">Used in:</p>
                 <ul>
-                    @foreach (var challenge in challenges)
+                    @foreach (var question in questions)
                     {
                         <li>
-                            <a asp-controller="Challenge" asp-action="Details"
-                               asp-route-id="@challenge.Key" asp-route-showQuestions="true">
-                                @challenge.Value (challenge #@challenge.Key)
+                            <a asp-controller="Question" asp-action="Update"
+                               asp-route-id="@question.Key">
+                                @question.Value (edit question #@question.Key)
                             </a>
                         </li>
                     }

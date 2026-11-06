@@ -77,7 +77,7 @@ else
 
                         <td>
                             <div class="d-flex flex-nowrap gap-1 align-items-center my-challenges-actions">
-                                <a asp-controller="Challenge" asp-action="Details"
+                                <a asp-controller="Challenge" asp-action="Details" asp-route-fromMyChallenges="true"
                                    asp-route-id="@challenge.ChallengeId"
                                    class="btn btn-sm btn-outline-primary">
                                     View

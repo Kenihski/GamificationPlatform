@@ -186,13 +186,13 @@ namespace GamificationPlatform.Controllers
                 var imageUsage = await _context.Questions
                     .Where(q => q.ImageUrl == image.ImageUrl)
                     .OrderBy(q => q.Challenge.Title)
-                    .Select(q => new { q.ChallengeId, ChallengeTitle = q.Challenge.Title })
+                    .Select(q => new { q.QuestionId, q.Title, ChallengeTitle = q.Challenge.Title })
                     .ToListAsync();
                 if (imageUsage.Count > 0)
                 {
-                    // Pass structured data so Razor can render safe, descriptive challenge links.
-                    TempData["ImageUsageChallenges"] = System.Text.Json.JsonSerializer.Serialize(
-                        imageUsage.Distinct().ToDictionary(q => q.ChallengeId, q => q.ChallengeTitle));
+                    // Pass structured data so Razor can render safe, descriptive question links.
+                    TempData["ImageUsageQuestions"] = System.Text.Json.JsonSerializer.Serialize(
+                        imageUsage.ToDictionary(q => q.QuestionId, q => $"{q.Title} — {q.ChallengeTitle}"));
                     TempData["ErrorMessage"] =
                         $"This image is used by {imageUsage.Count} question(s). Remove or replace it in those questions before deleting it.";
                     return RedirectAfterDelete(returnUrl);
@@ -507,13 +507,13 @@ namespace GamificationPlatform.Controllers
                 var imageUsage = await _context.Questions
                     .Where(q => q.ImageUrl == image.ImageUrl)
                     .OrderBy(q => q.Challenge.Title)
-                    .Select(q => new { q.ChallengeId, ChallengeTitle = q.Challenge.Title })
+                    .Select(q => new { q.QuestionId, q.Title, ChallengeTitle = q.Challenge.Title })
                     .ToListAsync();
                 if (imageUsage.Count > 0)
                 {
-                    // Pass structured data so Razor can render safe, descriptive challenge links.
-                    TempData["ImageUsageChallenges"] = System.Text.Json.JsonSerializer.Serialize(
-                        imageUsage.Distinct().ToDictionary(q => q.ChallengeId, q => q.ChallengeTitle));
+                    // Pass structured data so Razor can render safe, descriptive question links.
+                    TempData["ImageUsageQuestions"] = System.Text.Json.JsonSerializer.Serialize(
+                        imageUsage.ToDictionary(q => q.QuestionId, q => $"{q.Title} — {q.ChallengeTitle}"));
                     TempData["ErrorMessage"] =
                         $"This image is used by {imageUsage.Count} question(s). Remove or replace it in those questions before deleting it.";
                     return RedirectToAction(nameof(Admin));

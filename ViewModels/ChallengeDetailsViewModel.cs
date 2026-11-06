@@ -4,6 +4,9 @@ namespace GamificationPlatform.ViewModels
 {
     public class ChallengeDetailsHistoryViewModel
     {
+        // Preserve the list the user opened this challenge from.
+        public bool FromMyChallenges { get; set; }
+
         public Challenge Challenge { get; set; } = default!;
 
         public List<ChallengeAttemptHistoryViewModel> Attempts

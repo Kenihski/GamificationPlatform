@@ -149,14 +149,14 @@ public class UserImageControllerTests
             Assert.Equal(!shouldDelete, controller.TempData.ContainsKey("ErrorMessage"));
             if (usedByQuestion)
             {
-                // The refusal identifies the challenge without including question titles.
+                // The refusal links to the exact question and identifies its challenge.
                 var error = controller.TempData["ErrorMessage"]?.ToString();
                 Assert.Contains("used by 1 question(s)", error);
                 var links = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(
-                    (string)controller.TempData["ImageUsageChallenges"]!);
+                    (string)controller.TempData["ImageUsageQuestions"]!);
                 Assert.NotNull(links);
-                Assert.Equal("Affected", Assert.Single(links).Value);
-                Assert.True(links.ContainsKey(challenge.ChallengeId));
+                Assert.Equal("Identify the diagram — Affected", Assert.Single(links).Value);
+                Assert.True(links.ContainsKey(question.QuestionId));
                 Assert.DoesNotContain("Identify the diagram", error);
             }
             if (defaultImage)

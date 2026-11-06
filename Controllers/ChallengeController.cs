@@ -340,7 +340,8 @@ namespace GamificationPlatform.Controllers
         // Shows challenge details and attempt history.
         public async Task<IActionResult> Details(
             int id,
-            bool showQuestions = false)
+            bool showQuestions = false,
+            bool fromMyChallenges = false)
         {
             var challenge =
                 await _challengeRepository.GetChallengeWithQuestionsAsync(id);
@@ -357,7 +358,8 @@ namespace GamificationPlatform.Controllers
             {
                 Challenge = challenge,
                 MaxPoints = maxPoints,
-                ShowQuestions = showQuestions
+                ShowQuestions = showQuestions,
+                FromMyChallenges = fromMyChallenges
             };
 
             if (User.Identity?.IsAuthenticated == true)
