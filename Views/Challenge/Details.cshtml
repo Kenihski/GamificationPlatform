@@ -252,18 +252,30 @@
                                             }
                                         </td>
                                         <td>
-                                            @foreach (var option in question.Options)
+                                            @if (question.QuestionType == "ShortAnswer")
                                             {
-                                                <div>
-                                                    @if (option.IsCorrect)
-                                                    {
-                                                        <span>✓ <strong>@option.Text</strong></span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span>○ @option.Text</span>
-                                                    }
-                                                </div>
+                                                @foreach (var acceptedAnswer in question.AcceptedAnswers)
+                                                {
+                                                    <div>
+                                                        <span>✓ <strong>@acceptedAnswer.Text</strong></span>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @foreach (var option in question.Options)
+                                                {
+                                                    <div>
+                                                        @if (option.IsCorrect)
+                                                        {
+                                                            <span>✓ <strong>@option.Text</strong></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>○ @option.Text</span>
+                                                        }
+                                                    </div>
+                                                }
                                             }
                                         </td>
                                         <td>@question.Points</td>
