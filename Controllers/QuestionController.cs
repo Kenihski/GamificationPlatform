@@ -427,6 +427,14 @@ namespace GamificationPlatform.Controllers
 
             ValidateAnswers(model);
 
+            // Only actual changes should reset attempts. A new upload always counts as a change.
+            if (ModelState.IsValid && imageUpload == null && !HasQuestionChanges(question, model))
+            {
+                TempData["SuccessMessage"] = "No changes were made.";
+                return RedirectToAction("Details", "Challenge",
+                    new { id = question.ChallengeId, showQuestions = true });
+            }
+
             if (ModelState.IsValid && imageUpload != null)
             {
                 var result =
@@ -777,6 +785,34 @@ namespace GamificationPlatform.Controllers
                     "AcceptedAnswers",
                     "Accepted answers must be different.");
             }
+        }
+
+        // Compare saved values, treating empty optional fields and browser line endings alike.
+        private static bool HasQuestionChanges(Question question, QuestionFormViewModel model)
+        {
+            var submitted = model.Question;
+            if (question.Title != submitted.Title ||
+                (question.Description ?? "").ReplaceLineEndings("\n") != (submitted.Description ?? "").ReplaceLineEndings("\n") ||
+                (question.Explanation ?? "").ReplaceLineEndings("\n") != (submitted.Explanation ?? "").ReplaceLineEndings("\n") ||
+                question.Points != submitted.Points ||
+                (question.ImageUrl ?? "") != (submitted.ImageUrl ?? "") ||
+                question.QuestionType != submitted.QuestionType)
+            {
+                return true;
+            }
+
+            // Reuse the saving rules for trimming answers and ignoring unused answer fields.
+            var proposedAnswers = new Question();
+            if (submitted.QuestionType == "ShortAnswer")
+            {
+                AddAcceptedAnswers(proposedAnswers, model.AcceptedAnswers);
+                return !question.AcceptedAnswers.Select(answer => answer.Text)
+                    .SequenceEqual(proposedAnswers.AcceptedAnswers.Select(answer => answer.Text));
+            }
+
+            AddAnswerOptions(proposedAnswers, model.Options, model.CorrectOptions);
+            return !question.Options.Select(option => (option.Text, option.IsCorrect))
+                .SequenceEqual(proposedAnswers.Options.Select(option => (option.Text, option.IsCorrect)));
         }
 
         // Adds answer options for choice questions.
