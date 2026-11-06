@@ -31,6 +31,7 @@
 
         <input asp-for="Username"
                autocomplete="username"
+               autofocus="@(ViewData.ModelState.IsValid ? "autofocus" : null)"
                class="form-control" />
 
         <span asp-validation-for="Username"

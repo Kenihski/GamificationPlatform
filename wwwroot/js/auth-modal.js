@@ -2,6 +2,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.getElementById("modalLoginForm");
     const loginError = document.getElementById("modalLoginError");
+    const loginModal = document.getElementById("loginModal");
+
+    // Wait until Bootstrap has opened the dialog and activated its focus handling.
+    if (loginModal) {
+        loginModal.addEventListener("shown.bs.modal", function () {
+            document.getElementById("modalLoginUsername")?.focus();
+        });
+    }
 
     const registerForm = document.getElementById("modalRegisterForm");
     const registerError = document.getElementById("modalRegisterError");

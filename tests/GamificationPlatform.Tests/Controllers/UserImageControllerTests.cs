@@ -62,15 +62,19 @@ public class UserImageControllerTests
             .DeleteImageAsync(Arg.Any<UserImage>());
     }
 
-    // Check both deletion routes, missing fallback files and protection of default image.
+    // Check both deletion routes, question image protection and fallback protection.
     [Theory]
-    [InlineData(false, true, false)]
-    [InlineData(true, true, false)]
-    [InlineData(false, false, false)]
-    [InlineData(true, false, false)]
-    [InlineData(true, true, true)]
-    public async Task Delete_ReplacesReferencesOrKeepsImageWhenFallbackIsUnavailable(
-        bool defaultImage, bool fallbackAvailable, bool deleteFallback)
+    [InlineData(false, true, false, false, true)]
+    [InlineData(true, true, false, false, true)]
+    [InlineData(false, false, false, false, true)]
+    [InlineData(true, false, false, false, true)]
+    [InlineData(true, true, true, false, true)]
+    [InlineData(false, true, false, true, true)]
+    [InlineData(true, true, false, true, true)]
+    [InlineData(false, true, false, false, false)]
+    [InlineData(true, true, false, false, false)]
+    public async Task Delete_UsesChallengeFallbackOrPreservesProtectedImage(
+        bool defaultImage, bool fallbackAvailable, bool deleteFallback, bool usedByQuestion, bool usedByChallenge)
     {
         // Arrange: use an isolated in-memory database and temporary image files.
         using var connection = new SqliteConnection("Data Source=:memory:;Foreign Keys=False");
@@ -98,8 +102,8 @@ public class UserImageControllerTests
                 new DefaultImage { Name = "Example", ImageUrl = deletedUrl };
             if (defaultImage && !deleteFallback) context.DefaultImages.Add(targetDefault);
 
-            var challenge = new Challenge { Title = "Affected", ImageUrl = deletedUrl };
-            var question = new Question { Title = "Affected", ImageUrl = deletedUrl, Challenge = challenge };
+            var challenge = new Challenge { Title = "Affected", ImageUrl = usedByChallenge ? deletedUrl : "/images/other.png" };
+            var question = new Question { Title = "Identify the diagram", ImageUrl = usedByQuestion ? deletedUrl : string.Empty, Challenge = challenge };
             var unaffected = new Challenge { Title = "Unchanged", ImageUrl = "/images/other.png" };
             context.AddRange(challenge, question, unaffected);
             await context.SaveChangesAsync();
@@ -113,19 +117,48 @@ public class UserImageControllerTests
             controller.TempData = new TempDataDictionary(
                 controller.HttpContext, Substitute.For<ITempDataProvider>());
 
-            // Act: delete the selected image without touching the project's database.
-            if (defaultImage) await controller.DeleteDefaultImage(targetDefault.DefaultImageId);
-            else await controller.Delete(12, null);
+            controller.Url = Substitute.For<IUrlHelper>();
+            controller.Url.Action(Arg.Any<Microsoft.AspNetCore.Mvc.Routing.UrlActionContext>())
+                .Returns("/UserImage");
 
-            // Assert: persisted references change together, or deletion is safely refused.
-            var shouldDelete = fallbackAvailable && !deleteFallback;
+            // An allowed deletion must first show its actual impact without deleting anything.
+            if (fallbackAvailable && !deleteFallback && !usedByQuestion)
+            {
+                var preview = defaultImage
+                    ? await controller.DeleteDefaultImage(targetDefault.DefaultImageId)
+                    : await controller.Delete(12, null);
+                var view = Assert.IsType<ViewResult>(preview);
+                var model = Assert.IsType<GamificationPlatform.ViewModels.DeleteImageViewModel>(view.Model);
+                Assert.Equal(usedByChallenge ? 1 : 0, model.Challenges.Count);
+                Assert.True(File.Exists(deletedPath));
+                await repository.DidNotReceive().DeleteImageAsync(userImage);
+            }
+
+            // Act: confirm deletion without touching the project's database.
+            if (defaultImage) await controller.DeleteDefaultImage(targetDefault.DefaultImageId, confirmed: true);
+            else await controller.Delete(12, null, confirmed: true);
+
+            // Assert: images used by questions stay intact; otherwise challenges receive the fallback.
+            var shouldDelete = fallbackAvailable && !deleteFallback && !usedByQuestion;
             await context.Entry(challenge).ReloadAsync();
             await context.Entry(question).ReloadAsync();
-            Assert.Equal(shouldDelete ? fallbackUrl : deletedUrl, challenge.ImageUrl);
-            Assert.Equal(shouldDelete ? fallbackUrl : deletedUrl, question.ImageUrl);
+            Assert.Equal(usedByChallenge ? (shouldDelete ? fallbackUrl : deletedUrl) : "/images/other.png", challenge.ImageUrl);
+            Assert.Equal(usedByQuestion ? deletedUrl : string.Empty, question.ImageUrl);
             Assert.Equal("/images/other.png", (await context.Challenges.FindAsync(unaffected.ChallengeId))!.ImageUrl);
             Assert.Equal(!shouldDelete, File.Exists(deletedPath));
             Assert.Equal(!shouldDelete, controller.TempData.ContainsKey("ErrorMessage"));
+            if (usedByQuestion)
+            {
+                // The refusal identifies the challenge without including question titles.
+                var error = controller.TempData["ErrorMessage"]?.ToString();
+                Assert.Contains("used by 1 question(s)", error);
+                var links = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(
+                    (string)controller.TempData["ImageUsageChallenges"]!);
+                Assert.NotNull(links);
+                Assert.Equal("Affected", Assert.Single(links).Value);
+                Assert.True(links.ContainsKey(challenge.ChallengeId));
+                Assert.DoesNotContain("Identify the diagram", error);
+            }
             if (defaultImage)
                 Assert.Equal(!shouldDelete, await context.DefaultImages.AnyAsync(i => i.DefaultImageId == targetDefault.DefaultImageId));
             else

@@ -43,6 +43,8 @@
 <div class="management-page my-4">
     <h1 class="mb-4">Update Question</h1>
 
+    <partial name="_FeedbackMessages" />
+
     <div class="card border-warning">
         <div class="card-body">
 
@@ -284,18 +286,12 @@
                             @foreach (var image in myImages)
                             {
                                 <option value="@image.ImageUrl"
-                                        data-image-id="@image.UserImageId"
                                         selected="@(image.ImageUrl == currentImage)">
                                     @image.FileName
                                 </option>
                             }
                         </select>
 
-                        <button type="button"
-                                id="removeImageButton"
-                                class="btn btn-outline-danger btn-sm image-selection-hidden">
-                            Delete image from library
-                        </button>
                     </div>
 
                     @* Default Images *@

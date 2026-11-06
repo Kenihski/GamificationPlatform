@@ -317,9 +317,15 @@ main a:not(.btn):not(.home-feature-link):not(.dropdown-item):hover {
 }
 
 .alert-danger {
+    padding: 0.75rem 1rem;
     background: #421b1b;
     border-color: var(--danger-border);
     color: #fff1ef;
+}
+
+.alert-danger ul {
+    margin-block: 0;
+    padding-inline-start: 1.25rem;
 }
 
 .alert-info {

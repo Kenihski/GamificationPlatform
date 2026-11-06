@@ -151,7 +151,7 @@ namespace GamificationPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(
             int id,
-            string? returnUrl)
+            string? returnUrl, bool confirmed = false)
         {
             var image = await _imageRepository.GetImageByIdAsync(id);
 
@@ -182,18 +182,38 @@ namespace GamificationPlatform.Controllers
                     .Where(c => c.ImageUrl == image.ImageUrl)
                     .ToListAsync();
 
-                var questions = await _context.Questions
+                // A question may depend on its image to make sense, so preserve images in use.
+                var imageUsage = await _context.Questions
                     .Where(q => q.ImageUrl == image.ImageUrl)
+                    .OrderBy(q => q.Challenge.Title)
+                    .Select(q => new { q.ChallengeId, ChallengeTitle = q.Challenge.Title })
                     .ToListAsync();
+                if (imageUsage.Count > 0)
+                {
+                    // Pass structured data so Razor can render safe, descriptive challenge links.
+                    TempData["ImageUsageChallenges"] = System.Text.Json.JsonSerializer.Serialize(
+                        imageUsage.Distinct().ToDictionary(q => q.ChallengeId, q => q.ChallengeTitle));
+                    TempData["ErrorMessage"] =
+                        $"This image is used by {imageUsage.Count} question(s). Remove or replace it in those questions before deleting it.";
+                    return RedirectAfterDelete(returnUrl);
+                }
 
+                // Show the actual consequences before any data is changed.
+                if (!confirmed)
+                {
+                    return View("ConfirmDelete", new DeleteImageViewModel
+                    {
+                        ImageId = id,
+                        ImageName = image.FileName,
+                        ImageUrl = image.ImageUrl,
+                        ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                            ? returnUrl : Url.Action(nameof(Index))!,
+                        Challenges = challenges
+                    });
+                }
                 foreach (var challenge in challenges)
                 {
                     challenge.ImageUrl = fallbackImage.ImageUrl;
-                }
-
-                foreach (var question in questions)
-                {
-                    question.ImageUrl = fallbackImage.ImageUrl;
                 }
 
                 await _context.SaveChangesAsync();
@@ -447,11 +467,11 @@ namespace GamificationPlatform.Controllers
         }
 
         // Deletes an image from the shared library.
-        // Challenges and questions using it receive Question 1 as a fallback.
+        // Images used by questions cannot be deleted; challenges receive Question 1 as a fallback.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteDefaultImage(int id)
+        public async Task<IActionResult> DeleteDefaultImage(int id, bool confirmed = false)
         {
             var image = await _context.DefaultImages.FindAsync(id);
 
@@ -483,18 +503,38 @@ namespace GamificationPlatform.Controllers
                     .Where(c => c.ImageUrl == image.ImageUrl)
                     .ToListAsync();
 
-                var questions = await _context.Questions
+                // A question may depend on its image to make sense, so preserve images in use.
+                var imageUsage = await _context.Questions
                     .Where(q => q.ImageUrl == image.ImageUrl)
+                    .OrderBy(q => q.Challenge.Title)
+                    .Select(q => new { q.ChallengeId, ChallengeTitle = q.Challenge.Title })
                     .ToListAsync();
+                if (imageUsage.Count > 0)
+                {
+                    // Pass structured data so Razor can render safe, descriptive challenge links.
+                    TempData["ImageUsageChallenges"] = System.Text.Json.JsonSerializer.Serialize(
+                        imageUsage.Distinct().ToDictionary(q => q.ChallengeId, q => q.ChallengeTitle));
+                    TempData["ErrorMessage"] =
+                        $"This image is used by {imageUsage.Count} question(s). Remove or replace it in those questions before deleting it.";
+                    return RedirectToAction(nameof(Admin));
+                }
 
+                // Shared confirmation page for default and uploaded library images.
+                if (!confirmed)
+                {
+                    return View("ConfirmDelete", new DeleteImageViewModel
+                    {
+                        ImageId = id,
+                        ImageName = image.Name,
+                        ImageUrl = image.ImageUrl,
+                        IsDefaultImage = true,
+                        ReturnUrl = Url.Action(nameof(Admin))!,
+                        Challenges = challenges
+                    });
+                }
                 foreach (var challenge in challenges)
                 {
                     challenge.ImageUrl = fallbackImage.ImageUrl;
-                }
-
-                foreach (var question in questions)
-                {
-                    question.ImageUrl = fallbackImage.ImageUrl;
                 }
 
                 _context.DefaultImages.Remove(image);

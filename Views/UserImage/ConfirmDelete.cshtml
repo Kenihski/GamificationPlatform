@@ -1,0 +1,39 @@
+@model GamificationPlatform.ViewModels.DeleteImageViewModel
+@{
+    ViewData["Title"] = "Delete Image";
+}
+
+<div class="management-page my-4">
+    <h1 class="mb-4">Delete Image</h1>
+    <div class="card border-danger">
+        <div class="card-body">
+            <h2 class="h4 text-break">@Model.ImageName</h2>
+            <img src="@Model.ImageUrl" alt="" class="img-fluid rounded mb-3 image-delete-preview" />
+            <div class="alert alert-danger">
+                <p class="mb-0">Are you sure you want to permanently delete this image? This cannot be undone.</p>
+                @if (Model.Challenges.Count > 0)
+                {
+                    <p class="mt-2 mb-1">This image is used as the challenge image for the following challenges. Confirming deletion will replace it with Question 1 in each of them:</p>
+                    <ul>
+                        @foreach (var challenge in Model.Challenges)
+                        {
+                            <li>
+                                <a asp-controller="Challenge" asp-action="Details" asp-route-id="@challenge.ChallengeId">
+                                    @challenge.Title (challenge #@challenge.ChallengeId)
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+            <form asp-controller="UserImage"
+                  asp-action="@(Model.IsDefaultImage ? "DeleteDefaultImage" : "Delete")" method="post">
+                <input type="hidden" name="id" value="@Model.ImageId" />
+                <input type="hidden" name="confirmed" value="true" />
+                <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                <button type="submit" class="btn btn-outline-danger">Confirm deletion</button>
+                <a href="@Model.ReturnUrl" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

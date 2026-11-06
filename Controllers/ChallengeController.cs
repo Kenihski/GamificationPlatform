@@ -475,7 +475,8 @@ namespace GamificationPlatform.Controllers
 
             await LoadImagesAsync(userId);
 
-            return View();
+            // Use the model defaults, including answer review, in the new challenge form.
+            return View(new Challenge());
         }
 
         // Creates a new challenge.
@@ -685,9 +686,19 @@ namespace GamificationPlatform.Controllers
             // Navigation property is not received from the form.
             ModelState.Remove("CreatedByUser");
 
-            // ImageUrl may be empty when uploading a new image
-            // or when the user chooses No image.
+            // Use the default when no existing image or upload was supplied.
             ModelState.Remove("ImageUrl");
+            if (imageUpload == null && string.IsNullOrWhiteSpace(challenge.ImageUrl))
+            {
+                var defaultImages = await _imageService.GetDefaultImagesAsync();
+                challenge.ImageUrl = defaultImages
+                    .FirstOrDefault(image => image.Name == "Question 1")?.ImageUrl ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(challenge.ImageUrl))
+                {
+                    ModelState.AddModelError("ImageUrl", "The default image is unavailable. Please choose another image.");
+                }
+            }
 
             if (imageUpload != null &&
                 !string.IsNullOrWhiteSpace(challenge.ImageUrl))

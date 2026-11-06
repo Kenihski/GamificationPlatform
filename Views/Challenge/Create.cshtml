@@ -19,6 +19,8 @@
 
 <h1 class="h2 my-4">Create New Challenge</h1>
 
+<partial name="_FeedbackMessages" />
+
 <form asp-controller="Challenge"
       asp-action="Create"
       method="post"
@@ -166,21 +168,13 @@
 
                 @foreach (var image in myImages)
                 {
-                    <option value="@image.ImageUrl"
-                            data-image-id="@image.UserImageId" selected="@(image.ImageUrl == selectedImage)">
+                    <option value="@image.ImageUrl" selected="@(image.ImageUrl == selectedImage)">
                         @image.FileName
                     </option>
                 }
 
             </select>
 
-            <div class="text-end mt-1">
-                <button type="button"
-                        id="removeImageButton"
-                        class="btn btn-outline-danger btn-sm image-selection-hidden">
-                    Delete image from library
-                </button>
-            </div>
 
         </div>
 

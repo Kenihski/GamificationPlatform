@@ -31,14 +31,11 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("defaultImageSelect") ||
         document.getElementById("defaultImagesSelect");
 
-    const removeImageButton =
-        document.getElementById("removeImageButton");
-
     if (!imageSelect || !imagePreview) {
         return;
     }
 
-    // Only Create Challenge opts into a fallback image.
+    // Forms provide the default used when the image selection is empty.
     const fallbackImageUrl = imageSelect.dataset.defaultImage || "";
     const imageSelectionStatus = document.getElementById("imageSelectionStatus");
 
@@ -76,19 +73,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Remember the original image on Update.
     const originalImageUrl = imageSelect.value;
-
-    // Shows Remove only for a selected personal image.
-    function updateRemoveButton() {
-
-        if (!removeImageButton || !myImageSelect) {
-            return;
-        }
-
-        removeImageButton.style.display =
-            imageCategory.value === "my" && myImageSelect.value
-                ? "inline-block"
-                : "none";
-    }
 
     // Shows the selected image category.
     function updateImageCategory() {
@@ -158,7 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
             updateImagePreview("");
         }
 
-        updateRemoveButton();
     }
 
     // Changes between image categories.
@@ -179,7 +162,6 @@ document.addEventListener("DOMContentLoaded", function () {
             imageSelect.value = myImageSelect.value;
 
             updateImagePreview(myImageSelect.value);
-            updateRemoveButton();
         });
     }
 
@@ -251,100 +233,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Deletes the library image and replaces its references with the default image.
-    if (removeImageButton && myImageSelect) {
-
-        removeImageButton.addEventListener("click", async function () {
-
-            const selectedOption =
-                myImageSelect.options[myImageSelect.selectedIndex];
-
-            if (!selectedOption || !selectedOption.value) {
-                return;
-            }
-
-            const imageId = selectedOption.dataset.imageId;
-
-            if (!imageId) {
-                alert("Could not identify the selected image.");
-                return;
-            }
-
-            const confirmed = confirm(
-                "Permanently delete this image from your library? " +
-                "Every challenge and question using it will use the Question 1 default image instead. " +
-                "This cannot be undone. The page will reload and any unsaved changes " +
-                "in this form will be lost."
-            );
-
-            if (!confirmed) {
-                return;
-            }
-
-            // Read the antiforgery token from the form.
-            const token = document.querySelector(
-                'input[name="__RequestVerificationToken"]'
-            );
-
-            if (!token) {
-                alert("Could not verify the request.");
-                return;
-            }
-
-            removeImageButton.disabled = true;
-
-            try {
-
-                const formData = new FormData();
-
-                formData.append("id", imageId);
-
-                formData.append(
-                    "__RequestVerificationToken",
-                    token.value
-                );
-
-                const response = await fetch(
-                    "/UserImage/Delete",
-                    {
-                        method: "POST",
-                        body: formData,
-                        credentials: "same-origin",
-                        redirect: "manual"
-                    }
-                );
-
-                // The controller redirects after deletion.
-                // Reload to retrieve the updated image list.
-                if (response.status === 0 ||
-                    response.type === "opaqueredirect" ||
-                    response.status === 302 ||
-                    response.status === 303) {
-
-                    window.location.reload();
-                    return;
-                }
-
-                if (!response.ok) {
-                    alert("Could not delete the image.");
-                    return;
-                }
-
-                window.location.reload();
-            }
-            catch (error) {
-
-                console.error("Image deletion failed:", error);
-
-                alert("Could not delete the image.");
-            }
-            finally {
-
-                removeImageButton.disabled = false;
-            }
-        });
-    }
-
     // Initialize without clearing an existing image on Update.
     function initializeImageSelector() {
 
@@ -372,8 +260,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // Keep the existing image URL on Update.
         updateImagePreview(originalImageUrl);
 
-        updateRemoveButton();
     }
 
     initializeImageSelector();
+
+    // Back/Forward may restore the selected option after the page has loaded.
+    window.addEventListener("pageshow", function () {
+        setTimeout(updateImageCategory, 0);
+    });
 });

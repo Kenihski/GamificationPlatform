@@ -15,6 +15,8 @@
 
 <h1 class="h2">Create New Question</h1>
 
+<partial name="_FeedbackMessages" />
+
 <div class="alert alert-warning">
     <strong>Note:</strong>
     Adding a new question will reset all previous attempts
@@ -239,18 +241,12 @@
 
                 @foreach (var image in myImages)
                 {
-                    <option value="@image.ImageUrl"
-                            data-image-id="@image.UserImageId">
+                    <option value="@image.ImageUrl">
                         @image.FileName
                     </option>
                 }
             </select>
 
-            <button type="button"
-                    id="removeImageButton"
-                    class="btn btn-outline-danger btn-sm image-selection-hidden">
-                Delete image from library
-            </button>
         </div>
 
         @* Default Images *@
