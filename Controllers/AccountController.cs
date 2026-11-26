@@ -123,14 +123,17 @@ namespace GamificationPlatform.Controllers
                 });
             }
 
-            // A full-page registration returns home and opens the login modal once.
-            TempData["RegisteredUsername"] = user.UserName;
-            TempData["RegistrationMessage"] = registrationMessage;
+            // Protected-page registration must return to the full login page.
             if (safeReturnUrl != null)
             {
-                TempData["RegistrationReturnUrl"] = safeReturnUrl;
+                TempData["SuccessMessage"] = registrationMessage;
+                TempData["LoginUsername"] = user.UserName;
+                return RedirectToAction(nameof(Login), new { returnUrl = safeReturnUrl });
             }
 
+            // Ordinary full-page registration opens the login modal on home.
+            TempData["RegisteredUsername"] = user.UserName;
+            TempData["RegistrationMessage"] = registrationMessage;
             return RedirectToAction("Index", "Home");
         }
 
@@ -141,7 +144,8 @@ namespace GamificationPlatform.Controllers
         {
             return View(new LoginViewModel
             {
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
+                Username = TempData["LoginUsername"] as string ?? string.Empty
             });
         }
 
