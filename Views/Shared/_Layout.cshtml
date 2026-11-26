@@ -377,9 +377,17 @@
     <!-- Login and Register modals -->
     @if (User.Identity?.IsAuthenticated != true)
     {
+        @{
+            var registeredUsername = TempData["RegisteredUsername"] as string;
+            var registrationMessage = TempData["RegistrationMessage"] as string;
+            var registrationReturnUrl = TempData["RegistrationReturnUrl"] as string;
+        }
         <!-- Login modal -->
         <div class="modal fade"
              id="loginModal"
+             data-registered-username="@registeredUsername"
+             data-registration-message="@registrationMessage"
+             data-registration-return-url="@registrationReturnUrl"
              tabindex="-1"
              aria-labelledby="loginModalLabel"
              aria-hidden="true">
@@ -410,6 +418,9 @@
                             <input type="hidden"
                                    name="isModal"
                                    value="true" />
+
+                            <input type="hidden" name="ReturnUrl" id="modalLoginReturnUrl" />
+                            <div id="modalLoginSuccess" class="alert alert-success d-none" role="status"></div>
 
                             <div id="modalLoginError"
                                  class="alert alert-danger d-none"

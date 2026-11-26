@@ -13,6 +13,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const registerForm = document.getElementById("modalRegisterForm");
     const registerError = document.getElementById("modalRegisterError");
+    const registerModal = document.getElementById("registerModal");
+    const loginSuccess = document.getElementById("modalLoginSuccess");
+
+    function openLoginAfterRegistration(username, message, returnUrl) {
+        if (!loginModal || !loginForm || !loginSuccess) return;
+        loginForm.reset();
+        document.getElementById("modalLoginUsername").value = username || "";
+        document.getElementById("modalLoginReturnUrl").value = returnUrl || "";
+        loginError.textContent = "";
+        loginError.classList.add("d-none");
+        loginSuccess.textContent = message;
+        loginSuccess.classList.remove("d-none");
+        const showLogin = () => bootstrap.Modal.getOrCreateInstance(loginModal).show();
+        if (registerModal?.classList.contains("show")) {
+            registerModal.addEventListener("hidden.bs.modal", showLogin, { once: true });
+            bootstrap.Modal.getOrCreateInstance(registerModal).hide();
+        } else {
+            showLogin();
+        }
+    }
+
+    loginModal?.addEventListener("hidden.bs.modal", function () {
+        loginSuccess?.classList.add("d-none");
+        if (loginSuccess) loginSuccess.textContent = "";
+        loginForm?.reset();
+    });
+
+    if (loginModal?.dataset.registrationMessage) {
+        openLoginAfterRegistration(
+            loginModal.dataset.registeredUsername,
+            loginModal.dataset.registrationMessage,
+            loginModal.dataset.registrationReturnUrl
+        );
+    }
 
     // Login modal
     if (loginForm && loginError) {
@@ -37,7 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (result.success) {
                     // Stay on the current page.
-                    window.location.reload();
+                    if (result.redirectUrl) window.location.assign(result.redirectUrl);
+                    else window.location.reload();
                 } else {
                     loginError.textContent =
                         result.message || "Login failed.";
@@ -77,16 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 const result = await response.json();
 
                 if (result.success) {
-                    // The server has stored the success notification for the login page.
-                    // Use the application's generated URL, preserving returnUrl.
-                    if (result.loginUrl) {
-                        window.location.assign(result.loginUrl);
-                    } else {
-                        registerError.textContent =
-                            "Registration succeeded, but the login page could not be opened.";
-                        registerError.classList.remove("d-none");
-                    registerError.focus();
-                    }
+                    registerForm.reset();
+                    openLoginAfterRegistration(result.username, result.message, result.returnUrl);
                 } else {
                     // Show validation errors inside the Register modal.
                     registerError.textContent =

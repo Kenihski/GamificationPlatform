@@ -108,27 +108,30 @@ namespace GamificationPlatform.Controllers
                 "User {UserId} registered successfully.",
                 user.Id);
 
-            // Show this message once after redirecting to the login page.
-            TempData["SuccessMessage"] =
+            var safeReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
+            const string registrationMessage =
                 "Registration successful! Your account has been created. You can now log in.";
 
-            // Both modal and full-page registration lead to the login page.
             if (isModal)
             {
                 return Json(new
                 {
                     success = true,
-                    loginUrl = Url.Action(nameof(Login), "Account", new { returnUrl })
+                    username = user.UserName,
+                    message = registrationMessage,
+                    returnUrl = safeReturnUrl
                 });
             }
 
-            // Registration does not automatically log in.
-            return RedirectToAction(
-                nameof(Login),
-                new
-                {
-                    returnUrl
-                });
+            // A full-page registration returns home and opens the login modal once.
+            TempData["RegisteredUsername"] = user.UserName;
+            TempData["RegistrationMessage"] = registrationMessage;
+            if (safeReturnUrl != null)
+            {
+                TempData["RegistrationReturnUrl"] = safeReturnUrl;
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         // Shows the login form.
@@ -214,7 +217,8 @@ namespace GamificationPlatform.Controllers
             {
                 return Json(new
                 {
-                    success = true
+                    success = true,
+                    redirectUrl = Url.IsLocalUrl(model.ReturnUrl) ? model.ReturnUrl : null
                 });
             }
 
