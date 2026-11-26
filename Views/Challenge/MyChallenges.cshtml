@@ -31,10 +31,7 @@ else
                     <th class="text-center">Max Points</th>
                     <th class="text-center">Status</th>
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <th class="text-center">Type</th>
-                    }
+                    <th class="text-center">Type</th>
 
                     <th>Actions</th>
                 </tr>
@@ -61,19 +58,16 @@ else
                             }
                         </td>
 
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <td class="text-center">
-                                @if (challenge.IsCore)
-                                {
-                                    <span class="featured-badge featured-badge-core challenge-table-badge">CORE</span>
-                                }
-                                else
-                                {
-                                    <span class="featured-badge featured-badge-community challenge-table-badge">COMMUNITY</span>
-                                }
-                            </td>
-                        }
+                        <td class="text-center">
+                            @if (challenge.IsCore)
+                            {
+                                <span class="featured-badge featured-badge-core challenge-table-badge">CORE</span>
+                            }
+                            else
+                            {
+                                <span class="featured-badge featured-badge-community challenge-table-badge">COMMUNITY</span>
+                            }
+                        </td>
 
                         <td>
                             <div class="d-flex flex-nowrap gap-1 align-items-center my-challenges-actions">
