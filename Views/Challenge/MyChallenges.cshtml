@@ -118,30 +118,14 @@ else
 
                                 @if (User.IsInRole("Admin"))
                                 {
-                                    @if (challenge.IsCore)
-                                    {
-                                        <form asp-controller="Challenge" asp-action="MakeCommunity"
-                                              asp-route-id="@challenge.ChallengeId" method="post">
-                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                            <button type="submit"
-                                                    class="btn btn-sm my-challenges-type-button featured-badge-community"
-                                                    title="Change challenge type to Community">
-                                                Community
-                                            </button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <form asp-controller="Challenge" asp-action="MakeCore"
-                                              asp-route-id="@challenge.ChallengeId" method="post">
-                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                            <button type="submit"
-                                                    class="btn btn-sm my-challenges-type-button featured-badge-core"
-                                                    title="Change challenge type to Core">
-                                                Core
-                                            </button>
-                                        </form>
-                                    }
+                                    <form asp-controller="Challenge" asp-action="ChangeType"
+                                          asp-route-id="@challenge.ChallengeId" method="post">
+                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-primary my-challenges-type-button">
+                                            Change Type
+                                        </button>
+                                    </form>
                                 }
                             </div>
                         </td>
