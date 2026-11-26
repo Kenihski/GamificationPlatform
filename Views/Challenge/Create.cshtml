@@ -20,240 +20,240 @@
 @* Form pages share the same centred width as Update and Delete. *@
 <div class="management-page">
 
-<h1 class="h2 my-4">Create New Challenge</h1>
+    <h1 class="h2 my-4">Create New Challenge</h1>
 
-<partial name="_FeedbackMessages" />
+    <partial name="_FeedbackMessages" />
 
-<form asp-controller="Challenge"
-      asp-action="Create"
-      method="post"
-      enctype="multipart/form-data">
+    <form asp-controller="Challenge"
+          asp-action="Create"
+          method="post"
+          enctype="multipart/form-data">
 
-    <div asp-validation-summary="All"
-         class="text-danger mb-3">
-    </div>
+        <div asp-validation-summary="All"
+             class="text-danger mb-3">
+        </div>
 
-    @if (User.IsInRole("Admin"))
-    {
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="form-group mb-3">
+                <label asp-for="IsCore" class="form-label">Challenge Type</label>
+                <select asp-for="IsCore" class="form-select" aria-describedby="challengeTypeHelp">
+                    <option value="false">Community</option>
+                    <option value="true">Core</option>
+                </select>
+                <small id="challengeTypeHelp" class="text-muted">
+                    You can change the type later.
+                </small>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Your challenge will be created as a Community challenge.</p>
+        }
+
         <div class="form-group mb-3">
-            <label asp-for="IsCore" class="form-label">Challenge Type</label>
-            <select asp-for="IsCore" class="form-select" aria-describedby="challengeTypeHelp">
-                <option value="false">Community</option>
-                <option value="true">Core</option>
+            <label asp-for="Title">
+                Title
+            </label>
+            <span class="text-danger">*</span>
+
+            <input asp-for="Title"
+                   class="form-control" />
+
+            <span asp-validation-for="Title"
+                  class="text-danger">
+            </span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Description">
+                Description
+            </label>
+            <span class="text-danger">*</span>
+
+            <input asp-for="Description"
+                   class="form-control" />
+
+            <span asp-validation-for="Description"
+                  class="text-danger">
+            </span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="TimeLimitMinutes">
+                Time Limit
+            </label>
+
+            <select asp-for="TimeLimitMinutes"
+                    class="form-select">
+
+                <option value="">Unlimited</option>
+                <option value="10">10 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">60 minutes</option>
+                <option value="90">90 minutes</option>
+                <option value="120">120 minutes</option>
+
             </select>
-            <small id="challengeTypeHelp" class="text-muted">
-                You can change the type later.
-            </small>
-        </div>
-    }
-    else
-    {
-        <p class="text-muted">Your challenge will be created as a Community challenge.</p>
-    }
 
-    <div class="form-group mb-3">
-        <label asp-for="Title">
-            Title
-        </label>
-        <span class="text-danger">*</span>
-
-        <input asp-for="Title"
-               class="form-control" />
-
-        <span asp-validation-for="Title"
-              class="text-danger">
-        </span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Description">
-            Description
-        </label>
-        <span class="text-danger">*</span>
-
-        <input asp-for="Description"
-               class="form-control" />
-
-        <span asp-validation-for="Description"
-              class="text-danger">
-        </span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="TimeLimitMinutes">
-            Time Limit
-        </label>
-
-        <select asp-for="TimeLimitMinutes"
-                class="form-select">
-
-            <option value="">Unlimited</option>
-            <option value="10">10 minutes</option>
-            <option value="20">20 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="60">60 minutes</option>
-            <option value="90">90 minutes</option>
-            <option value="120">120 minutes</option>
-
-        </select>
-
-        <span asp-validation-for="TimeLimitMinutes"
-              class="text-danger">
-        </span>
-    </div>
-
-    <!-- Result settings -->
-    <div class="form-group mb-3">
-        <div class="form-check">
-            <input asp-for="ShowAnswersAfterCompletion"
-                   class="form-check-input" />
-
-            <label asp-for="ShowAnswersAfterCompletion"
-                   class="form-check-label">
-                Show answers after completion
-            </label>
+            <span asp-validation-for="TimeLimitMinutes"
+                  class="text-danger">
+            </span>
         </div>
 
-        <small class="text-muted">
-            Allow participants to review their answers,
-            correct answers and explanations after completing
-            the challenge.
-        </small>
-    </div>
+        <!-- Result settings -->
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input asp-for="ShowAnswersAfterCompletion"
+                       class="form-check-input" />
 
-    <!-- Image selection -->
-    <div class="form-group mb-4">
-
-        <label for="imageCategory">
-            Image
-        </label>
-
-        <select id="imageCategory" data-validation-for="ImageUrl"
-                class="form-select" aria-describedby="imageHelp">
-
-            <option value="upload">
-                Upload new image...
-            </option>
-
-            <option value="my" selected="@(selectedCategory == "my")">
-                My Images
-            </option>
-
-            <option value="default" selected="@(selectedCategory == "default")">
-                Default Images
-            </option>
-
-        </select>
-
-        <!-- Upload new image -->
-        <p id="imageHelp" class="text-muted mt-2">
-            Question 1 is the default image. You can choose another default image,
-            select one of your images, or upload a new one.
-            If you leave the image selection empty, the default will be used.
-        </p>
-        <p id="imageSelectionStatus" role="status" class="text-muted"></p>
-
-        <div id="uploadImageSection"
-             class="mt-3 image-selection-hidden">
-
-            <label for="imageUpload">
-                Choose image
-            </label>
-
-            <input type="file"
-                   id="imageUpload"
-                   name="imageUpload"
-                   class="form-control"
-                   accept=".jpg,.jpeg,.png,.webp" />
+                <label asp-for="ShowAnswersAfterCompletion"
+                       class="form-check-label">
+                    Show answers after completion
+                </label>
+            </div>
 
             <small class="text-muted">
-                JPG, PNG or WebP. Maximum 5 MB.
+                Allow participants to review their answers,
+                correct answers and explanations after completing
+                the challenge.
             </small>
-
         </div>
 
-        <!-- My Images -->
-        <div id="myImagesSection"
-             class="mt-3 image-selection-hidden">
+        <!-- Image selection -->
+        <div class="form-group mb-4">
 
-            <label for="myImageSelect">
-                My Images
+            <label for="imageCategory">
+                Image
             </label>
 
-            <select id="myImageSelect"
-                    class="form-select">
+            <select id="imageCategory" data-validation-for="ImageUrl"
+                    class="form-select" aria-describedby="imageHelp">
 
-                <option value="">
-                    -- Select your image --
+                <option value="upload">
+                    Upload new image...
                 </option>
 
-                @foreach (var image in myImages)
-                {
-                    <option value="@image.ImageUrl"
-                            selected="@(image.ImageUrl == selectedImage)">
-                        @image.FileName
-                    </option>
-                }
+                <option value="my" selected="@(selectedCategory == "my")">
+                    My Images
+                </option>
+
+                <option value="default" selected="@(selectedCategory == "default")">
+                    Default Images
+                </option>
 
             </select>
 
+            <!-- Upload new image -->
+            <p id="imageHelp" class="text-muted mt-2">
+                Question 1 is the default image. You can choose another default image,
+                select one of your images, or upload a new one.
+                If you leave the image selection empty, the default will be used.
+            </p>
+            <p id="imageSelectionStatus" role="status" class="text-muted"></p>
 
-        </div>
+            <div id="uploadImageSection"
+                 class="mt-3 image-selection-hidden">
 
-        <!-- Default Images -->
-        <div id="defaultImagesSection"
-             class="mt-3 image-selection-hidden">
+                <label for="imageUpload">
+                    Choose image
+                </label>
 
-            <label for="defaultImageSelect">
-                Default Images
-            </label>
+                <input type="file"
+                       id="imageUpload"
+                       name="imageUpload"
+                       class="form-control"
+                       accept=".jpg,.jpeg,.png,.webp" />
 
-            <select id="defaultImageSelect"
-                    class="form-select">
+                <small class="text-muted">
+                    JPG, PNG or WebP. Maximum 5 MB.
+                </small>
 
-                @foreach (var image in defaultImages)
-                {
-                    <option value="@image.ImageUrl" selected="@(image.ImageUrl == selectedImage)">
-                        @image.Name
+            </div>
+
+            <!-- My Images -->
+            <div id="myImagesSection"
+                 class="mt-3 image-selection-hidden">
+
+                <label for="myImageSelect">
+                    My Images
+                </label>
+
+                <select id="myImageSelect"
+                        class="form-select">
+
+                    <option value="">
+                        -- Select your image --
                     </option>
-                }
 
-            </select>
+                    @foreach (var image in myImages)
+                    {
+                        <option value="@image.ImageUrl"
+                                selected="@(image.ImageUrl == selectedImage)">
+                            @image.FileName
+                        </option>
+                    }
+
+                </select>
+
+
+            </div>
+
+            <!-- Default Images -->
+            <div id="defaultImagesSection"
+                 class="mt-3 image-selection-hidden">
+
+                <label for="defaultImageSelect">
+                    Default Images
+                </label>
+
+                <select id="defaultImageSelect"
+                        class="form-select">
+
+                    @foreach (var image in defaultImages)
+                    {
+                        <option value="@image.ImageUrl" selected="@(image.ImageUrl == selectedImage)">
+                            @image.Name
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+            <!-- Selected image URL -->
+            <input asp-for="ImageUrl"
+                   type="hidden"
+                   id="imageSelect" value="@selectedImage"
+                   data-default-image="@fallbackImage?.ImageUrl" />
+
+            <span asp-validation-for="ImageUrl"
+                  class="text-danger">
+            </span>
+
+            <!-- Image preview -->
+            <div class="mt-3">
+                <img id="imagePreview"
+                     src="@selectedImage"
+                     alt="Selected challenge image preview"
+                     class="image-preview" />
+            </div>
 
         </div>
 
-        <!-- Selected image URL -->
-        <input asp-for="ImageUrl"
-               type="hidden"
-               id="imageSelect" value="@selectedImage"
-               data-default-image="@fallbackImage?.ImageUrl" />
+        <button type="submit"
+                class="btn btn-primary">
+            Create Challenge
+        </button>
 
-        <span asp-validation-for="ImageUrl"
-              class="text-danger">
-        </span>
+        <a asp-controller="Challenge"
+           asp-action="MyChallenges"
+           class="btn btn-outline-primary">
+            Cancel
+        </a>
 
-        <!-- Image preview -->
-        <div class="mt-3">
-            <img id="imagePreview"
-                 src="@selectedImage"
-                 alt="Selected challenge image preview"
-                 class="image-preview" />
-        </div>
-
-    </div>
-
-    <button type="submit"
-            class="btn btn-primary">
-        Create Challenge
-    </button>
-
-    <a asp-controller="Challenge"
-       asp-action="MyChallenges"
-       class="btn btn-outline-primary">
-        Cancel
-    </a>
-
-</form>
+    </form>
 
 </div>
 
