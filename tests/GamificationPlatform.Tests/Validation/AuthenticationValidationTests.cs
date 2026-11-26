@@ -7,14 +7,17 @@ namespace GamificationPlatform.Tests.Validation;
 public class AuthenticationValidationTests
 {
     [Theory]
-    [InlineData("", "example@example.com", "secret123", "secret123", false)]
-    [InlineData("ab", "example@example.com", "secret123", "secret123", false)]
-    [InlineData("   ", "example@example.com", "secret123", "secret123", false)]
-    [InlineData("newuser", "not-an-email", "secret123", "secret123", false)]
+    [InlineData("", "example@example.com", "Secret123", "Secret123", false)]
+    [InlineData("ab", "example@example.com", "Secret123", "Secret123", false)]
+    [InlineData("   ", "example@example.com", "Secret123", "Secret123", false)]
+    [InlineData("newuser", "not-an-email", "Secret123", "Secret123", false)]
     [InlineData("newuser", "example@example.com", "short", "short", false)]
-    [InlineData("newuser", "example@example.com", "secret123", "different", false)]
-    [InlineData("newuser", "example@example.com", "newuser", "newuser", false)]
-    [InlineData("newuser", "example@example.com", "secret123", "secret123", true)]
+    [InlineData("newuser", "example@example.com", "Secret123", "different", false)]
+    [InlineData("Newuser1", "example@example.com", "Newuser1", "Newuser1", false)]
+    [InlineData("newuser", "example@example.com", "Secret123", "Secret123", true)]
+    [InlineData("newuser", "example@example.com", "secret123", "secret123", false)]
+    [InlineData("newuser", "example@example.com", "Secretabc", "Secretabc", false)]
+    [InlineData("newuser", "example@example.com", "SECRET123", "SECRET123", true)]
     public void Register_WhenFieldsChange_ValidatesExpectedResult(
         string username, string email, string password,
         string confirmation, bool expectedValid)

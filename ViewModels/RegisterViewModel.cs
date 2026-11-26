@@ -23,8 +23,10 @@ namespace GamificationPlatform.ViewModels
         [StringLength(
             100,
             MinimumLength = 6,
-            ErrorMessage = "Password must be at least 6 characters long.")]
+            ErrorMessage = "Password must be between 6 and 100 characters.")]
         [DataType(DataType.Password)]
+        [RegularExpression(@"(?s)^(?=.*[A-Z])(?=.*[0-9]).+$",
+            ErrorMessage = "Password must contain at least one uppercase letter and one number.")]
         public string Password { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Please confirm your password.")]

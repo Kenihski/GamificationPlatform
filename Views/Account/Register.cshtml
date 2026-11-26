@@ -31,12 +31,12 @@
                aria-describedby="registerUsernameHelp"
                class="form-control" />
 
+        <span asp-validation-for="Username"
+              class="text-danger"></span>
+
         <div id="registerUsernameHelp" class="form-text text-muted">
             Use 3 to 50 characters.
         </div>
-
-        <span asp-validation-for="Username"
-              class="text-danger"></span>
     </div>
 
     <div class="mb-3">
@@ -50,12 +50,12 @@
                aria-describedby="registerEmailHelp"
                class="form-control" />
 
+        <span asp-validation-for="Email"
+              class="text-danger"></span>
+
         <div id="registerEmailHelp" class="form-text text-muted">
             Enter your email address (up to 100 characters).
         </div>
-
-        <span asp-validation-for="Email"
-              class="text-danger"></span>
     </div>
 
     <div class="mb-3">
@@ -69,13 +69,13 @@
                aria-describedby="registerPasswordHelp"
                class="form-control" />
 
-        <div id="registerPasswordHelp" class="form-text text-muted">
-            Use 6 to 100 characters, including at least one lowercase letter and one number.
-            Your password must be different from your username.
-        </div>
-
         <span asp-validation-for="Password"
               class="text-danger"></span>
+
+        <div id="registerPasswordHelp" class="form-text text-muted">
+            Use 6 to 100 characters, including at least one uppercase letter and one number.
+            Your password must be different from your username.
+        </div>
     </div>
 
     <div class="mb-3">
@@ -89,12 +89,12 @@
                aria-describedby="registerConfirmPasswordHelp"
                class="form-control" />
 
+        <span asp-validation-for="ConfirmPassword"
+              class="text-danger"></span>
+
         <div id="registerConfirmPasswordHelp" class="form-text text-muted">
             Enter the same password again.
         </div>
-
-        <span asp-validation-for="ConfirmPassword"
-              class="text-danger"></span>
     </div>
 
     <button type="submit"

@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
             let fieldMessage = form.querySelector(`[data-valmsg-for="${field.name}"]`);
             if (!fieldMessage) {
                 fieldMessage = document.createElement("span");
-                fieldMessage.className = "text-danger";
-                field.parentElement.appendChild(fieldMessage);
+                fieldMessage.className = "text-danger d-block";
+                field.insertAdjacentElement("afterend", fieldMessage);
             }
             fieldMessage.id = fieldMessage.id || `${field.id}-error`;
             const descriptions = (field.getAttribute("aria-describedby") || "")
@@ -70,6 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 addError(password, "Password is required.");
             } else if (secret.length < 6 || secret.length > 100) {
                 addError(password, "Password must be between 6 and 100 characters.");
+            } else if (!/[A-Z]/.test(secret) || !/[0-9]/.test(secret)) {
+                addError(password, "Password must contain at least one uppercase letter and one number.");
             } else if (secret.toLowerCase() === name.toLowerCase()) {
                 addError(password, "Username and password cannot be the same.");
             }
