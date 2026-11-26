@@ -93,7 +93,7 @@
                     <span class="text-danger">*</span>
 
                     <select asp-for="Question.QuestionType"
-                            class="form-control"
+                            class="form-select"
                             id="questionType" aria-describedby="questionTypeHelp">
 
                         <option value="SingleChoice">
@@ -125,7 +125,7 @@
                     </label>
 
                     <select id="descriptionSelect" data-validation-for="Question.Description"
-                            class="form-control">
+                            class="form-select">
 
                         <option value="">
                             -- No description --
@@ -219,7 +219,7 @@
                     </label>
 
                     <select id="imageCategorySelect" data-validation-for="Question.ImageUrl"
-                            class="form-control">
+                            class="form-select">
 
                         <option value="none"
                                 selected="@(selectedCategory == "none")">
@@ -277,7 +277,7 @@
                         </label>
 
                         <select id="myImagesSelect"
-                                class="form-control">
+                                class="form-select">
 
                             <option value="">
                                 -- Select image --
@@ -303,7 +303,7 @@
                         </label>
 
                         <select id="defaultImagesSelect"
-                                class="form-control">
+                                class="form-select">
 
                             <option value="">
                                 -- Select image --

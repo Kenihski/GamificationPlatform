@@ -88,7 +88,7 @@
                     </label>
 
                     <select asp-for="TimeLimitMinutes"
-                            class="form-control">
+                            class="form-select">
 
                         <option value="">Unlimited</option>
                         <option value="10">10 minutes</option>
@@ -132,7 +132,7 @@
                     </label>
 
                     <select id="imageCategory" data-validation-for="ImageUrl"
-                            class="form-control">
+                            class="form-select">
 
 
                         @if (isOtherImage)
@@ -200,7 +200,7 @@
                         </label>
 
                         <select id="myImageSelect"
-                                class="form-control">
+                                class="form-select">
 
                             <option value="">
                                 -- Select your image --
@@ -237,7 +237,7 @@
                         </label>
 
                         <select id="defaultImageSelect"
-                                class="form-control">
+                                class="form-select">
 
                             <option value="">
                                 -- Select default image --

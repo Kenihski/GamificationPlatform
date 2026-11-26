@@ -17,6 +17,9 @@
         ? "my" : "default";
 }
 
+@* Form pages share the same centred width as Update and Delete. *@
+<div class="management-page">
+
 <h1 class="h2 my-4">Create New Challenge</h1>
 
 <partial name="_FeedbackMessages" />
@@ -34,12 +37,12 @@
     {
         <div class="form-group mb-3">
             <label asp-for="IsCore" class="form-label">Challenge Type</label>
-            <select asp-for="IsCore" class="form-control">
+            <select asp-for="IsCore" class="form-select" aria-describedby="challengeTypeHelp">
                 <option value="false">Community</option>
                 <option value="true">Core</option>
             </select>
-            <small class="text-muted">
-                You can change the type later for challenges you created.
+            <small id="challengeTypeHelp" class="text-muted">
+                You can change the type later.
             </small>
         </div>
     }
@@ -82,7 +85,7 @@
         </label>
 
         <select asp-for="TimeLimitMinutes"
-                class="form-control">
+                class="form-select">
 
             <option value="">Unlimited</option>
             <option value="10">10 minutes</option>
@@ -126,7 +129,7 @@
         </label>
 
         <select id="imageCategory" data-validation-for="ImageUrl"
-                class="form-control" aria-describedby="imageHelp">
+                class="form-select" aria-describedby="imageHelp">
 
             <option value="upload">
                 Upload new image...
@@ -178,7 +181,7 @@
             </label>
 
             <select id="myImageSelect"
-                    class="form-control">
+                    class="form-select">
 
                 <option value="">
                     -- Select your image --
@@ -206,7 +209,7 @@
             </label>
 
             <select id="defaultImageSelect"
-                    class="form-control">
+                    class="form-select">
 
                 @foreach (var image in defaultImages)
                 {
@@ -251,6 +254,8 @@
     </a>
 
 </form>
+
+</div>
 
 @section Scripts
 {

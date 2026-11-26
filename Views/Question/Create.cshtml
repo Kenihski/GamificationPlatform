@@ -13,6 +13,9 @@
         ?? new List<GamificationPlatform.Models.DefaultImage>();
 }
 
+@* Form pages share the same centred width as Update and Delete. *@
+<div class="management-page">
+
 <h1 class="h2">Create New Question</h1>
 
 <partial name="_FeedbackMessages" />
@@ -55,7 +58,7 @@
         <span class="text-danger">*</span>
 
         <select asp-for="Question.QuestionType"
-                class="form-control"
+                class="form-select"
                 id="questionType" aria-describedby="questionTypeHelp">
 
             <option value="SingleChoice">
@@ -87,7 +90,7 @@
         </label>
 
         <select id="descriptionSelect" data-validation-for="Question.Description"
-                class="form-control">
+                class="form-select">
 
             <option value="">
                 -- No description --
@@ -186,7 +189,7 @@
         </label>
 
         <select id="imageCategorySelect" data-validation-for="Question.ImageUrl"
-                class="form-control">
+                class="form-select">
 
             <option value="none">
                 No image
@@ -233,7 +236,7 @@
             </label>
 
             <select id="myImagesSelect"
-                    class="form-control">
+                    class="form-select">
 
                 <option value="">
                     -- Select image --
@@ -258,7 +261,7 @@
             </label>
 
             <select id="defaultImagesSelect"
-                    class="form-control">
+                    class="form-select">
 
                 <option value="">
                     -- Select image --
@@ -398,6 +401,8 @@
         Back to Challenge
     </a>
 </form>
+
+</div>
 
 @section Scripts
 {
