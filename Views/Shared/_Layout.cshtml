@@ -377,11 +377,9 @@
     <!-- Login and Register modals -->
     @if (User.Identity?.IsAuthenticated != true)
     {
-        @{
-            var registeredUsername = TempData["RegisteredUsername"] as string;
-            var registrationMessage = TempData["RegistrationMessage"] as string;
-            var registrationReturnUrl = TempData["RegistrationReturnUrl"] as string;
-        }
+        var registeredUsername = TempData["RegisteredUsername"] as string;
+        var registrationMessage = TempData["RegistrationMessage"] as string;
+        var registrationReturnUrl = TempData["RegistrationReturnUrl"] as string;
         <!-- Login modal -->
         <div class="modal fade"
              id="loginModal"
