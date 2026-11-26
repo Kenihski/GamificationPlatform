@@ -56,7 +56,7 @@ namespace GamificationPlatform.DAL
                     ImageUrl = "/images/Cloud.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
-                    IsCore = true,
+                    IsCore = false,
                     CreatedByUserId = 3
                 },
                 new Challenge
@@ -67,7 +67,7 @@ namespace GamificationPlatform.DAL
                     ImageUrl = "/images/API.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
-                    IsCore = true,
+                    IsCore = false,
                     CreatedByUserId = 3
                 },
                 new Challenge
@@ -78,7 +78,7 @@ namespace GamificationPlatform.DAL
                     ImageUrl = "/images/Testing.png",
                     TimeLimitMinutes = 10,
                     IsPublished = true,
-                    IsCore = true,
+                    IsCore = false,
                     CreatedByUserId = 3
                 },
                 new Challenge
