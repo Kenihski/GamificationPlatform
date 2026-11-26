@@ -43,14 +43,16 @@
 <div class="management-page my-4">
     <h1 class="mb-4">Update Question</h1>
 
+    <partial name="_FeedbackMessages" />
+
     <div class="card border-warning">
         <div class="card-body">
 
             <div class="alert alert-warning">
                 <strong>Warning:</strong>
-                Saving this question permanently deletes all attempts, submitted answers and scores
+                Saving changes to this question permanently deletes all attempts, submitted answers and scores
                 for the entire challenge, even if you only change the text or image.
-                This also removes those results from the leaderboards.
+                This also removes those results from the leaderboards. Saving without changes keeps all results.
             </div>
 
             <form asp-controller="Question"
@@ -284,18 +286,12 @@
                             @foreach (var image in myImages)
                             {
                                 <option value="@image.ImageUrl"
-                                        data-image-id="@image.UserImageId"
                                         selected="@(image.ImageUrl == currentImage)">
                                     @image.FileName
                                 </option>
                             }
                         </select>
 
-                        <button type="button"
-                                id="removeImageButton"
-                                class="btn btn-outline-danger btn-sm image-selection-hidden">
-                            Delete image from library
-                        </button>
                     </div>
 
                     @* Default Images *@

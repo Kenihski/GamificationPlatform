@@ -9,5 +9,24 @@
 {
     <div id="errorMessage" class="alert alert-danger" role="alert">
         @errorMessage
+        @if (TempData["ImageUsageQuestions"] is string imageUsageJson)
+        {
+            var questions = System.Text.Json.JsonSerializer.Deserialize<Dictionary<int, string>>(imageUsageJson);
+            if (questions != null && questions.Count > 0)
+            {
+                <p class="mt-2 mb-1">Used in:</p>
+                <ul>
+                    @foreach (var question in questions)
+                    {
+                        <li>
+                            <a asp-controller="Question" asp-action="Update"
+                               asp-route-id="@question.Key">
+                                @question.Value (edit question #@question.Key)
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        }
     </div>
 }

@@ -10,7 +10,9 @@
     var defaultImages = ViewData["DefaultImages"] as List<GamificationPlatform.Models.DefaultImage>
         ?? new List<GamificationPlatform.Models.DefaultImage>();
 
-    var currentImage = Model.ImageUrl ?? "";
+    var fallbackImage = defaultImages.FirstOrDefault(image => image.Name == "Question 1");
+    var currentImage = string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? fallbackImage?.ImageUrl ?? "" : Model.ImageUrl;
 
     bool isMyImage = myImages.Any(image => image.ImageUrl == currentImage);
 
@@ -27,11 +29,13 @@
             ? "default"
             : isOtherImage
                 ? "current"
-                : "none";
+                : "default";
 }
 
 <div class="management-page my-4">
     <h1 class="mb-4">Update Challenge</h1>
+
+    <partial name="_FeedbackMessages" />
 
     <div class="card border-warning">
         <div class="card-body">
@@ -130,14 +134,6 @@
                     <select id="imageCategory" data-validation-for="ImageUrl"
                             class="form-control">
 
-                        @if (selectedCategory == "none")
-                        {
-                            <option value="none" selected>No image</option>
-                        }
-                        else
-                        {
-                            <option value="none">No image</option>
-                        }
 
                         @if (isOtherImage)
                         {
@@ -169,6 +165,11 @@
                         }
 
                     </select>
+
+                    <p class="form-text text-muted">
+                        If no image is selected, Question 1 will be used. You can choose another image.
+                    </p>
+                    <p id="imageSelectionStatus" role="status" class="text-muted"></p>
 
                     <!-- Upload new image -->
                     <div id="uploadImageSection"
@@ -210,15 +211,13 @@
                                 if (image.ImageUrl == currentImage)
                                 {
                                     <option value="@image.ImageUrl"
-                                            data-image-id="@image.UserImageId"
                                             selected>
                                         @image.FileName
                                     </option>
                                 }
                                 else
                                 {
-                                    <option value="@image.ImageUrl"
-                                            data-image-id="@image.UserImageId">
+                                    <option value="@image.ImageUrl">
                                         @image.FileName
                                     </option>
                                 }
@@ -226,13 +225,6 @@
 
                         </select>
 
-                        <div class="text-end mt-1">
-                            <button type="button"
-                                    id="removeImageButton"
-                                    class="btn btn-outline-danger btn-sm image-selection-hidden">
-                                Delete image from library
-                            </button>
-                        </div>
 
                     </div>
 
@@ -274,7 +266,8 @@
                     <!-- Selected image URL -->
                     <input asp-for="ImageUrl"
                            type="hidden"
-                           id="imageSelect" />
+                           id="imageSelect" value="@currentImage"
+                           data-default-image="@fallbackImage?.ImageUrl" />
 
                     <span asp-validation-for="ImageUrl"
                           class="text-danger">

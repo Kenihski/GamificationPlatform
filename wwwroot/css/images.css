@@ -112,3 +112,9 @@
     border-color: #a58dff;
     box-shadow: 0 0 0 0.15rem rgba(132, 111, 230, 0.2);
 }
+
+.image-delete-preview {
+    display: block;
+    max-height: 200px;
+    object-fit: contain;
+}

@@ -316,7 +316,8 @@ namespace GamificationPlatform.Controllers
         // Shows challenge details and attempt history.
         public async Task<IActionResult> Details(
             int id,
-            bool showQuestions = false)
+            bool showQuestions = false,
+            bool fromMyChallenges = false)
         {
             // The owner/admin question overview needs both choice options
             // and the accepted text answers used by Short Answer questions.
@@ -335,7 +336,8 @@ namespace GamificationPlatform.Controllers
             {
                 Challenge = challenge,
                 MaxPoints = maxPoints,
-                ShowQuestions = showQuestions
+                ShowQuestions = showQuestions,
+                FromMyChallenges = fromMyChallenges
             };
 
             if (User.Identity?.IsAuthenticated == true)
@@ -453,7 +455,8 @@ namespace GamificationPlatform.Controllers
 
             await LoadImagesAsync(userId);
 
-            return View();
+            // Initialize model defaults, including answer-review settings.
+            return View(new Challenge());
         }
 
         // Creates a new challenge.
@@ -664,9 +667,19 @@ namespace GamificationPlatform.Controllers
             // Navigation property is not received from the form.
             ModelState.Remove("CreatedByUser");
 
-            // ImageUrl may be empty when uploading a new image
-            // or when the user chooses No image.
+            // Use the default when no existing image or upload was supplied.
             ModelState.Remove("ImageUrl");
+            if (imageUpload == null && string.IsNullOrWhiteSpace(challenge.ImageUrl))
+            {
+                var defaultImages = await _imageService.GetDefaultImagesAsync();
+                challenge.ImageUrl = defaultImages
+                    .FirstOrDefault(image => image.Name == "Question 1")?.ImageUrl ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(challenge.ImageUrl))
+                {
+                    ModelState.AddModelError("ImageUrl", "The default image is unavailable. Please choose another image.");
+                }
+            }
 
             if (imageUpload != null &&
                 !string.IsNullOrWhiteSpace(challenge.ImageUrl))

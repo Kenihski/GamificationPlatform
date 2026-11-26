@@ -16,6 +16,96 @@ namespace GamificationPlatform.Tests.Validation;
 public class QuestionValidationTests
 {
     [Theory]
+    [InlineData("SingleChoice", "none")]
+    [InlineData("SingleChoice", "line-endings")]
+    [InlineData("MultipleChoice", "none")]
+    [InlineData("ShortAnswer", "none")]
+    [InlineData("SingleChoice", "title")]
+    [InlineData("SingleChoice", "description")]
+    [InlineData("SingleChoice", "explanation")]
+    [InlineData("SingleChoice", "points")]
+    [InlineData("SingleChoice", "image")]
+    [InlineData("SingleChoice", "type")]
+    [InlineData("SingleChoice", "answer")]
+    [InlineData("SingleChoice", "correct")]
+    [InlineData("ShortAnswer", "answer")]
+    public async Task Update_OnlyResetsHistoryWhenQuestionChanges(string type, string change)
+    {
+        // Arrange: a valid existing question and the values returned by its edit form.
+        var questions = Substitute.For<IQuestionRepository>();
+        var attempts = Substitute.For<IAttemptRepository>();
+        var images = Substitute.For<IImageService>();
+        images.IsAllowedImageAsync(Arg.Any<string>(), 7).Returns(true);
+        var stored = new Question
+        {
+            QuestionId = 1, ChallengeId = 12, Title = "Example", Points = 1,
+            QuestionType = type, ImageUrl = "",
+            Challenge = new Challenge { ChallengeId = 12, CreatedByUserId = 7 }
+        };
+        if (type == "ShortAnswer")
+            stored.AcceptedAnswers.Add(new QuestionAcceptedAnswer { Text = "Yes" });
+        else
+            stored.Options.AddRange(new[]
+            {
+                new QuestionOption { Text = "Yes", IsCorrect = true },
+                new QuestionOption { Text = "No", IsCorrect = false }
+            });
+        questions.GetQuestionWithOptionsAndChallengeAsync(1).Returns(stored);
+        var controller = new QuestionController(questions, Substitute.For<IChallengeRepository>(),
+            attempts, images, Substitute.For<ILogger<QuestionController>>());
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                    new[] { new Claim(ClaimTypes.NameIdentifier, "7") }, "Test"))
+            }
+        };
+        controller.TempData = new Microsoft.AspNetCore.Mvc.ViewFeatures.TempDataDictionary(
+            controller.HttpContext, Substitute.For<Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataProvider>());
+        var model = new QuestionFormViewModel
+        {
+            Question = new Question
+            {
+                QuestionId = 1, Title = "Example", Points = 1, QuestionType = type,
+                Description = "", Explanation = "", ImageUrl = null
+            },
+            Options = new List<string> { " Yes ", "No", "", "" },
+            CorrectOptions = new List<int> { 0 },
+            AcceptedAnswers = new List<string> { " Yes ", "", "", "" }
+        };
+        switch (change)
+        {
+            case "line-endings":
+                stored.Explanation = "Line one\nLine two";
+                model.Question.Explanation = "Line one\r\nLine two";
+                break;
+            case "title": model.Question.Title = "Changed"; break;
+            case "description": model.Question.Description = "Changed"; break;
+            case "explanation": model.Question.Explanation = "Changed"; break;
+            case "points": model.Question.Points = 2; break;
+            case "image": model.Question.ImageUrl = "/images/Question_1.png"; break;
+            case "type": model.Question.QuestionType = "MultipleChoice"; break;
+            case "answer":
+                model.Options[0] = "Maybe";
+                model.AcceptedAnswers[0] = "Maybe";
+                break;
+            case "correct": model.CorrectOptions = new List<int> { 1 }; break;
+        }
+
+        // Act: submit without an upload.
+        var result = await controller.Update(model, null);
+
+        // Assert: unchanged forms must not write data or delete history.
+        Assert.IsType<RedirectToActionResult>(result);
+        int expectedWrites = change == "none" || change == "line-endings" ? 0 : 1;
+        await attempts.Received(expectedWrites).DeleteChallengeHistoryAsync(12);
+        await questions.Received(expectedWrites).UpdateQuestionAsync(Arg.Any<Question>());
+        if (expectedWrites == 0)
+            Assert.Equal("No changes were made.", controller.TempData["SuccessMessage"]);
+    }
+
+    [Theory]
     [InlineData(-1, false)]
     [InlineData(0, false)]
     [InlineData(1, true)]
