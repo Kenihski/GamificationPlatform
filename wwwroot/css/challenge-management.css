@@ -57,7 +57,8 @@
     padding: 0.25rem 0.5rem;
     white-space: nowrap;
     background: transparent;
-    border: 1px solid;
+    /* Same border as the other outline buttons in the row (matches Subapp 2). */
+    border: 1px solid #91adff;
 }
 
 .my-challenges-type-button.featured-badge-core {

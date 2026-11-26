@@ -63,24 +63,25 @@
 
             <div class="container-fluid">
 
-                <!-- Burger menu button -->
-                <button class="navbar-toggler me-3"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#sidebarMenu"
-                        aria-controls="sidebarMenu"
-                        aria-label="Open navigation menu">
+                <!-- Left side: burger menu and application name -->
+                <div class="site-navbar-start d-flex align-items-center">
+                    <button class="navbar-toggler me-3"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#sidebarMenu"
+                            aria-controls="sidebarMenu"
+                            aria-label="Open navigation menu">
 
-                    <span class="navbar-toggler-icon"></span>
+                        <span class="navbar-toggler-icon"></span>
 
-                </button>
+                    </button>
 
-                <!-- Application name -->
-                <a class="navbar-brand me-auto"
-                   asp-controller="Home"
-                   asp-action="Index">
-                    Learning Challenge Hub
-                </a>
+                    <a class="navbar-brand"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        Learning Challenge Hub
+                    </a>
+                </div>
 
                 <!-- Main links are also available in the sidebar at every screen size. -->
                 <ul class="navbar-nav desktop-navigation flex-row align-items-center gap-3 mx-auto">
@@ -97,7 +98,7 @@
                 </ul>
 
                 <!-- Right side -->
-                <ul class="navbar-nav flex-row align-items-center gap-3">
+                <ul class="navbar-nav site-navbar-end flex-row align-items-center gap-3">
 
                     <li class="nav-item matrix-control">
                         <button id="matrixToggle" type="button"

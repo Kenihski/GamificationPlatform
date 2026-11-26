@@ -115,6 +115,25 @@ body:not(:has(.home-hero)) #matrixBackground {
     row-gap: 0.75rem;
 }
 
+/* From 1200px the main links stay in the exact centre: the left and right
+   columns are always equally wide, whatever the right side contains. */
+@media (min-width: 1200px) {
+    .site-navbar > .container-fluid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        column-gap: 1rem;
+    }
+
+    .site-navbar-start {
+        justify-self: start;
+    }
+
+    .site-navbar-end {
+        justify-self: end;
+    }
+}
+
 .site-navbar .navbar-brand {
     color: #ffffff;
     font-weight: 700;
