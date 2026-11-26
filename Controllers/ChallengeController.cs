@@ -748,7 +748,7 @@ namespace GamificationPlatform.Controllers
                     existingChallenge.ChallengeId,
                     userId);
 
-                return RedirectToAction(nameof(Table));
+                return RedirectToAction(nameof(MyChallenges));
             }
 
             _logger.LogWarning(
