@@ -6,8 +6,12 @@ body {
 }
 
 /* skip to main content */
+/* Fixed to the window even while hidden, so the browser never scrolls the page to
+   reach it, also when focus comes from the browser toolbar. */
 .skip-link {
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 1px;
     height: 1px;
     overflow: hidden;
@@ -267,27 +271,37 @@ body:not(:has(.home-hero)) #matrixBackground {
     }
 }
 
-/* The navbar stays at the top while scrolling; navbar-reveal.js hides it while
-   scrolling down and shows it on scroll up or when the mouse reaches the top. */
+/* The navbar stays at the top while scrolling and is hidden while scrolling down.
+   It is clipped instead of moved off-screen, so the browser does not scroll the
+   page when keyboard focus moves into it. */
 .site-header {
     position: sticky;
     top: 0;
     z-index: 1030;
-    transition: top 0.25s ease;
 }
 
-/* Used for one frame when keyboard focus enters the hidden navbar. */
-.site-header.site-header-instant {
-    transition: none;
+.site-header > .site-navbar {
+    /* The visible area reaches past the navbar so focus rings, shadows and the
+       matrix tooltip are not cut off. */
+    clip-path: inset(-12px -12px -80px -12px);
+    transition: clip-path 0.25s ease, opacity 0.25s ease;
 }
 
 /* Keyboard users tabbing into the navbar always see it. */
-.site-header.site-header-hidden:not(:focus-within) {
-    top: calc(-1 * var(--site-header-height, 80px) - 4px);
+.site-header.site-header-hidden:not(:focus-within) > .site-navbar {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Used for one frame when keyboard focus enters the hidden navbar. */
+.site-header.site-header-instant,
+.site-header.site-header-instant .site-navbar {
+    transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .site-header {
+    .site-header > .site-navbar {
         transition: none;
     }
 }
