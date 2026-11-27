@@ -329,6 +329,24 @@ namespace GamificationPlatform.Controllers
                 return NotFound();
             }
 
+            // Draft details are private to the owner and administrators.
+            bool isOwner =
+                int.TryParse(
+                    User.FindFirstValue(ClaimTypes.NameIdentifier),
+                    out int currentUserId) &&
+                challenge.CreatedByUserId == currentUserId;
+
+            bool isAdmin = User.IsInRole("Admin");
+
+            if (!challenge.IsPublished && !isOwner && !isAdmin)
+            {
+                _logger.LogWarning(
+                    "Unauthorised access to unpublished challenge {ChallengeId}.",
+                    id);
+
+                return NotFound();
+            }
+
             int maxPoints = challenge.Questions.Sum(q => q.Points);
             challenge.MaxPoints = maxPoints;
 
