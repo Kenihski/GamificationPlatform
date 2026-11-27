@@ -146,12 +146,42 @@ namespace GamificationPlatform.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Shows the Delete Image confirmation page with the challenges that will change.
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id, string? returnUrl = null)
+        {
+            var image = await _imageRepository.GetImageByIdAsync(id);
+
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            if (image.UserId != GetCurrentUserId() && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            if (await IsImageDeletionBlockedAsync(image.ImageUrl))
+            {
+                return RedirectAfterDelete(returnUrl);
+            }
+
+            return View("ConfirmDelete", new DeleteImageViewModel
+            {
+                ImageId = id,
+                ImageName = image.FileName,
+                ImageUrl = image.ImageUrl,
+                ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                    ? returnUrl : Url.Action(nameof(Index))!,
+                Challenges = await GetChallengesUsingImageAsync(image.ImageUrl)
+            });
+        }
+
         // Deletes an uploaded user image.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(
-            int id,
-            string? returnUrl, bool confirmed = false)
+        public async Task<IActionResult> DeleteConfirmed(int id, string? returnUrl = null)
         {
             var image = await _imageRepository.GetImageByIdAsync(id);
 
@@ -170,47 +200,15 @@ namespace GamificationPlatform.Controllers
 
             try
             {
-                var fallbackImage = await GetFallbackImageAsync();
-                if (fallbackImage == null)
+                // Check again: the image may have come into use after the page was shown.
+                if (await IsImageDeletionBlockedAsync(image.ImageUrl))
                 {
-                    TempData["ErrorMessage"] =
-                        "The image cannot be deleted because the Question 1 default image is unavailable.";
                     return RedirectAfterDelete(returnUrl);
                 }
 
-                var challenges = await _context.Challenges
-                    .Where(c => c.ImageUrl == image.ImageUrl)
-                    .ToListAsync();
+                var fallbackImage = (await GetFallbackImageAsync())!;
+                var challenges = await GetChallengesUsingImageAsync(image.ImageUrl);
 
-                // A question may depend on its image to make sense, so preserve images in use.
-                var imageUsage = await _context.Questions
-                    .Where(q => q.ImageUrl == image.ImageUrl)
-                    .OrderBy(q => q.Challenge.Title)
-                    .Select(q => new { q.QuestionId, q.Title, ChallengeTitle = q.Challenge.Title })
-                    .ToListAsync();
-                if (imageUsage.Count > 0)
-                {
-                    // Pass structured data so Razor can render safe, descriptive question links.
-                    TempData["ImageUsageQuestions"] = System.Text.Json.JsonSerializer.Serialize(
-                        imageUsage.ToDictionary(q => q.QuestionId, q => $"{q.Title} — {q.ChallengeTitle}"));
-                    TempData["ErrorMessage"] =
-                        $"This image is used by {imageUsage.Count} question(s). Remove or replace it in those questions before deleting it.";
-                    return RedirectAfterDelete(returnUrl);
-                }
-
-                // Show the actual consequences before any data is changed.
-                if (!confirmed)
-                {
-                    return View("ConfirmDelete", new DeleteImageViewModel
-                    {
-                        ImageId = id,
-                        ImageName = image.FileName,
-                        ImageUrl = image.ImageUrl,
-                        ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
-                            ? returnUrl : Url.Action(nameof(Index))!,
-                        Challenges = challenges
-                    });
-                }
                 foreach (var challenge in challenges)
                 {
                     challenge.ImageUrl = fallbackImage.ImageUrl;
@@ -468,10 +466,38 @@ namespace GamificationPlatform.Controllers
 
         // Deletes an image from the shared library.
         // Images used by questions cannot be deleted; challenges receive Question 1 as a fallback.
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteDefaultImage(int id)
+        {
+            var image = await _context.DefaultImages.FindAsync(id);
+
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            if (await IsImageDeletionBlockedAsync(image.ImageUrl))
+            {
+                return RedirectToAction(nameof(Admin));
+            }
+
+            // Shared confirmation page for default and uploaded library images.
+            return View("ConfirmDelete", new DeleteImageViewModel
+            {
+                ImageId = id,
+                ImageName = image.Name,
+                ImageUrl = image.ImageUrl,
+                IsDefaultImage = true,
+                ReturnUrl = Url.Action(nameof(Admin))!,
+                Challenges = await GetChallengesUsingImageAsync(image.ImageUrl)
+            });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteDefaultImage(int id, bool confirmed = false)
+        public async Task<IActionResult> DeleteDefaultImageConfirmed(int id)
         {
             var image = await _context.DefaultImages.FindAsync(id);
 
@@ -482,56 +508,15 @@ namespace GamificationPlatform.Controllers
 
             try
             {
-                var fallbackImage = await GetFallbackImageAsync();
-                if (fallbackImage == null)
+                // Check again: the image may have come into use after the page was shown.
+                if (await IsImageDeletionBlockedAsync(image.ImageUrl))
                 {
-                    TempData["ErrorMessage"] =
-                        "The image cannot be deleted because the Question 1 default image is unavailable.";
                     return RedirectToAction(nameof(Admin));
                 }
 
-                // Keep the fallback available for future image deletions and new challenges.
-                if (image.ImageUrl == fallbackImage.ImageUrl ||
-                    image.ImageUrl == "/images/Question_1.png")
-                {
-                    TempData["ErrorMessage"] =
-                        "Question 1 is the fallback image and cannot be deleted.";
-                    return RedirectToAction(nameof(Admin));
-                }
+                var fallbackImage = (await GetFallbackImageAsync())!;
+                var challenges = await GetChallengesUsingImageAsync(image.ImageUrl);
 
-                var challenges = await _context.Challenges
-                    .Where(c => c.ImageUrl == image.ImageUrl)
-                    .ToListAsync();
-
-                // A question may depend on its image to make sense, so preserve images in use.
-                var imageUsage = await _context.Questions
-                    .Where(q => q.ImageUrl == image.ImageUrl)
-                    .OrderBy(q => q.Challenge.Title)
-                    .Select(q => new { q.QuestionId, q.Title, ChallengeTitle = q.Challenge.Title })
-                    .ToListAsync();
-                if (imageUsage.Count > 0)
-                {
-                    // Pass structured data so Razor can render safe, descriptive question links.
-                    TempData["ImageUsageQuestions"] = System.Text.Json.JsonSerializer.Serialize(
-                        imageUsage.ToDictionary(q => q.QuestionId, q => $"{q.Title} — {q.ChallengeTitle}"));
-                    TempData["ErrorMessage"] =
-                        $"This image is used by {imageUsage.Count} question(s). Remove or replace it in those questions before deleting it.";
-                    return RedirectToAction(nameof(Admin));
-                }
-
-                // Shared confirmation page for default and uploaded library images.
-                if (!confirmed)
-                {
-                    return View("ConfirmDelete", new DeleteImageViewModel
-                    {
-                        ImageId = id,
-                        ImageName = image.Name,
-                        ImageUrl = image.ImageUrl,
-                        IsDefaultImage = true,
-                        ReturnUrl = Url.Action(nameof(Admin))!,
-                        Challenges = challenges
-                    });
-                }
                 foreach (var challenge in challenges)
                 {
                     challenge.ImageUrl = fallbackImage.ImageUrl;
@@ -590,6 +575,54 @@ namespace GamificationPlatform.Controllers
             var filePath = Path.Combine(
                 _environment.WebRootPath, image.ImageUrl.TrimStart('/'));
             return System.IO.File.Exists(filePath) ? image : null;
+        }
+
+        // Returns true and sets an error message when an image must be kept: Question 1
+        // is missing or is the image itself, or a question still uses the image.
+        private async Task<bool> IsImageDeletionBlockedAsync(string imageUrl)
+        {
+            var fallbackImage = await GetFallbackImageAsync();
+            if (fallbackImage == null)
+            {
+                TempData["ErrorMessage"] =
+                    "The image cannot be deleted because the Question 1 default image is unavailable.";
+                return true;
+            }
+
+            // Keep the fallback available for future image deletions and new challenges.
+            if (imageUrl == fallbackImage.ImageUrl ||
+                imageUrl == "/images/Question_1.png")
+            {
+                TempData["ErrorMessage"] =
+                    "Question 1 is the fallback image and cannot be deleted.";
+                return true;
+            }
+
+            // A question may depend on its image to make sense, so preserve images in use.
+            var imageUsage = await _context.Questions
+                .Where(q => q.ImageUrl == imageUrl)
+                .OrderBy(q => q.Challenge.Title)
+                .Select(q => new { q.QuestionId, q.Title, ChallengeTitle = q.Challenge.Title })
+                .ToListAsync();
+            if (imageUsage.Count > 0)
+            {
+                // Pass structured data so Razor can render safe, descriptive question links.
+                TempData["ImageUsageQuestions"] = System.Text.Json.JsonSerializer.Serialize(
+                    imageUsage.ToDictionary(q => q.QuestionId, q => $"{q.Title} — {q.ChallengeTitle}"));
+                TempData["ErrorMessage"] =
+                    $"This image is used by {imageUsage.Count} question(s). Remove or replace it in those questions before deleting it.";
+                return true;
+            }
+
+            return false;
+        }
+
+        // Challenges that use the image get Question 1 instead when it is deleted.
+        private async Task<List<Challenge>> GetChallengesUsingImageAsync(string imageUrl)
+        {
+            return await _context.Challenges
+                .Where(c => c.ImageUrl == imageUrl)
+                .ToListAsync();
         }
 
         // Registers bundled Question images if the table is empty.

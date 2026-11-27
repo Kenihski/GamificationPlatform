@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "Manage Images";
+
+    // ?tab=user opens the User Images tab, e.g. after deleting a user image.
+    bool showUserImages = Context.Request.Query["tab"] == "user";
 }
 
 <div class="d-flex justify-content-between align-items-center my-4">
@@ -20,27 +23,27 @@
 <ul class="nav nav-tabs mb-4" id="imageTabs" role="tablist">
 
     <li class="nav-item" role="presentation">
-        <button class="nav-link"
+        <button class="nav-link @(showUserImages ? "active" : "")"
                 id="user-images-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#user-images"
                 type="button"
                 role="tab"
                 aria-controls="user-images"
-                aria-selected="false">
+                aria-selected="@(showUserImages ? "true" : "false")">
             User Images (@Model.UserImages.Count)
         </button>
     </li>
 
     <li class="nav-item" role="presentation">
-        <button class="nav-link active"
+        <button class="nav-link @(showUserImages ? "" : "active")"
                 id="default-images-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#default-images"
                 type="button"
                 role="tab"
                 aria-controls="default-images"
-                aria-selected="true">
+                aria-selected="@(showUserImages ? "false" : "true")">
             Default Images (@Model.DefaultImages.Count)
         </button>
     </li>
@@ -50,7 +53,7 @@
 <div class="tab-content" id="imageTabsContent">
 
     <!-- User Images -->
-    <div class="tab-pane fade"
+    <div class="tab-pane fade @(showUserImages ? "show active" : "")"
          id="user-images"
          role="tabpanel"
          aria-labelledby="user-images-tab">
@@ -116,25 +119,13 @@
 
                                     <hr class="dropdown-divider" />
 
-                                    <form asp-controller="UserImage"
-                                          asp-action="Delete"
-                                          method="post"
-                                          class="delete-image-form">
-
-                                        <input type="hidden"
-                                               name="id"
-                                               value="@image.UserImageId" />
-
-                                        <input type="hidden"
-                                               name="returnUrl"
-                                               value="@Url.Action("Admin", "UserImage")" />
-
-                                        <button type="submit"
-                                                class="btn btn-outline-danger btn-sm w-100">
-                                            Delete Image
-                                        </button>
-
-                                    </form>
+                                    <a asp-controller="UserImage"
+                                       asp-action="Delete"
+                                       asp-route-id="@image.UserImageId"
+                                       asp-route-returnUrl="@Url.Action("Admin", "UserImage", new { tab = "user" })"
+                                       class="btn btn-outline-danger btn-sm w-100">
+                                        Delete Image
+                                    </a>
 
                                 </div>
 
@@ -151,7 +142,7 @@
     </div>
 
     <!-- Default Images -->
-    <div class="tab-pane fade show active"
+    <div class="tab-pane fade @(showUserImages ? "" : "show active")"
          id="default-images"
          role="tabpanel"
          aria-labelledby="default-images-tab">
@@ -264,21 +255,12 @@
                                     <hr class="dropdown-divider" />
 
                                     <!-- Delete image -->
-                                    <form asp-controller="UserImage"
-                                          asp-action="DeleteDefaultImage"
-                                          method="post"
-                                          class="delete-image-form">
-
-                                        <input type="hidden"
-                                               name="id"
-                                               value="@image.DefaultImageId" />
-
-                                        <button type="submit"
-                                                class="btn btn-outline-danger btn-sm w-100">
-                                            Delete Image
-                                        </button>
-
-                                    </form>
+                                    <a asp-controller="UserImage"
+                                       asp-action="DeleteDefaultImage"
+                                       asp-route-id="@image.DefaultImageId"
+                                       class="btn btn-outline-danger btn-sm w-100">
+                                        Delete Image
+                                    </a>
 
                                 </div>
 
