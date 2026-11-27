@@ -453,6 +453,40 @@
 }
 
 
+/* Compact notifications on phones: full width with a small margin and slightly
+   smaller text, still at least about 13.6px for the description. */
+@media (max-width: 575.98px) {
+    .achievement-notification-container {
+        width: calc(100vw - 24px);
+        max-width: calc(100vw - 24px);
+    }
+
+    .achievement-notification {
+        padding: 10px;
+    }
+
+    .achievement-notification-heading {
+        margin-bottom: 3px;
+        font-size: 0.7rem;
+    }
+
+    .achievement-notification-name {
+        font-size: 0.95rem;
+    }
+
+    .achievement-notification-description {
+        margin-top: 2px;
+        font-size: 0.85rem;
+    }
+
+    .achievement-notification-points {
+        min-width: 44px;
+        margin-top: 20px;
+        padding: 4px 6px;
+        font-size: 0.85rem;
+    }
+}
+
 /* Achievement management badges */
 .achievement-admin-badges {
     display: flex;
