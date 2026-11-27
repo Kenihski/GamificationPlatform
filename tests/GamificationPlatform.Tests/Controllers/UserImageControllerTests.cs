@@ -135,8 +135,8 @@ public class UserImageControllerTests
             }
 
             // Act: confirm deletion without touching the project's database.
-            if (defaultImage) await controller.DeleteDefaultImage(targetDefault.DefaultImageId, confirmed: true);
-            else await controller.Delete(12, null, confirmed: true);
+            if (defaultImage) await controller.DeleteDefaultImageConfirmed(targetDefault.DefaultImageId);
+            else await controller.DeleteConfirmed(12, null);
 
             // Assert: images used by questions stay intact; otherwise challenges receive the fallback.
             var shouldDelete = fallbackAvailable && !deleteFallback && !usedByQuestion;

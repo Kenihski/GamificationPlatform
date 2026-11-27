@@ -27,9 +27,8 @@
                 }
             </div>
             <form asp-controller="UserImage"
-                  asp-action="@(Model.IsDefaultImage ? "DeleteDefaultImage" : "Delete")" method="post">
+                  asp-action="@(Model.IsDefaultImage ? "DeleteDefaultImageConfirmed" : "DeleteConfirmed")" method="post">
                 <input type="hidden" name="id" value="@Model.ImageId" />
-                <input type="hidden" name="confirmed" value="true" />
                 <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
                 <button type="submit" class="btn btn-outline-danger">Confirm deletion</button>
                 <a href="@Model.ReturnUrl" class="btn btn-outline-secondary">Cancel</a>

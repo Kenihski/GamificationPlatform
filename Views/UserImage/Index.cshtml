@@ -53,16 +53,12 @@
                         </div>
                         <div class="card-body d-flex flex-column gap-2">
                             <p class="card-text text-break mb-0">@image.FileName</p>
-                            <form asp-controller="UserImage" asp-action="Delete"
-                                  method="post" class="mt-auto">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@image.UserImageId" />
-                                <input type="hidden" name="returnUrl"
-                                       value="@Url.Action("Index", "UserImage")" />
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    Delete Image
-                                </button>
-                            </form>
+                            <a asp-controller="UserImage" asp-action="Delete"
+                               asp-route-id="@image.UserImageId"
+                               asp-route-returnUrl="@Url.Action("Index", "UserImage")"
+                               class="btn btn-outline-danger btn-sm mt-auto align-self-start">
+                                Delete Image
+                            </a>
                         </div>
                     </div>
                 </div>
