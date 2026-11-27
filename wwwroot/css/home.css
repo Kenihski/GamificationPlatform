@@ -254,17 +254,21 @@
 
 .featured-carousel .featured-carousel-indicators {
     bottom: 0;
-    margin-bottom: 7px;
-    gap: 7px;
+    margin-bottom: 0;
+    gap: 0;
 }
 
+/* 24x24 click area (WCAG 2.5.8); the padding keeps the visible dot at 9px. */
 .featured-carousel .featured-carousel-indicators button {
-    width: 9px;
-    height: 9px;
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    padding: 7.5px;
     margin: 0;
     border: 0;
     border-radius: 50%;
     background: #a9b8e8;
+    background-clip: content-box;
     opacity: 0.45;
 }
 
