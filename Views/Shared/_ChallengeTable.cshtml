@@ -1,119 +1,122 @@
 
 @model ChallengesViewModel
 
-<table class="table table-striped align-middle">
+<!-- Scroll the table on its own on narrow screens, not the whole page. -->
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
 
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Max Points</th>
-            <th>Time Limit</th>
-
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <th>Completed</th>
-            }
-
-            <th>Image</th>
-        </tr>
-    </thead>
-
-    <tbody>
-
-        @foreach (var challenge in Model.Challenges)
-        {
-            bool isCompleted =
-                Model.CompletedChallengeIds.Contains(
-                    challenge.ChallengeId);
-
+        <thead>
             <tr>
-
-                <td>
-                    @challenge.ChallengeId
-                </td>
-
-                <td>
-                    <a asp-controller="Challenge"
-                       asp-action="Details"
-                       asp-route-id="@challenge.ChallengeId">
-                        @challenge.Title
-                    </a>
-                </td>
-
-                <td>
-                    @if (challenge.IsCore)
-                    {
-                        <span class="featured-badge featured-badge-core challenge-table-badge">
-                            CORE
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="featured-badge featured-badge-community challenge-table-badge">
-                            COMMUNITY
-                        </span>
-                    }
-                </td>
-
-                <td>
-                    @challenge.Description
-                </td>
-
-                <td>
-                    @challenge.MaxPoints
-                </td>
-
-                <td class="text-nowrap">
-                    @if (challenge.TimeLimitMinutes.HasValue)
-                    {
-                        <span>
-                            @challenge.TimeLimitMinutes minutes
-                        </span>
-                    }
-                    else
-                    {
-                        <span>
-                            Unlimited
-                        </span>
-                    }
-                </td>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Max Points</th>
+                <th>Time Limit</th>
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <td class="text-center">
+                    <th>Completed</th>
+                }
 
-                        @if (isCompleted)
+                <th>Image</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var challenge in Model.Challenges)
+            {
+                bool isCompleted =
+                    Model.CompletedChallengeIds.Contains(
+                        challenge.ChallengeId);
+
+                <tr>
+
+                    <td>
+                        @challenge.ChallengeId
+                    </td>
+
+                    <td>
+                        <a asp-controller="Challenge"
+                           asp-action="Details"
+                           asp-route-id="@challenge.ChallengeId">
+                            @challenge.Title
+                        </a>
+                    </td>
+
+                    <td>
+                        @if (challenge.IsCore)
                         {
-                            <span class="text-success fw-bold fs-4"
-                                  title="Completed">
-                                ✓
+                            <span class="featured-badge featured-badge-core challenge-table-badge">
+                                CORE
                             </span>
                         }
                         else
                         {
-                            <span class="text-muted">
-                                —
+                            <span class="featured-badge featured-badge-community challenge-table-badge">
+                                COMMUNITY
                             </span>
                         }
-
                     </td>
-                }
 
-                <td>
-                    <img src="@challenge.ImageUrl"
-                         alt=""
-                         width="80"
-                         height="53"
-                         loading="lazy"
-                         style="max-width: 80px; max-height: 80px; object-fit: contain" />
-                </td>
+                    <td>
+                        @challenge.Description
+                    </td>
 
-            </tr>
-        }
+                    <td>
+                        @challenge.MaxPoints
+                    </td>
 
-    </tbody>
+                    <td class="text-nowrap">
+                        @if (challenge.TimeLimitMinutes.HasValue)
+                        {
+                            <span>
+                                @challenge.TimeLimitMinutes minutes
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                Unlimited
+                            </span>
+                        }
+                    </td>
 
-</table>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <td class="text-center">
+
+                            @if (isCompleted)
+                            {
+                                <span class="text-success fw-bold fs-4"
+                                      title="Completed">
+                                    ✓
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">
+                                    —
+                                </span>
+                            }
+
+                        </td>
+                    }
+
+                    <td>
+                        <img src="@challenge.ImageUrl"
+                             alt=""
+                             width="80"
+                             height="53"
+                             loading="lazy"
+                             style="max-width: 80px; max-height: 80px; object-fit: contain" />
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+</div>

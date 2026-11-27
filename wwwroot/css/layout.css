@@ -179,6 +179,13 @@ body:not(:has(.home-hero)) #matrixBackground {
     border-radius: 8px;
 }
 
+/* Let the site name wrap on very narrow screens instead of widening the page. */
+@media (max-width: 359.98px) {
+    .site-navbar .navbar-brand {
+        white-space: normal;
+    }
+}
+
 .site-sidebar {
     background: #121a36;
     color: #edf1ff;
@@ -303,5 +310,13 @@ body:not(:has(.home-hero)) #matrixBackground {
 @media (prefers-reduced-motion: reduce) {
     .site-header > .site-navbar {
         transition: none;
+    }
+}
+
+/* In a low window, such as at 400 % zoom, the navbar would cover much of the
+   screen and hide keyboard focus, so it scrolls away with the page instead. */
+@media (max-height: 479.98px) {
+    .site-header {
+        position: static;
     }
 }
