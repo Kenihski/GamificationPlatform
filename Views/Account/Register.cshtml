@@ -5,111 +5,116 @@
     ViewData["Title"] = "Register";
 }
 
-<h1 class="h2">Register</h1>
+@* Same centred width and heading spacing as the other form pages. *@
+<div class="management-page">
 
-<p class="text-muted">All fields are required.</p>
+    <h1 class="h2 my-4">Register</h1>
 
-<form asp-controller="Account"
-      asp-action="Register"
-      method="post">
+    <p class="text-muted">All fields are required.</p>
 
-    <div asp-validation-summary="All"
-         class="text-danger mb-3"></div>
+    <form asp-controller="Account"
+          asp-action="Register"
+          method="post">
 
-    <input type="hidden"
-           name="returnUrl"
-           value="@ViewBag.ReturnUrl" />
+        <div asp-validation-summary="All"
+             class="text-danger mb-3"></div>
 
-    <div class="mb-3">
-        <label asp-for="Username"
-               class="form-label">
-            Username
-        </label>
+        <input type="hidden"
+               name="returnUrl"
+               value="@ViewBag.ReturnUrl" />
 
-        <input asp-for="Username"
-               autocomplete="username"
-               aria-describedby="registerUsernameHelp"
-               class="form-control" />
+        <div class="mb-3">
+            <label asp-for="Username"
+                   class="form-label">
+                Username
+            </label>
 
-        <span asp-validation-for="Username"
-              class="text-danger"></span>
+            <input asp-for="Username"
+                   autocomplete="username"
+                   aria-describedby="registerUsernameHelp"
+                   class="form-control" />
 
-        <div id="registerUsernameHelp" class="form-text text-muted">
-            Use 3 to 50 characters.
+            <span asp-validation-for="Username"
+                  class="text-danger"></span>
+
+            <div id="registerUsernameHelp" class="form-text text-muted">
+                Use 3 to 50 characters.
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="Email"
-               class="form-label">
-            Email
-        </label>
+        <div class="mb-3">
+            <label asp-for="Email"
+                   class="form-label">
+                Email
+            </label>
 
-        <input asp-for="Email"
-               autocomplete="email"
-               aria-describedby="registerEmailHelp"
-               class="form-control" />
+            <input asp-for="Email"
+                   autocomplete="email"
+                   aria-describedby="registerEmailHelp"
+                   class="form-control" />
 
-        <span asp-validation-for="Email"
-              class="text-danger"></span>
+            <span asp-validation-for="Email"
+                  class="text-danger"></span>
 
-        <div id="registerEmailHelp" class="form-text text-muted">
-            Enter your email address (up to 100 characters).
+            <div id="registerEmailHelp" class="form-text text-muted">
+                Enter your email address (up to 100 characters).
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="Password"
-               class="form-label">
-            Password
-        </label>
+        <div class="mb-3">
+            <label asp-for="Password"
+                   class="form-label">
+                Password
+            </label>
 
-        <input asp-for="Password"
-               autocomplete="new-password"
-               aria-describedby="registerPasswordHelp"
-               class="form-control" />
+            <input asp-for="Password"
+                   autocomplete="new-password"
+                   aria-describedby="registerPasswordHelp"
+                   class="form-control" />
 
-        <span asp-validation-for="Password"
-              class="text-danger"></span>
+            <span asp-validation-for="Password"
+                  class="text-danger"></span>
 
-        <div id="registerPasswordHelp" class="form-text text-muted">
-            Use 6 to 100 characters, including at least one uppercase letter and one number.
-            Your password must be different from your username.
+            <div id="registerPasswordHelp" class="form-text text-muted">
+                Use 6 to 100 characters, including at least one uppercase letter and one number.
+                Your password must be different from your username.
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="ConfirmPassword"
-               class="form-label">
-            Confirm Password
-        </label>
+        <div class="mb-3">
+            <label asp-for="ConfirmPassword"
+                   class="form-label">
+                Confirm Password
+            </label>
 
-        <input asp-for="ConfirmPassword"
-               autocomplete="new-password"
-               aria-describedby="registerConfirmPasswordHelp"
-               class="form-control" />
+            <input asp-for="ConfirmPassword"
+                   autocomplete="new-password"
+                   aria-describedby="registerConfirmPasswordHelp"
+                   class="form-control" />
 
-        <span asp-validation-for="ConfirmPassword"
-              class="text-danger"></span>
+            <span asp-validation-for="ConfirmPassword"
+                  class="text-danger"></span>
 
-        <div id="registerConfirmPasswordHelp" class="form-text text-muted">
-            Enter the same password again.
+            <div id="registerConfirmPasswordHelp" class="form-text text-muted">
+                Enter the same password again.
+            </div>
         </div>
-    </div>
 
-    <button type="submit"
-            class="btn btn-primary">
-        Register
-    </button>
+        <button type="submit"
+                class="btn btn-primary">
+            Register
+        </button>
 
-    <p class="mt-3">
-        Already have an account?
+        <p class="mt-3">
+            Already have an account?
 
-        <a asp-controller="Account"
-           asp-action="Login"
-           asp-route-returnUrl="@ViewBag.ReturnUrl">
-            Login here
-        </a>
-    </p>
+            <a asp-controller="Account"
+               asp-action="Login"
+               asp-route-returnUrl="@ViewBag.ReturnUrl">
+                Login here
+            </a>
+        </p>
 
-</form>
+    </form>
+
+</div>

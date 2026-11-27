@@ -99,6 +99,7 @@ else
                                 <a asp-controller="Challenge"
                                    asp-action="Update"
                                    asp-route-id="@challenge.ChallengeId"
+                                   asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")"
                                    class="btn btn-sm btn-outline-warning">
                                     Edit
                                 </a>
@@ -106,6 +107,7 @@ else
                                 <a asp-controller="Challenge"
                                    asp-action="Delete"
                                    asp-route-id="@challenge.ChallengeId"
+                                   asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")"
                                    class="btn btn-sm btn-outline-danger">
                                     Delete
                                 </a>

@@ -33,11 +33,34 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
+        // jQuery validation marks invalid fields with a class; keep aria-invalid in sync
+        // so screen readers also know about errors found in the browser.
+        function syncAriaInvalid() {
+            controls.forEach(function (control) {
+                if (control.type === "hidden" || !control.classList) {
+                    return;
+                }
+
+                if (control.classList.contains("input-validation-error")) {
+                    control.setAttribute("aria-invalid", "true");
+                } else if (control.getAttribute("aria-invalid") === "true") {
+                    control.setAttribute("aria-invalid", "false");
+                }
+            });
+        }
+
+        ["input", "change", "focusout", "submit"].forEach(function (eventName) {
+            form.addEventListener(eventName, function () {
+                setTimeout(syncAriaInvalid, 0);
+            });
+        });
+
         const summary = form.querySelector("[data-valmsg-summary]");
         if (summary) {
             // Let jQuery finish displaying client errors before focusing the summary.
             jQuery(form).on("invalid-form", function () {
                 setTimeout(function () {
+                    syncAriaInvalid();
                     if (summary.textContent.trim()) {
                         summary.classList.add("alert", "alert-danger");
                         summary.setAttribute("tabindex", "-1");

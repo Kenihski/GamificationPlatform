@@ -4,7 +4,7 @@
     ViewData["Title"] = "Challenges - Grid";
 }
 
-<div class="mb-4">
+<div class="my-4">
 
     <h1 class="fw-bold mb-2">
         List of Challenges
@@ -16,7 +16,7 @@
 
 </div>
 
-<div class="d-flex justify-content-between align-items-center mb-4 gap-3 flex-wrap">
+<div class="challenge-toolbar d-flex justify-content-between align-items-center mb-4 gap-3 flex-wrap">
 
     <!-- Challenge category filters -->
     <div class="btn-group" role="group" aria-label="Filter challenges">
@@ -55,8 +55,7 @@
           asp-action="Grid"
           method="get"
           role="search"
-          class="d-flex gap-2 flex-grow-1"
-          style="max-width: 420px;">
+          class="challenge-search-form d-flex gap-2 flex-grow-1">
 
         <input type="hidden"
                name="filter"

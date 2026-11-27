@@ -94,8 +94,22 @@
     opacity: 1;
 }
 
-.quiz-result-selected-label {
+/* The text fills the row and the answer labels stay together on the right. */
+.quiz-result-option-text {
+    flex: 1;
+    min-width: 120px;
+    overflow-wrap: anywhere;
+}
+
+.quiz-result-labels {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
     margin-left: auto;
+}
+
+.quiz-result-selected-label {
     color: #a9bfff;
     font-size: 0.75rem;
     font-weight: 700;

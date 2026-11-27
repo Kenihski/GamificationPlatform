@@ -1,7 +1,9 @@
-// Live required-field validation for Challenge/Create.
+// Live required-field validation for Challenge/Create and Challenge/Update.
 // Backend model validation remains authoritative for submitted data.
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.querySelector('form[action*="/Challenge/Create"]');
+  const form = document.querySelector(
+    'form[action*="/Challenge/Create"], form[action*="/Challenge/Update"]'
+  );
   if (!form) return;
 
   const title = form.querySelector('[name="Title"]');

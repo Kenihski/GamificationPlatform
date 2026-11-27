@@ -143,6 +143,19 @@
     border-radius: 14px;
 }
 
+/* Search form; on small screens it goes on its own row below the filter and view buttons. */
+.challenge-search-form {
+    max-width: 420px;
+}
+
+@media (max-width: 768px) {
+    .challenge-search-form {
+        max-width: none;
+        flex-basis: 100%;
+        order: 3;
+    }
+}
+
 /* Challenge list description */
 .challenge-list-description {
     color: var(--home-muted);

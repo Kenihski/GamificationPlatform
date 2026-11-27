@@ -591,10 +591,14 @@ namespace GamificationPlatform.Controllers
         // Shows the Update Challenge form.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Update(int id)
+        public async Task<IActionResult> Update(
+            int id,
+            string? returnUrl = null,
+            bool showQuestions = false)
         {
+            // Questions are loaded for the question overview below the form.
             var challenge =
-                await _challengeRepository.GetChallengeByIdAsync(id);
+                await _challengeRepository.GetChallengeWithQuestionsAndOptionsAsync(id);
 
             if (challenge == null)
             {
@@ -622,6 +626,8 @@ namespace GamificationPlatform.Controllers
             }
 
             await LoadImagesAsync(userId);
+            SetReturnUrl(returnUrl);
+            ViewData["ShowQuestions"] = showQuestions;
 
             return View(challenge);
         }
@@ -632,7 +638,8 @@ namespace GamificationPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(
             Challenge challenge,
-            IFormFile? imageUpload)
+            IFormFile? imageUpload,
+            string? returnUrl = null)
         {
             var existingChallenge =
                 await _challengeRepository.GetChallengeByIdAsync(
@@ -748,6 +755,12 @@ namespace GamificationPlatform.Controllers
                     existingChallenge.ChallengeId,
                     userId);
 
+                // Return to the page the user came from, such as Challenge Details.
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
                 return RedirectToAction(nameof(MyChallenges));
             }
 
@@ -757,14 +770,30 @@ namespace GamificationPlatform.Controllers
                 existingChallenge.ChallengeId);
 
             await LoadImagesAsync(userId);
+            SetReturnUrl(returnUrl);
+
+            // Reload the questions so the overview below the form still shows them.
+            var challengeWithQuestions =
+                await _challengeRepository.GetChallengeWithQuestionsAndOptionsAsync(
+                    existingChallenge.ChallengeId);
+            challenge.Questions = challengeWithQuestions?.Questions ?? new List<Question>();
 
             return View(challenge);
+        }
+
+        // Only local URLs are passed to the view, so links cannot leave the site.
+        private void SetReturnUrl(string? returnUrl)
+        {
+            ViewData["ReturnUrl"] =
+                !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                    ? returnUrl
+                    : null;
         }
 
         // Shows the Delete Challenge confirmation page.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string? returnUrl = null)
         {
             var challenge =
                 await _challengeRepository.GetChallengeByIdAsync(id);
@@ -794,6 +823,8 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
+            SetReturnUrl(returnUrl);
+
             return View(challenge);
         }
 
@@ -801,7 +832,7 @@ namespace GamificationPlatform.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, string? returnUrl = null)
         {
             var challenge =
                 await _challengeRepository.GetChallengeByIdAsync(id);
@@ -837,6 +868,11 @@ namespace GamificationPlatform.Controllers
                 "Challenge {ChallengeId} was deleted by user {UserId}.",
                 id,
                 userId);
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
 
             return RedirectToAction(nameof(MyChallenges));
         }

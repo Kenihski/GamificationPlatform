@@ -5,73 +5,78 @@
     ViewData["Title"] = "Login";
 }
 
-<h1 class="h2">Login</h1>
+@* Same centred width and heading spacing as the other form pages. *@
+<div class="management-page">
 
-@if (TempData["SuccessMessage"] is string registrationSuccess)
-{
-    <div class="alert alert-success" role="status">
-        @registrationSuccess
-    </div>
-}
+    <h1 class="h2 my-4">Login</h1>
 
-@if (!string.IsNullOrEmpty(Model?.ReturnUrl))
-{
-    <div class="alert alert-info">
-        You must be logged in to access this page.
-    </div>
-}
+    @if (TempData["SuccessMessage"] is string registrationSuccess)
+    {
+        <div class="alert alert-success" role="status">
+            @registrationSuccess
+        </div>
+    }
 
-<form asp-controller="Account"
-      asp-action="Login"
-      method="post">
+    @if (!string.IsNullOrEmpty(Model?.ReturnUrl))
+    {
+        <div class="alert alert-info">
+            You must be logged in to access this page.
+        </div>
+    }
 
-    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <form asp-controller="Account"
+          asp-action="Login"
+          method="post">
 
-    <input asp-for="ReturnUrl"
-           type="hidden" />
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <div class="mb-3">
-        <label asp-for="Username"
-               class="form-label">
-            Username or email
-        </label>
+        <input asp-for="ReturnUrl"
+               type="hidden" />
 
-        <input asp-for="Username"
-               autocomplete="username"
-               autofocus="@(ViewData.ModelState.IsValid ? "autofocus" : null)"
-               class="form-control" />
+        <div class="mb-3">
+            <label asp-for="Username"
+                   class="form-label">
+                Username or email
+            </label>
 
-        <span asp-validation-for="Username"
-              class="text-danger"></span>
-    </div>
+            <input asp-for="Username"
+                   autocomplete="username"
+                   autofocus="@(ViewData.ModelState.IsValid ? "autofocus" : null)"
+                   class="form-control" />
 
-    <div class="mb-3">
-        <label asp-for="Password"
-               class="form-label">
-            Password
-        </label>
+            <span asp-validation-for="Username"
+                  class="text-danger"></span>
+        </div>
 
-        <input asp-for="Password"
-               autocomplete="current-password"
-               class="form-control" />
+        <div class="mb-3">
+            <label asp-for="Password"
+                   class="form-label">
+                Password
+            </label>
 
-        <span asp-validation-for="Password"
-              class="text-danger"></span>
-    </div>
+            <input asp-for="Password"
+                   autocomplete="current-password"
+                   class="form-control" />
 
-    <button type="submit"
-            class="btn btn-primary">
-        Login
-    </button>
+            <span asp-validation-for="Password"
+                  class="text-danger"></span>
+        </div>
 
-    <p class="mt-3">
-        Don't have an account?
+        <button type="submit"
+                class="btn btn-primary">
+            Login
+        </button>
 
-        <a asp-controller="Account"
-           asp-action="Register"
-           asp-route-returnUrl="@Model?.ReturnUrl">
-            Register here
-        </a>
-    </p>
+        <p class="mt-3">
+            Don't have an account?
 
-</form>
+            <a asp-controller="Account"
+               asp-action="Register"
+               asp-route-returnUrl="@Model?.ReturnUrl">
+                Register here
+            </a>
+        </p>
+
+    </form>
+
+</div>

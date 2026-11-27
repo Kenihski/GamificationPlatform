@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "Delete Challenge";
+
+    // Set by the controller only when it is a local URL.
+    var returnUrl = ViewData["ReturnUrl"] as string;
 }
 
 <div class="management-page my-4">
@@ -92,13 +95,16 @@
 
                 @Html.AntiForgeryToken()
 
+                <input type="hidden"
+                       name="returnUrl"
+                       value="@returnUrl" />
+
                 <button type="submit"
                         class="btn btn-outline-danger">
                     Confirm deletion
                 </button>
 
-                <a asp-controller="Challenge"
-                   asp-action="MyChallenges"
+                <a href="@(returnUrl ?? Url.Action("MyChallenges", "Challenge"))"
                    class="btn btn-outline-primary">
                     Cancel
                 </a>

@@ -51,10 +51,34 @@ namespace GamificationPlatform.Controllers
                 await _imageService.GetDefaultImagesAsync();
         }
 
+        // Returns to a local returnUrl, or to the challenge's question overview.
+        private IActionResult RedirectToReturnUrlOrChallenge(
+            string? returnUrl,
+            int challengeId)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction(
+                "Details",
+                "Challenge",
+                new { id = challengeId, showQuestions = true });
+        }
+
+        // Only local URLs are kept, so links on the page cannot leave the site.
+        private string? LocalReturnUrlOrNull(string? returnUrl)
+        {
+            return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                ? returnUrl
+                : null;
+        }
+
         // Shows the Create Question form.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Create(int? challengeId)
+        public async Task<IActionResult> Create(int? challengeId, string? returnUrl = null)
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -82,7 +106,8 @@ namespace GamificationPlatform.Controllers
 
             var model = new QuestionFormViewModel
             {
-                Challenges = challenges
+                Challenges = challenges,
+                ReturnUrl = LocalReturnUrlOrNull(returnUrl)
             };
 
             // Automatically selects the challenge when coming
@@ -243,14 +268,7 @@ namespace GamificationPlatform.Controllers
                 TempData["SuccessMessage"] =
                     "Question created. Previous attempts and scores were reset.";
 
-                return RedirectToAction(
-                    "Details",
-                    "Challenge",
-                    new
-                    {
-                        id = question.ChallengeId,
-                        showQuestions = true
-                    });
+                return RedirectToReturnUrlOrChallenge(model.ReturnUrl, question.ChallengeId);
             }
 
             _logger.LogWarning(
@@ -280,7 +298,7 @@ namespace GamificationPlatform.Controllers
         // Shows the Update Question form.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Update(int id)
+        public async Task<IActionResult> Update(int id, string? returnUrl = null)
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -315,6 +333,7 @@ namespace GamificationPlatform.Controllers
             var model = new QuestionFormViewModel
             {
                 Question = question,
+                ReturnUrl = LocalReturnUrlOrNull(returnUrl),
 
                 Challenges = new List<Challenge>
                 {
@@ -431,8 +450,7 @@ namespace GamificationPlatform.Controllers
             if (ModelState.IsValid && imageUpload == null && !HasQuestionChanges(question, model))
             {
                 TempData["SuccessMessage"] = "No changes were made.";
-                return RedirectToAction("Details", "Challenge",
-                    new { id = question.ChallengeId, showQuestions = true });
+                return RedirectToReturnUrlOrChallenge(model.ReturnUrl, question.ChallengeId);
             }
 
             if (ModelState.IsValid && imageUpload != null)
@@ -498,14 +516,7 @@ namespace GamificationPlatform.Controllers
                 TempData["SuccessMessage"] =
                     "Question updated. Previous attempts and scores were reset.";
 
-                return RedirectToAction(
-                    "Details",
-                    "Challenge",
-                    new
-                    {
-                        id = question.ChallengeId,
-                        showQuestions = true
-                    });
+                return RedirectToReturnUrlOrChallenge(model.ReturnUrl, question.ChallengeId);
             }
 
             _logger.LogWarning(
@@ -530,7 +541,7 @@ namespace GamificationPlatform.Controllers
         // Shows the Delete Question confirmation page.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string? returnUrl = null)
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -562,6 +573,8 @@ namespace GamificationPlatform.Controllers
                 return Forbid();
             }
 
+            ViewData["ReturnUrl"] = LocalReturnUrlOrNull(returnUrl);
+
             return View(question);
         }
 
@@ -569,7 +582,7 @@ namespace GamificationPlatform.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, string? returnUrl = null)
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -640,14 +653,7 @@ namespace GamificationPlatform.Controllers
                     "Question deleted. Previous attempts and scores were reset.";
             }
 
-            return RedirectToAction(
-                "Details",
-                "Challenge",
-                new
-                {
-                    id = challengeId,
-                    showQuestions = true
-                });
+            return RedirectToReturnUrlOrChallenge(returnUrl, challengeId);
         }
 
         // Validates answers based on question type.

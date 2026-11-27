@@ -183,19 +183,19 @@
                                            disabled />
                                 }
 
-                                <span>@option.Text</span>
+                                <span class="quiz-result-option-text">@option.Text</span>
 
-                                @if (isSelected)
+                                @if (isSelected || option.IsCorrect)
                                 {
-                                    <span class="quiz-result-selected-label">
-                                        Your answer
-                                    </span>
-                                }
-
-                                @if (option.IsCorrect)
-                                {
-                                    <span class="quiz-result-correct-label">
-                                        Correct answer
+                                    <span class="quiz-result-labels">
+                                        @if (isSelected)
+                                        {
+                                            <span class="quiz-result-selected-label">Your answer</span>
+                                        }
+                                        @if (option.IsCorrect)
+                                        {
+                                            <span class="quiz-result-correct-label">Correct answer</span>
+                                        }
                                     </span>
                                 }
 

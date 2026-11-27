@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Update Question";
 
+    // Only a local return URL is used for links back to the previous page.
+    var returnUrl = Url.IsLocalUrl(Model.ReturnUrl) ? Model.ReturnUrl : null;
+
     var challenge = Model.Challenges.FirstOrDefault(c =>
         c.ChallengeId == Model.Question.ChallengeId);
 
@@ -70,6 +73,9 @@
                 <input type="hidden"
                        asp-for="Question.ChallengeId" />
 
+                <input type="hidden"
+                       asp-for="ReturnUrl" />
+
                 <div class="form-group mb-3">
                     <label asp-for="Question.Title">
                         Title
@@ -93,7 +99,7 @@
                     <span class="text-danger">*</span>
 
                     <select asp-for="Question.QuestionType"
-                            class="form-control"
+                            class="form-select"
                             id="questionType" aria-describedby="questionTypeHelp">
 
                         <option value="SingleChoice">
@@ -125,7 +131,7 @@
                     </label>
 
                     <select id="descriptionSelect" data-validation-for="Question.Description"
-                            class="form-control">
+                            class="form-select">
 
                         <option value="">
                             -- No description --
@@ -219,7 +225,7 @@
                     </label>
 
                     <select id="imageCategorySelect" data-validation-for="Question.ImageUrl"
-                            class="form-control">
+                            class="form-select">
 
                         <option value="none"
                                 selected="@(selectedCategory == "none")">
@@ -277,7 +283,7 @@
                         </label>
 
                         <select id="myImagesSelect"
-                                class="form-control">
+                                class="form-select">
 
                             <option value="">
                                 -- Select image --
@@ -303,7 +309,7 @@
                         </label>
 
                         <select id="defaultImagesSelect"
-                                class="form-control">
+                                class="form-select">
 
                             <option value="">
                                 -- Select image --
@@ -388,8 +394,9 @@
 
                                 <label class="form-check-label"
                                        for="correctOption@(i)">
+                                    @* Screen readers hear "Mark option N as correct answer"; the visible text stays short. *@
+                                    <span class="visually-hidden">Mark option @(i + 1) as</span>
                                     Correct answer
-                                    <span class="visually-hidden">for Option @(i + 1)</span>
                                 </label>
                             </div>
                         </div>
@@ -429,14 +436,12 @@
                 <br />
 
                 <button type="submit"
-                        class="btn btn-primary">
-                    Update Question
+                        class="btn btn-outline-warning">
+                    Save Changes
                 </button>
 
-                <a asp-controller="Challenge"
-                   asp-action="Details"
-                   asp-route-id="@Model.Question.ChallengeId"
-                   class="btn btn-secondary">
+                <a href="@(returnUrl ?? Url.Action("Details", "Challenge", new { id = Model.Question.ChallengeId }))"
+                   class="btn btn-outline-primary">
                     Cancel
                 </a>
             </form>

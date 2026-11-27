@@ -154,11 +154,6 @@
     color: #ffffff;
 }
 
-.challenge-details-panel .btn-success:focus-visible {
-    outline: 2px solid #a7e7d8;
-    outline-offset: 3px;
-}
-
 
 /* Core and Community buttons in Challenge Details */
 .challenge-details-panel .my-challenges-type-button {

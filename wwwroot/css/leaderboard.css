@@ -125,11 +125,7 @@
     font-weight: 600;
 }
 
-.leaderboard-back-button:hover {
-    border-color: #b2c1ff;
-    background: rgba(77, 99, 202, 0.4);
-    color: #ffffff;
-}
+/* Hover uses the shared solid blue of .btn-outline-primary. */
 
 @media (max-width: 575.98px) {
     .leaderboard-table thead th,

@@ -32,6 +32,17 @@
     white-space: nowrap;
 }
 
+/* Shared question table: short headers and action buttons stay on one line,
+   so narrow form pages scroll the table instead of wrapping them. */
+.question-overview th,
+.question-overview .question-overview-actions {
+    white-space: nowrap;
+}
+
+.question-overview .question-overview-actions {
+    flex-wrap: nowrap;
+}
+
 /* Delete confirmation warnings */
 .question-delete-warning,
 .challenge-delete-warning {
@@ -57,7 +68,8 @@
     padding: 0.25rem 0.5rem;
     white-space: nowrap;
     background: transparent;
-    border: 1px solid;
+    /* Same border as the other outline buttons in the row (matches Subapp 2). */
+    border: 1px solid #91adff;
 }
 
 .my-challenges-type-button.featured-badge-core {

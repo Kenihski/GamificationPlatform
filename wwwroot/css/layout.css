@@ -6,8 +6,12 @@ body {
 }
 
 /* skip to main content */
+/* Fixed to the window even while hidden, so the browser never scrolls the page to
+   reach it, also when focus comes from the browser toolbar. */
 .skip-link {
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 1px;
     height: 1px;
     overflow: hidden;
@@ -15,15 +19,18 @@ body {
     white-space: nowrap;
 }
 
+/* Fixed to the window so focusing it does not scroll the page or push content down. */
 .skip-link:focus {
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
     display: block;
     width: auto;
     height: auto;
     overflow: visible;
     clip-path: none;
     white-space: normal;
-    z-index: 1;
+    z-index: 1100;
     margin: 0.5rem;
     padding: 0.5rem 1rem;
     background: #111833;
@@ -115,6 +122,25 @@ body:not(:has(.home-hero)) #matrixBackground {
     row-gap: 0.75rem;
 }
 
+/* From 1200px the main links stay in the exact centre: the left and right
+   columns are always equally wide, whatever the right side contains. */
+@media (min-width: 1200px) {
+    .site-navbar > .container-fluid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        column-gap: 1rem;
+    }
+
+    .site-navbar-start {
+        justify-self: start;
+    }
+
+    .site-navbar-end {
+        justify-self: end;
+    }
+}
+
 .site-navbar .navbar-brand {
     color: #ffffff;
     font-weight: 700;
@@ -138,8 +164,19 @@ body:not(:has(.home-hero)) #matrixBackground {
     border-color: rgba(145, 169, 255, 0.45);
 }
 
+/* Mouse focus keeps the soft glow; keyboard focus gets the shared light ring below. */
 .site-navbar .navbar-toggler:focus {
     box-shadow: 0 0 0 0.2rem rgba(111, 132, 255, 0.2);
+}
+
+.site-navbar .navbar-toggler:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* Rounded corners so the focus ring matches the rest of the navbar. */
+.site-navbar .nav-link,
+.site-navbar .navbar-brand {
+    border-radius: 8px;
 }
 
 .site-sidebar {
@@ -231,5 +268,40 @@ body:not(:has(.home-hero)) #matrixBackground {
     .desktop-navigation .nav-link {
         white-space: nowrap;
         padding: 10px 8px;
+    }
+}
+
+/* The navbar stays at the top while scrolling and is hidden while scrolling down.
+   It is clipped instead of moved off-screen, so the browser does not scroll the
+   page when keyboard focus moves into it. */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.site-header > .site-navbar {
+    /* The visible area reaches past the navbar so focus rings, shadows and the
+       matrix tooltip are not cut off. */
+    clip-path: inset(-12px -12px -80px -12px);
+    transition: clip-path 0.25s ease, opacity 0.25s ease;
+}
+
+/* Keyboard users tabbing into the navbar always see it. */
+.site-header.site-header-hidden:not(:focus-within) > .site-navbar {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Used for one frame when keyboard focus enters the hidden navbar. */
+.site-header.site-header-instant,
+.site-header.site-header-instant .site-navbar {
+    transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-header > .site-navbar {
+        transition: none;
     }
 }
