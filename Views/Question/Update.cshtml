@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Update Question";
 
+    // Only a local return URL is used for links back to the previous page.
+    var returnUrl = Url.IsLocalUrl(Model.ReturnUrl) ? Model.ReturnUrl : null;
+
     var challenge = Model.Challenges.FirstOrDefault(c =>
         c.ChallengeId == Model.Question.ChallengeId);
 
@@ -69,6 +72,9 @@
 
                 <input type="hidden"
                        asp-for="Question.ChallengeId" />
+
+                <input type="hidden"
+                       asp-for="ReturnUrl" />
 
                 <div class="form-group mb-3">
                     <label asp-for="Question.Title">
@@ -433,10 +439,8 @@
                     Save Changes
                 </button>
 
-                <a asp-controller="Challenge"
-                   asp-action="Details"
-                   asp-route-id="@Model.Question.ChallengeId"
-                   class="btn btn-secondary">
+                <a href="@(returnUrl ?? Url.Action("Details", "Challenge", new { id = Model.Question.ChallengeId }))"
+                   class="btn btn-outline-primary">
                     Cancel
                 </a>
             </form>

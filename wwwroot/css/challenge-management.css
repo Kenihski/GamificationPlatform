@@ -32,6 +32,17 @@
     white-space: nowrap;
 }
 
+/* Shared question table: short headers and action buttons stay on one line,
+   so narrow form pages scroll the table instead of wrapping them. */
+.question-overview th,
+.question-overview .question-overview-actions {
+    white-space: nowrap;
+}
+
+.question-overview .question-overview-actions {
+    flex-wrap: nowrap;
+}
+
 /* Delete confirmation warnings */
 .question-delete-warning,
 .challenge-delete-warning {

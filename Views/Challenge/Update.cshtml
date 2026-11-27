@@ -4,6 +4,21 @@
 @{
     ViewData["Title"] = "Update Challenge";
 
+    // Set by the controller only when it is a local URL.
+    var returnUrl = ViewData["ReturnUrl"] as string;
+
+    // The question overview starts closed so the form and its buttons come first.
+    // It opens automatically when the user returns from a question page.
+    bool showQuestions = ViewData["ShowQuestions"] as bool? ?? false;
+
+    // Question pages opened from here come back to this form.
+    var questionOverview = new GamificationPlatform.ViewModels.QuestionOverviewViewModel
+    {
+        ChallengeId = Model.ChallengeId,
+        Questions = Model.Questions ?? new List<GamificationPlatform.Models.Question>(),
+        ReturnUrl = Url.Action("Update", "Challenge", new { id = Model.ChallengeId, showQuestions = true, returnUrl })
+    };
+
     var myImages = ViewBag.MyImages as List<GamificationPlatform.Models.UserImage>
         ?? new List<GamificationPlatform.Models.UserImage>();
 
@@ -57,6 +72,10 @@
 
                 <input type="hidden"
                        asp-for="ChallengeId" />
+
+                <input type="hidden"
+                       name="returnUrl"
+                       value="@returnUrl" />
 
                 <div class="form-group mb-3">
                     <label asp-for="Title"></label>
@@ -283,20 +302,56 @@
 
                 </div>
 
-                <button type="submit"
-                        class="btn btn-outline-warning">
-                    Save Changes
-                </button>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit"
+                                class="btn btn-outline-warning">
+                            Save Changes
+                        </button>
 
-                <a asp-controller="Challenge"
-                   asp-action="MyChallenges"
-                   class="btn btn-outline-primary">
-                    Cancel
-                </a>
+                        <a href="@(returnUrl ?? Url.Action("MyChallenges", "Challenge"))"
+                           class="btn btn-outline-primary">
+                            Cancel
+                        </a>
+                    </div>
+
+                    @* Same toggle as on Challenge Details; it opens the question overview below. *@
+                    <button class="btn btn-outline-primary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#questionOverview"
+                            aria-expanded="@(showQuestions ? "true" : "false")"
+                            aria-controls="questionOverview">
+                        Questions (@questionOverview.Questions.Count())
+                    </button>
+                </div>
 
             </form>
         </div>
     </div>
+
+    @* Manage the questions here as well, so editing does not require the details page. *@
+    <section id="questionOverview"
+             class="card mt-4 collapse@(showQuestions ? " show" : "")"
+             aria-labelledby="questionOverviewTitle">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3">
+                <h2 id="questionOverviewTitle" class="h4 mb-0">
+                    Questions (@questionOverview.Questions.Count())
+                </h2>
+
+                <a asp-controller="Question"
+                   asp-action="Create"
+                   asp-route-challengeId="@Model.ChallengeId"
+                   asp-route-returnUrl="@questionOverview.ReturnUrl"
+                   class="btn btn-primary">
+                    + Add Question
+                </a>
+            </div>
+
+            <partial name="_QuestionOverview" model="questionOverview" />
+        </div>
+    </section>
 </div>
 
 @section Scripts

@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "Delete Question";
+
+    // Set by the controller only when it is a local URL.
+    var returnUrl = ViewData["ReturnUrl"] as string;
 }
 
 <div class="management-page my-4">
@@ -146,14 +149,16 @@
                   asp-route-id="@Model.QuestionId"
                   method="post">
 
+                <input type="hidden"
+                       name="returnUrl"
+                       value="@returnUrl" />
+
                 <button type="submit"
                         class="btn btn-outline-danger">
                     Confirm deletion
                 </button>
 
-                <a asp-controller="Challenge"
-                   asp-action="Details"
-                   asp-route-id="@Model.ChallengeId"
+                <a href="@(returnUrl ?? Url.Action("Details", "Challenge", new { id = Model.ChallengeId }))"
                    class="btn btn-outline-primary">
                     Cancel
                 </a>

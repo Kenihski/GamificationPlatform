@@ -107,13 +107,6 @@
     margin-bottom: 20px;
 }
 
-.user-history-card-header h4 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #f5f7ff;
-}
-
 .user-history-attempt-count {
     padding: 5px 12px;
     color: #b9c9f5;

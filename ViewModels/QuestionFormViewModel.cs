@@ -37,6 +37,10 @@ namespace GamificationPlatform.ViewModels
                 ""
             };
 
+        // Local URL to return to after saving or cancelling.
+        // The controller checks that it is local before redirecting.
+        public string? ReturnUrl { get; set; }
+
         [BindNever]
         public List<Challenge> Challenges { get; set; }
             = new List<Challenge>();

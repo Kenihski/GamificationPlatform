@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Create New Question";
 
+    // Only a local return URL is used for links back to the previous page.
+    var returnUrl = Url.IsLocalUrl(Model.ReturnUrl) ? Model.ReturnUrl : null;
+
     var challenge = Model.Challenges.FirstOrDefault(c =>
         c.ChallengeId == Model.Question.ChallengeId);
 
@@ -299,6 +302,9 @@
                 <input type="hidden"
                        asp-for="Question.ChallengeId" />
 
+                <input type="hidden"
+                       asp-for="ReturnUrl" />
+
                 @* The challenge cannot be changed. *@
                 <div class="form-group mb-3">
                     <label for="challengeTitle">
@@ -397,9 +403,7 @@
                     Create Question
                 </button>
 
-                <a asp-controller="Challenge"
-                   asp-action="Details"
-                   asp-route-id="@Model.Question.ChallengeId"
+                <a href="@(returnUrl ?? Url.Action("Details", "Challenge", new { id = Model.Question.ChallengeId }))"
                    class="btn btn-secondary">
                     Back to Challenge
                 </a>

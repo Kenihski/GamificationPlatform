@@ -217,7 +217,30 @@ main h5 {
     color: #b8c8ff;
 }
 
-.btn-outline-primary:hover {
+/* Hover, click and open state: solid blue, as Bootstrap shows when pressed in Subapp 1.
+   Same pattern as Edit (yellow), Delete (red) and Publish (green). */
+.btn-outline-primary:hover,
+.btn-outline-primary:active,
+.btn.btn-outline-primary[aria-expanded="true"] {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #ffffff;
+}
+
+/* Change Type uses the solid purple of the Community badge (white text, 5.6:1 contrast). */
+.btn.change-type-button:hover,
+.btn.change-type-button:active {
+    background: #7b4ec9;
+    border-color: #7b4ec9;
+    color: #ffffff;
+}
+
+/* Navigation-style buttons keep the subtle hover: the challenge list filters,
+   search and view switch, and View Leaderboard on the details page. */
+.challenge-toolbar .btn-outline-primary:hover,
+.challenge-toolbar .btn-outline-primary:active,
+.btn.btn-outline-primary.challenge-details-leaderboard-button:hover,
+.btn.btn-outline-primary.challenge-details-leaderboard-button:active {
     background: rgba(77, 99, 202, 0.35);
     border-color: #b2c1ff;
     color: #ffffff;
