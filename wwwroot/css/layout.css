@@ -15,15 +15,18 @@ body {
     white-space: nowrap;
 }
 
+/* Fixed to the window so focusing it does not scroll the page or push content down. */
 .skip-link:focus {
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
     display: block;
     width: auto;
     height: auto;
     overflow: visible;
     clip-path: none;
     white-space: normal;
-    z-index: 1;
+    z-index: 1100;
     margin: 0.5rem;
     padding: 0.5rem 1rem;
     background: #111833;
@@ -261,5 +264,30 @@ body:not(:has(.home-hero)) #matrixBackground {
     .desktop-navigation .nav-link {
         white-space: nowrap;
         padding: 10px 8px;
+    }
+}
+
+/* The navbar stays at the top while scrolling; navbar-reveal.js hides it while
+   scrolling down and shows it on scroll up or when the mouse reaches the top. */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    transition: top 0.25s ease;
+}
+
+/* Used for one frame when keyboard focus enters the hidden navbar. */
+.site-header.site-header-instant {
+    transition: none;
+}
+
+/* Keyboard users tabbing into the navbar always see it. */
+.site-header.site-header-hidden:not(:focus-within) {
+    top: calc(-1 * var(--site-header-height, 80px) - 4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-header {
+        transition: none;
     }
 }
