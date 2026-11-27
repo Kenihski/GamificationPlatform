@@ -497,6 +497,81 @@ public class ChallengeControllerTests
         await repository.Received(1).SaveChangesAsync();
     }
 
+    // Published details are public; draft details require ownership or the Admin role.
+    [Theory]
+    [InlineData(false, null, false, false)]
+    [InlineData(false, 8, false, false)]
+    [InlineData(false, 7, false, true)]
+    [InlineData(false, 8, true, true)]
+    [InlineData(true, null, false, true)]
+    [InlineData(true, 8, false, true)]
+    public async Task Details_EnforcesDraftVisibility(
+        bool isPublished, int? userId, bool isAdmin, bool expectedAccess)
+    {
+        const int challengeId = 12;
+        var repository = Substitute.For<IChallengeRepository>();
+        var attempts = Substitute.For<IAttemptRepository>();
+        var logger = Substitute.For<ILogger<ChallengeController>>();
+        var challenge = new Challenge
+        {
+            ChallengeId = challengeId,
+            CreatedByUserId = 7,
+            IsPublished = isPublished,
+            Title = "Visibility test"
+        };
+
+        repository.GetChallengeWithQuestionsAndOptionsAsync(challengeId)
+            .Returns(Task.FromResult<Challenge?>(challenge));
+        attempts.GetCompletedAttemptsAsync(Arg.Any<int>(), challengeId)
+            .Returns(Task.FromResult(new List<ChallengeAttempt>()));
+
+        var claims = new List<Claim>();
+        if (userId.HasValue)
+        {
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()));
+        }
+        if (isAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        }
+
+        var identity = userId.HasValue
+            ? new ClaimsIdentity(claims, "Test")
+            : new ClaimsIdentity();
+
+        var controller = new ChallengeController(
+            repository, attempts, Substitute.For<IImageService>(),
+            Substitute.For<IAchievementService>(), logger)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(identity)
+                }
+            }
+        };
+
+        var result = await controller.Details(challengeId);
+
+        if (expectedAccess)
+        {
+            Assert.IsType<ViewResult>(result);
+        }
+        else
+        {
+            Assert.IsType<NotFoundResult>(result);
+            await attempts.DidNotReceive()
+                .GetCompletedAttemptsAsync(Arg.Any<int>(), Arg.Any<int>());
+
+            Assert.Contains(logger.ReceivedCalls(), call =>
+                call.GetMethodInfo().Name == nameof(ILogger.Log) &&
+                Equals(call.GetArguments()[0], LogLevel.Warning) &&
+                (call.GetArguments()[2]?.ToString() ?? "")
+                    .Contains("Unauthorised access to unpublished challenge"));
+        }
+    }
+
     private static ChallengeController CreateAdminChallengeController(
         IChallengeRepository repository, int userId)
     {
