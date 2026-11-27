@@ -77,10 +77,57 @@ main h5 {
     color: var(--text-success) !important;
 }
 
-/* Keep keyboard focus visible even when a component replaces Bootstrap's shadow. */
-:root :focus-visible {
-    outline: 3px solid var(--focus-ring);
+/* Keep keyboard focus visible on links and form fields. */
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+    outline: 2px solid var(--focus-ring);
     outline-offset: 3px;
+    /* Rounded like the rest of the design; components with their own radius keep it. */
+    border-radius: 6px;
+}
+
+/* The skip link target only receives focus so the next Tab starts in the content;
+   it is not interactive, so it needs no ring around the whole page. */
+#main-content:focus,
+.route-focus-start:focus {
+    outline: none;
+}
+
+/* Navigation links and controls use the same light ring as buttons instead of
+   Bootstrap's translucent blue, which is too faint on the dark background. */
+.nav-link:focus-visible,
+.navbar-brand:focus-visible,
+.page-link:focus-visible,
+.btn-close:focus-visible,
+.dropdown-item:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* Checkboxes and radios show the outline below instead of Bootstrap's blue glow. */
+.form-check-input:focus {
+    box-shadow: none;
+}
+
+/* Bootstrap removes the outline on focused form fields; keep the visible ring. */
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+}
+
+/* Buttons use a tight ring like Bootstrap, but in the light focus colour so it
+   keeps at least 3:1 contrast against the dark background (WCAG 1.4.11). */
+.btn:focus-visible {
+    outline: 0;
+    /* !important so page-specific glows (such as the home page buttons) cannot hide it. */
+    box-shadow: 0 0 0 2px var(--focus-ring) !important;
+}
+
+/* Bootstrap 5 has no label spacing without .form-label; keep focus rings off label text. */
+.form-group > label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
 }
 
 .card:not(.home-ranking-card):not(.home-feature-card) {
@@ -229,6 +276,7 @@ main h5 {
 
 /* Change Type uses the solid purple of the Community badge (white text, 5.6:1 contrast). */
 .btn.change-type-button:hover,
+.btn.change-type-button:focus-visible,
 .btn.change-type-button:active {
     background: #7b4ec9;
     border-color: #7b4ec9;
@@ -238,8 +286,10 @@ main h5 {
 /* Navigation-style buttons keep the subtle hover: the challenge list filters,
    search and view switch, and View Leaderboard on the details page. */
 .challenge-toolbar .btn-outline-primary:hover,
+.challenge-toolbar .btn-outline-primary:focus-visible,
 .challenge-toolbar .btn-outline-primary:active,
 .btn.btn-outline-primary.challenge-details-leaderboard-button:hover,
+.btn.btn-outline-primary.challenge-details-leaderboard-button:focus-visible,
 .btn.btn-outline-primary.challenge-details-leaderboard-button:active {
     background: rgba(77, 99, 202, 0.35);
     border-color: #b2c1ff;

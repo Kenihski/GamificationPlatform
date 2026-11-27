@@ -55,7 +55,7 @@
 }
 
 .questions-nav-button:focus-visible {
-    outline: 3px solid #a5b8ff;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 3px;
 }
 

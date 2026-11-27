@@ -157,8 +157,19 @@ body:not(:has(.home-hero)) #matrixBackground {
     border-color: rgba(145, 169, 255, 0.45);
 }
 
+/* Mouse focus keeps the soft glow; keyboard focus gets the shared light ring below. */
 .site-navbar .navbar-toggler:focus {
     box-shadow: 0 0 0 0.2rem rgba(111, 132, 255, 0.2);
+}
+
+.site-navbar .navbar-toggler:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* Rounded corners so the focus ring matches the rest of the navbar. */
+.site-navbar .nav-link,
+.site-navbar .navbar-brand {
+    border-radius: 8px;
 }
 
 .site-sidebar {

@@ -94,12 +94,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let attemptedSubmit = false;
 
-  function validateForm() {
-    const errors = [];
-    const title = form.querySelector('[name="Question.Title"]');
-    const points = form.querySelector('[name="Question.Points"]');
+  const title = form.querySelector('[name="Question.Title"]');
+  const points = form.querySelector('[name="Question.Points"]');
+
+  function getFieldErrors() {
+    const fieldErrors = {};
     if (!title?.value.trim()) {
-      errors.push("Question title is required.");
+      fieldErrors["Question.Title"] = "Question title is required.";
     }
     if (
       !points?.value.trim() ||
@@ -107,10 +108,30 @@ document.addEventListener("DOMContentLoaded", function () {
       Number(points.value) < 1 ||
       Number(points.value) > 100
     ) {
-      errors.push("Points must be between 1 and 100.");
+      fieldErrors["Question.Points"] = "Points must be between 1 and 100.";
     }
-    errors.push(...checkAnswers());
-    return errors;
+    return fieldErrors;
+  }
+
+  function validateForm() {
+    return [...Object.values(getFieldErrors()), ...checkAnswers()];
+  }
+
+  // Show each field's error below the field and mark it invalid for screen readers.
+  function showFieldErrors() {
+    const fieldErrors = attemptedSubmit ? getFieldErrors() : {};
+    for (const [name, element] of [["Question.Title", title], ["Question.Points", points]]) {
+      if (!element) continue;
+      const error = fieldErrors[name];
+      element.classList.toggle("input-validation-error", Boolean(error));
+      element.setAttribute("aria-invalid", error ? "true" : "false");
+      const inline = form.querySelector('[data-valmsg-for="' + name + '"]');
+      if (inline) {
+        inline.textContent = error || "";
+        inline.classList.toggle("field-validation-error", Boolean(error));
+        inline.classList.toggle("field-validation-valid", !error);
+      }
+    }
   }
 
   function showErrors(errors) {
@@ -128,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
       clientSummary.append(heading, list);
     }
     clientSummary.classList.toggle("d-none", errors.length === 0);
+    showFieldErrors();
     // The separate answer alert is replaced by the ordered summary.
     message.classList.add("d-none");
     message.textContent = "";

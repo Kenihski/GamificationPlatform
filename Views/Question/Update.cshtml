@@ -394,8 +394,9 @@
 
                                 <label class="form-check-label"
                                        for="correctOption@(i)">
+                                    @* Screen readers hear "Mark option N as correct answer"; the visible text stays short. *@
+                                    <span class="visually-hidden">Mark option @(i + 1) as</span>
                                     Correct answer
-                                    <span class="visually-hidden">for Option @(i + 1)</span>
                                 </label>
                             </div>
                         </div>
