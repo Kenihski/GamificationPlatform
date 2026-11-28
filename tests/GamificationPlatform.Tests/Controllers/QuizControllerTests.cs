@@ -113,6 +113,65 @@ public class QuizControllerTests
         AssertWarning(logger, warningText);
     }
 
+    [Fact]
+    public async Task Submit_WhenAnswersAreValid_RedirectsToAttemptDetails()
+    {
+        // Arrange: a published challenge with one question and an unfinished attempt.
+        var challengeRepository = Substitute.For<IChallengeRepository>();
+        var attemptRepository = Substitute.For<IAttemptRepository>();
+        var logger = Substitute.For<ILogger<QuizController>>();
+
+        var challenge = new Challenge
+        {
+            ChallengeId = 10,
+            IsPublished = true,
+            CreatedByUserId = 99,
+            Title = "Published challenge",
+            Questions = new List<Question>
+            {
+                new Question
+                {
+                    QuestionId = 21,
+                    ChallengeId = 10,
+                    Points = 10,
+                    QuestionType = "SingleChoice",
+                    Options = new List<QuestionOption>
+                    {
+                        new QuestionOption { QuestionOptionId = 101, Text = "A", IsCorrect = true },
+                        new QuestionOption { QuestionOptionId = 102, Text = "B" }
+                    }
+                }
+            }
+        };
+
+        challengeRepository.GetChallengeWithQuestionsAndOptionsAsync(10)
+            .Returns(Task.FromResult<Challenge?>(challenge));
+
+        attemptRepository.GetValidUnfinishedAttemptAsync(8, 7, 10)
+            .Returns(Task.FromResult<ChallengeAttempt?>(new ChallengeAttempt
+            {
+                ChallengeAttemptId = 8,
+                StartedAt = DateTime.Now
+            }));
+
+        var controller = CreateController(
+            challengeRepository, attemptRepository, logger);
+
+        var answers = new Dictionary<int, List<int>>
+        {
+            [21] = new List<int> { 101 }
+        };
+
+        // Act
+        var result = await controller.Submit(10, 8, answers, null);
+
+        // Assert: the attempt is saved and the browser is sent to its result page.
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(nameof(QuizController.AttemptDetails), redirect.ActionName);
+        Assert.Equal(8, redirect.RouteValues?["id"]);
+        await attemptRepository.Received(1).SaveChangesAsync();
+    }
+
     private static QuizController CreateController(
         IChallengeRepository challengeRepository,
         IAttemptRepository attemptRepository,

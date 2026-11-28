@@ -129,6 +129,11 @@
                    name="challengeAttemptId"
                    value="@Model.ChallengeAttemptId" />
 
+            @if (Model.FromMyChallenges)
+            {
+                <input type="hidden" name="fromMyChallenges" value="true" />
+            }
+
             @foreach (var question in Model.Challenge.Questions)
             {
                 questionNumber++;

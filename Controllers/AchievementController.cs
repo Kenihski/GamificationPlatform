@@ -272,6 +272,9 @@ namespace GamificationPlatform.Controllers
                 achievement.Name,
                 userId);
 
+            TempData["SuccessMessage"] =
+                "Achievement created successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -414,6 +417,9 @@ namespace GamificationPlatform.Controllers
                 achievement.AchievementId,
                 userId);
 
+            TempData["SuccessMessage"] =
+                "Achievement updated successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -525,6 +531,9 @@ namespace GamificationPlatform.Controllers
                 achievement.AchievementId,
                 userId);
 
+            TempData["SuccessMessage"] =
+                "Achievement deleted successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -586,6 +595,9 @@ namespace GamificationPlatform.Controllers
                 id,
                 userId);
 
+            TempData["SuccessMessage"] =
+                "Achievement published successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -641,6 +653,9 @@ namespace GamificationPlatform.Controllers
                 "Achievement {AchievementId} unpublished by admin {UserId}.",
                 id,
                 userId);
+
+            TempData["SuccessMessage"] =
+                "Achievement unpublished successfully.";
 
             return RedirectToAction(nameof(Index));
         }

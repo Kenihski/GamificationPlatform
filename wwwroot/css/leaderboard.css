@@ -107,8 +107,8 @@
     font-size: 1.15rem;
 }
 
+/* Names keep the table text colour, since they are not links. */
 .leaderboard-username {
-    color: #b8c8ff;
     font-weight: 600;
 }
 

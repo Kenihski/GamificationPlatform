@@ -173,6 +173,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 String(minutes).padStart(2, "0") +
                 ":" +
                 String(seconds).padStart(2, "0");
+
+            // The time turns red during the last minute.
+            const lastMinute = totalSeconds <= 60;
+            timeRemaining.classList.toggle("text-danger", lastMinute);
+            timeRemaining.classList.toggle("fw-bold", lastMinute);
         }
 
         // Shows the timer immediately.

@@ -19,6 +19,10 @@ namespace GamificationPlatform.ViewModels
         // Controls whether answers and explanations are visible.
         public bool ShowAnswers { get; set; }
 
+        // True when the user opened the challenge from My Challenges,
+        // so "Back to Challenge" keeps the "Back to My Challenges" link.
+        public bool FromMyChallenges { get; set; }
+
         public List<AttemptAnswerViewModel> Answers { get; set; }
             = new List<AttemptAnswerViewModel>();
     }

@@ -16,6 +16,9 @@
 
     // Pages opened from here return to this page afterwards.
     string currentUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+
+    // Pages opened from here keep "Back to My Challenges" when the user came from there.
+    string? fromMyChallenges = Model.FromMyChallenges ? "true" : null;
     string? questionReturnUrl = Url.Action("Details", "Challenge", new
     {
         id = Model.Challenge.ChallengeId,
@@ -31,10 +34,10 @@
     };
 }
 
-<partial name="_FeedbackMessages" />
-
 <div class="challenge-details-page">
-    <a asp-controller="Challenge" asp-action="@(Model.FromMyChallenges ? "MyChallenges" : "Grid")" class="challenge-details-back">
+    <partial name="_FeedbackMessages" />
+
+    <a asp-controller="Challenge" asp-action="@(Model.FromMyChallenges ? "MyChallenges" : "Index")" class="challenge-details-back">
         <span aria-hidden="true">←</span> @(Model.FromMyChallenges ? "Back to My Challenges" : "Back to Challenges")
     </a>
 
@@ -95,6 +98,17 @@
 
             @if (User.Identity?.IsAuthenticated == true)
             {
+                @if (canTakeChallenge && Model.HasUnfinishedAttempt)
+                {
+                    <div class="challenge-details-notice">
+                        You have an unfinished attempt.
+                        @if (Model.Challenge.TimeLimitMinutes.HasValue)
+                        {
+                            <text>The timer is still running.</text>
+                        }
+                    </div>
+                }
+
                 @if (canTakeChallenge)
                 {
                     @if (isUnpublishedTest)
@@ -120,8 +134,11 @@
                     {
                         <a asp-controller="Quiz" asp-action="Take"
                            asp-route-id="@Model.Challenge.ChallengeId"
+                           asp-route-fromMyChallenges="@fromMyChallenges"
                            class="btn btn-primary featured-challenge-button">
-                            @(Model.Attempts.Any() ? "Take Challenge Again" : "Start Challenge")
+                            @(Model.HasUnfinishedAttempt
+                                ? "Continue Challenge"
+                                : Model.Attempts.Any() ? "Take Challenge Again" : "Start Challenge")
                         </a>
                     }
                 }
@@ -201,7 +218,7 @@
                               asp-action="ChangeType"
                               asp-route-id="@Model.Challenge.ChallengeId"
                               method="post">
-                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <input type="hidden" name="returnUrl" value="@currentUrl" />
                             <button type="submit"
                                     class="btn btn-outline-primary change-type-button">
                                 Change Type
@@ -213,15 +230,15 @@
                     {
                         <form asp-controller="Challenge" asp-action="Unpublish"
                               asp-route-id="@Model.Challenge.ChallengeId" method="post">
-                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                            <button type="submit" class="btn btn-outline-danger">Unpublish</button>
+                            <input type="hidden" name="returnUrl" value="@currentUrl" />
+                            <button type="submit" class="btn btn-outline-secondary">Unpublish</button>
                         </form>
                     }
                     else
                     {
                         <form asp-controller="Challenge" asp-action="Publish"
                               asp-route-id="@Model.Challenge.ChallengeId" method="post">
-                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                            <input type="hidden" name="returnUrl" value="@currentUrl" />
                             <button type="submit" class="btn btn-success">Publish</button>
                         </form>
                     }
@@ -296,7 +313,8 @@
                                     </td>
                                     <td>
                                         <a asp-controller="Quiz" asp-action="AttemptDetails"
-                                           asp-route-id="@attempt.ChallengeAttemptId">
+                                           asp-route-id="@attempt.ChallengeAttemptId"
+                                           asp-route-fromMyChallenges="@fromMyChallenges">
                                             Attempt @attempt.AttemptNumber
                                         </a>
                                     </td>

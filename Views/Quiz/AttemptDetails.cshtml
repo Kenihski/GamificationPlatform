@@ -13,6 +13,7 @@
     <a asp-controller="Challenge"
        asp-action="Details"
        asp-route-id="@Model.ChallengeId"
+       asp-route-fromMyChallenges="@(Model.FromMyChallenges ? "true" : null)"
        class="challenge-details-back">
         ← Back to Challenge
     </a>
@@ -256,6 +257,7 @@
     <a asp-controller="Challenge"
        asp-action="Details"
        asp-route-id="@Model.ChallengeId"
+       asp-route-fromMyChallenges="@(Model.FromMyChallenges ? "true" : null)"
        class="btn btn-outline-primary quiz-result-back-button">
         Back to Challenge
     </a>

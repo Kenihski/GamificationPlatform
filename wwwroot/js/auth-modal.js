@@ -77,8 +77,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     loginError.textContent =
                         result.message || "Login failed.";
 
+                    // Clear the password after a failed login, as on the Login page.
+                    document.getElementById("modalLoginPassword").value = "";
+
                     loginError.classList.remove("d-none");
-                loginError.focus();
+                    loginError.focus();
                 }
             } catch (error) {
                 loginError.textContent =

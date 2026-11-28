@@ -67,10 +67,11 @@
     display: inline-flex;
     align-items: center;
     padding: 7px 13px;
-    border: 1px solid rgba(255, 204, 108, 0.55);
+    /* Same grey as the Draft status badge. */
+    border: 1px solid rgba(148, 163, 184, 0.4);
     border-radius: 7px;
-    background: rgba(175, 121, 28, 0.2);
-    color: #ffe2a0;
+    background: rgba(148, 163, 184, 0.12);
+    color: #cbd5e1;
     font-size: 0.82rem;
     font-weight: 800;
     letter-spacing: 0.8px;
