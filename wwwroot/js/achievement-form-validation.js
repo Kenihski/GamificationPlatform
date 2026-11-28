@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const heading = document.createElement("strong");
             heading.textContent = "Please correct the following errors:";
             const list = document.createElement("ul");
+            list.className = "mb-0 mt-2";
             for (const error of messages) {
                 const item = document.createElement("li");
                 item.textContent = error;

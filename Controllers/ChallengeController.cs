@@ -31,11 +31,26 @@ namespace GamificationPlatform.Controllers
             _logger = logger;
         }
 
+        // Cookie that remembers whether the user last chose Grid or Table.
+        private const string ChallengeViewCookie = "ChallengeView";
+
+        // Opens the challenge list in the view the user chose last time.
+        public IActionResult Index()
+        {
+            string view = Request.Cookies[ChallengeViewCookie] == "Table"
+                ? nameof(Table)
+                : nameof(Grid);
+
+            return RedirectToAction(view);
+        }
+
         // Shows published challenges in a table.
         public async Task<IActionResult> Table(
             string filter = "All",
             string? searchTerm = null)
         {
+            RememberChallengeView("Table");
+
             var viewModel = await BuildChallengesViewModelAsync(
                 filter, "Table", searchTerm);
 
@@ -47,10 +62,24 @@ namespace GamificationPlatform.Controllers
             string filter = "All",
             string? searchTerm = null)
         {
+            RememberChallengeView("Grid");
+
             var viewModel = await BuildChallengesViewModelAsync(
                 filter, "Grid", searchTerm);
 
             return View(viewModel);
+        }
+
+        // Saves the chosen view for a year, like the SPA keeps it in localStorage.
+        private void RememberChallengeView(string view)
+        {
+            Response.Cookies.Append(ChallengeViewCookie, view, new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                HttpOnly = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.Lax
+            });
         }
 
         // Prepares challenge data shared by the Table and Grid views.
@@ -371,6 +400,16 @@ namespace GamificationPlatform.Controllers
                         User.IsInRole("Admin") ||
                         challenge.CreatedByUserId == userId;
 
+                    // An attempt the user left without finishing can be continued.
+                    var userChallenge = await _attemptRepository
+                        .GetUserChallengeAsync(userId, id);
+
+                    if (userChallenge != null)
+                    {
+                        viewModel.HasUnfinishedAttempt = await _attemptRepository
+                            .GetUnfinishedAttemptAsync(userChallenge.UserChallengeId) != null;
+                    }
+
                     var attempts = await _attemptRepository
                         .GetCompletedAttemptsAsync(userId, id);
 
@@ -589,6 +628,9 @@ namespace GamificationPlatform.Controllers
                     challenge.ChallengeId,
                     userId);
 
+                TempData["SuccessMessage"] =
+                    "Challenge created successfully.";
+
                 return RedirectToAction(
                     nameof(Details),
                     new
@@ -773,6 +815,9 @@ namespace GamificationPlatform.Controllers
                     existingChallenge.ChallengeId,
                     userId);
 
+                TempData["SuccessMessage"] =
+                    "Challenge updated successfully.";
+
                 // Return to the page the user came from, such as Challenge Details.
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
@@ -886,6 +931,9 @@ namespace GamificationPlatform.Controllers
                 "Challenge {ChallengeId} was deleted by user {UserId}.",
                 id,
                 userId);
+
+            TempData["SuccessMessage"] =
+                "Challenge deleted successfully.";
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {

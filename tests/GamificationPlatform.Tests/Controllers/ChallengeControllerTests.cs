@@ -49,6 +49,10 @@ public class ChallengeControllerTests
             }
         };
 
+        // Create shows a success message on the next page.
+        controller.TempData = new TempDataDictionary(
+            controller.HttpContext, Substitute.For<ITempDataProvider>());
+
         var challenge = new Challenge
         {
             Title = "Test challenge",
@@ -346,6 +350,10 @@ public class ChallengeControllerTests
             }
         };
 
+        // Create shows a success message on the next page.
+        controller.TempData = new TempDataDictionary(
+            controller.HttpContext, Substitute.For<ITempDataProvider>());
+
         var submittedChallenge = new Challenge
         {
             Title = "A valid challenge",
@@ -437,6 +445,10 @@ public class ChallengeControllerTests
                 User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Test"))
             }
         };
+
+        // Create shows a success message on the next page.
+        controller.TempData = new TempDataDictionary(
+            controller.HttpContext, Substitute.For<ITempDataProvider>());
 
         await controller.Create(new Challenge
         {

@@ -31,7 +31,9 @@ namespace GamificationPlatform.Controllers
         // Shows the results of a completed attempt.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> AttemptDetails(int id)
+        public async Task<IActionResult> AttemptDetails(
+            int id,
+            bool fromMyChallenges = false)
         {
             var userIdString =
                 User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -77,6 +79,7 @@ namespace GamificationPlatform.Controllers
                 Score = attempt.Score,
                 MaxPoints = challenge.Questions.Sum(q => q.Points),
                 ShowAnswers = showAnswers,
+                FromMyChallenges = fromMyChallenges,
                 CompletedAt = attempt.CompletedAt?
                     .ToString("dd.MM.yyyy HH:mm")
             };
@@ -185,7 +188,9 @@ namespace GamificationPlatform.Controllers
         // Shows the challenge and its questions.
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Take(int id)
+        public async Task<IActionResult> Take(
+            int id,
+            bool fromMyChallenges = false)
         {
             var challenge = await _challengeRepository
                 .GetChallengeWithQuestionsAndOptionsAsync(id);
@@ -278,7 +283,8 @@ namespace GamificationPlatform.Controllers
                 Challenge = challenge,
                 ChallengeAttemptId =
                     challengeAttempt.ChallengeAttemptId,
-                StartedAt = challengeAttempt.StartedAt
+                StartedAt = challengeAttempt.StartedAt,
+                FromMyChallenges = fromMyChallenges
             };
 
             return View(viewModel);
@@ -294,7 +300,8 @@ namespace GamificationPlatform.Controllers
             [FromForm(Name = "answers")]
             Dictionary<int, List<int>>? answers,
             [FromForm(Name = "textAnswers")]
-            Dictionary<int, string>? textAnswers)
+            Dictionary<int, string>? textAnswers,
+            bool fromMyChallenges = false)
         {
             if (!ModelState.IsValid ||
                 challengeId <= 0 ||
@@ -319,7 +326,11 @@ namespace GamificationPlatform.Controllers
                     : BadRequest();
             }
 
-            return View("Result", result);
+            // Redirect to the saved attempt, so refreshing the result page
+            // does not submit the form again.
+            return RedirectToAction(
+                nameof(AttemptDetails),
+                new { id = challengeAttemptId, fromMyChallenges = FromMyChallengesRoute(fromMyChallenges) });
         }
 
         // Ends the challenge early and returns to challenge details.
@@ -332,7 +343,8 @@ namespace GamificationPlatform.Controllers
             [FromForm(Name = "answers")]
             Dictionary<int, List<int>>? answers,
             [FromForm(Name = "textAnswers")]
-            Dictionary<int, string>? textAnswers)
+            Dictionary<int, string>? textAnswers,
+            bool fromMyChallenges = false)
         {
             if (!ModelState.IsValid ||
                 challengeId <= 0 ||
@@ -368,8 +380,12 @@ namespace GamificationPlatform.Controllers
             return RedirectToAction(
                 "Details",
                 "Challenge",
-                new { id = challengeId });
+                new { id = challengeId, fromMyChallenges = FromMyChallengesRoute(fromMyChallenges) });
         }
+
+        // Leaves the flag out of the URL when it is false.
+        private static string? FromMyChallengesRoute(bool fromMyChallenges) =>
+            fromMyChallenges ? "true" : null;
 
         // Checks the answers, calculates the score
         // and completes the current attempt.

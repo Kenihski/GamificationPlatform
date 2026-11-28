@@ -284,7 +284,7 @@ main h5 {
 .btn.change-type-button:focus-visible,
 .btn.change-type-button:active {
     background: #7b4ec9;
-    border-color: #7b4ec9;
+    border-color: #9970c8;
     color: #ffffff;
 }
 
@@ -322,9 +322,27 @@ main h5 {
     --bs-btn-border-color: var(--text-success);
 }
 
+/* Grey outline buttons, such as Unpublish, Exit Challenge and Cancel: grey frame
+   and text, filled grey with white text on hover, like the other outline buttons.
+   Contrast: text 9.5:1, frame 5.1:1, white on the fill 5.9:1. */
 .btn-outline-secondary {
-    --bs-btn-color: var(--home-muted);
-    --bs-btn-border-color: #91a5df;
+    --bs-btn-color: #c9ced8;
+    --bs-btn-border-color: #8f97a8;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #5b6577;
+    --bs-btn-hover-border-color: #8f97a8;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #5b6577;
+    --bs-btn-active-border-color: #8f97a8;
+    --bs-btn-disabled-color: #c9ced8;
+    --bs-btn-disabled-border-color: #8f97a8;
+}
+
+/* Change Type: purple frame and text, filled purple with white text on hover.
+   Contrast: text 8.8:1, frame 3.9:1, white on the fill 5.6:1. */
+.btn.change-type-button {
+    border-color: #9970c8;
+    color: #d9baff;
 }
 
 /* Lists */

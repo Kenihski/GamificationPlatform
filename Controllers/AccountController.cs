@@ -234,7 +234,7 @@ namespace GamificationPlatform.Controllers
             }
 
             return RedirectToAction(
-                "Grid",
+                "Index",
                 "Challenge");
         }
 

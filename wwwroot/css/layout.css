@@ -66,6 +66,9 @@ body:not(:has(.home-hero)) #matrixBackground {
 }
 
 .matrix-toggle {
+    /* The navbar button keeps its blue-grey frame. */
+    --bs-btn-color: var(--home-muted);
+    --bs-btn-border-color: #91a5df;
     width: 44px;
     box-sizing: content-box;
     height: calc(1em * var(--bs-btn-line-height));

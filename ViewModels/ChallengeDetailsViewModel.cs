@@ -19,6 +19,10 @@ namespace GamificationPlatform.ViewModels
         // manage the challenge and its questions.
         public bool CanManage { get; set; }
 
+        // True when the user left an attempt without finishing it,
+        // so the page offers to continue it.
+        public bool HasUnfinishedAttempt { get; set; }
+
         // Determines whether the question section
         // should be open when the page loads.
         public bool ShowQuestions { get; set; }
