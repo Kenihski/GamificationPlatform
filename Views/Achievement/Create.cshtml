@@ -20,7 +20,7 @@
 
             <form asp-controller="Achievement"
                   asp-action="Create"
-                  method="post">
+                  method="post" data-achievement-validation novalidate>
 
                 @Html.AntiForgeryToken()
 
@@ -34,7 +34,7 @@
                         Name
                     </label>
 
-                    <input asp-for="Name"
+                    <input asp-for="Name" maxlength="100"
                            class="form-control" />
 
                     <span asp-validation-for="Name"
@@ -48,7 +48,7 @@
                         Description
                     </label>
 
-                    <textarea asp-for="Description"
+                    <textarea asp-for="Description" maxlength="300"
                               class="form-control"
                               rows="3"></textarea>
 
@@ -168,3 +168,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/achievement-form-validation.js" asp-append-version="true" defer></script>
+}

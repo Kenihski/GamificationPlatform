@@ -27,10 +27,6 @@ namespace GamificationPlatform.ViewModels
         [Required(ErrorMessage = "Achievement type is required.")]
         public string Type { get; set; } = string.Empty;
 
-        [Range(
-            1,
-            1000,
-            ErrorMessage = "Requirement must be between 1 and 1000.")]
         public int RequirementValue { get; set; }
 
         public bool IsActive { get; set; } = true;

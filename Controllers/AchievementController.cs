@@ -677,12 +677,12 @@ namespace GamificationPlatform.Controllers
                     "AP must be 5, 10, 15 or 20.");
             }
 
-            if (viewModel.Type == "ScorePercentage" &&
-                viewModel.RequirementValue > 100)
+            int maximum = viewModel.Type == "ScorePercentage" ? 100 : 1000;
+            if (viewModel.RequirementValue < 1 || viewModel.RequirementValue > maximum)
             {
                 ModelState.AddModelError(
                     nameof(viewModel.RequirementValue),
-                    "Percentage requirements cannot be above 100.");
+                    $"Requirement must be between 1 and {maximum}.");
             }
         }
 
