@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 using GamificationPlatform.DAL;
 using GamificationPlatform.Models;
@@ -12,15 +13,18 @@ namespace GamificationPlatform.Controllers
         private readonly IChallengeRepository _challengeRepository;
         private readonly IAttemptRepository _attemptRepository;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<LeaderboardController> _logger;
 
         public LeaderboardController(
             IChallengeRepository challengeRepository,
             IAttemptRepository attemptRepository,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            ILogger<LeaderboardController> logger)
         {
             _challengeRepository = challengeRepository;
             _attemptRepository = attemptRepository;
             _userManager = userManager;
+            _logger = logger;
         }
 
         // Shows the leaderboard for a challenge.
@@ -33,6 +37,24 @@ namespace GamificationPlatform.Controllers
 
             if (challenge == null)
             {
+                return NotFound();
+            }
+
+            // Draft leaderboards are private to the owner and administrators.
+            bool isOwner =
+                int.TryParse(
+                    User.FindFirstValue(ClaimTypes.NameIdentifier),
+                    out int currentUserId) &&
+                challenge.CreatedByUserId == currentUserId;
+
+            bool isAdmin = User.IsInRole("Admin");
+
+            if (!challenge.IsPublished && !isOwner && !isAdmin)
+            {
+                _logger.LogWarning(
+                    "Unauthorised access to unpublished challenge leaderboard {ChallengeId}.",
+                    id);
+
                 return NotFound();
             }
 
